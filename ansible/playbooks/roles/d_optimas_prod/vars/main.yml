@@ -1,0 +1,4 @@
+---
+# vars file for d_optimas_prod
+work_dir: "/opt/d-optimas"
+d_optimas_version: "latest"

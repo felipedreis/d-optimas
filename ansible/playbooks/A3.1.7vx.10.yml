@@ -1,0 +1,24 @@
+- name: Deploy experiment server
+  hosts: localhost
+  gather_facts: no
+  vars:
+    experiment_path: 'experiments/tese/A/A3.1.7vx.10.conf'
+    experiment_name: 'function-problem-a'
+    experiment_instance: 'A3.1.7vx.10'
+    region: "europe-central2"
+    zone: "europe-central2-a"
+  roles:
+    - gcloud-simulation-server
+
+- name: Prepare instance
+  hosts: new_instance
+  connection: ssh
+  become: True
+  vars:
+    experiment_path: 'experiments/tese/A/A3.1.7vx.10.conf'
+    experiment_name: 'function-problem-a'
+    experiment_instance: 'A3.1.7vx.10'
+    region: "europe-central2"
+    zone: "europe-central2-a"
+  roles:
+    - d_optimas_prod

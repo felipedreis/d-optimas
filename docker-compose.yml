@@ -1,0 +1,67 @@
+version: "3.4"
+
+networks:
+  d-optimas-net:
+    driver: bridge
+
+
+services:
+  d-optimas-1:
+    container_name: d-optimas-1
+    image: felipedreis/d-optimas
+
+    ports:
+      - 2551:2551
+    environment:
+      DOPTIMAS_PORT: 2551
+      DOPTIMAS_HOST: localhost
+      DOPTIMAS_EXP_FILE: experiments/tese/A/A.GA.conf
+      CASSANDRA_HOST: cassandra
+      REPEAT: 2
+    depends_on:
+      - cassandra
+      - cassandra-0
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ./results
+        target: /data
+        read_only: false
+        bind:
+          propagation: shared
+    networks:
+      - d-optimas-net
+
+  cassandra:
+    container_name: cassandra
+    image: bitnami/cassandra:3.11.5
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_DATACENTER=datacenter1
+      - CASSANDRA_CLUSTER_NAME=d-optimas-db
+      - CASSANDRA_PASSWORD_SEEDER=yes
+    ports:
+      - 9042:9042
+      - 7000:7000
+    restart: always
+    volumes:
+      - ./src/main/resources/cassandra/db.cql:/docker-entrypoint-initdb.d/init.cql
+    networks:
+      - d-optimas-net
+
+  cassandra-0:
+    image: bitnami/cassandra:3.11.5
+    container_name: cassandra-0
+    environment:
+      - CASSANDRA_HOST=cassandra-0
+      - CASSANDRA_DATACENTER=datacenter1
+      - CASSANDRA_SEEDS=cassandra
+      - CASSANDRA_CLUSTER_NAME=d-optimas-db
+    depends_on:
+      - cassandra
+    networks:
+      - d-optimas-net
+    restart: always
+
+volumes:
+  results:

@@ -1,0 +1,61 @@
+SimulacaoTeste              //Nome da simulação
+Testando a simulacao...     //Descrição da simulação
+
+PRVJT_Denise                //Nome do problema
+0                           //Tipo do problema
+true                        //Tem cooperação
+10000.0                     //limiarCov
+10000.0                     //limiarVar
+PRVJT_I05                   //Arquivo de instancia
+
+1                           //Quantidade de agentes
+GRASP_TESTE                 //Nome do agente
+60000000                    //Lifetime*
+GRASP                       //Tipo do agente
+
+maxIteracoes,500            //MetaHeuristic Parameters
+alpha,0.5
+nomeLCandidatos,Posicao
+nomeCondParada,MaxIteracoes
+nomeBuscaLocal,Randomica
+numIteracoesBuscaLocal,100
+
+Randomico_n,escolheSolucaoInicial,true  //SolutionManipulation Parameters
+PRVJT,neighborLS,true
+
+
+1
+ILSTeste
+60000000
+ILS
+
+maxIteracoes,500
+maxIteracoesSM,1
+tempo,0.0
+f0,0
+nomeCondParada,MaxIteracoes
+nivelPertubacao,1
+nomeBuscaLocal,Randomica
+numIteracoesBuscaLocal,1
+
+Randomico_n,escolheSolucaoInicial,true
+PRVJTRealoca,neighborLS,true
+PRVJTTroca,pertubacao,true
+
+
+1
+SATeste
+60000000
+SA
+
+maxIteracoesTemp,20
+maxIteracoes,500
+maxIteracoesSM,1000
+tempo,180.0
+f0,5
+alpha,0.9
+nomeCondParada,MaxIteracoes
+nomeTemperatura,SA
+
+Randomico_n,escolheSolucaoInicial,true
+PRVJTRealoca,neighbor,true

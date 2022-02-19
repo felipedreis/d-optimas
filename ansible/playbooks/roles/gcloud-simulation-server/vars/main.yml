@@ -1,0 +1,7 @@
+---
+# vars file for gcloud-simulation-server
+
+
+gcp_project: metal-complex-333608
+gcp_cred_kind: serviceaccount
+gcp_cred_file: ~/metal-complex.json

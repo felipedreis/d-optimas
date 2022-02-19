@@ -1,0 +1,24 @@
+# Intellij
+.idea/
+*.iml
+*.iws
+*.class
+*.csv
+
+# Maven
+log/
+target/
+out/
+
+#application
+journal/
+snapshots/
+ddata*/
+output/
+
+#python
+venv
+
+*.tar
+*.tar.gz
+*.zip

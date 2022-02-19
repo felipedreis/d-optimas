@@ -1,0 +1,10 @@
+[Unit]
+Description=Supervision of d-optimas
+
+[Service]
+ExecStart=/bin/bash {{ work_dir }}/scripts/d-optimas-post-exec.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

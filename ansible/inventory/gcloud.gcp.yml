@@ -1,0 +1,6 @@
+plugin: gcp_compute
+projects:
+  - metal-complex-333608
+auth_kind: serviceaccount
+service_account_file: ~/metal-complex.json
+filters: []

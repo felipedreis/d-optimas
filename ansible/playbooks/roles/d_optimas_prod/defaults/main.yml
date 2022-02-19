@@ -1,0 +1,5 @@
+---
+# defaults file for d_optimas_prod
+experiment_path: "experiments/tese/A/A0.4.7i.1.conf"
+experiment_instance: "A0.4.7i.1"
+experiment_name: "function-problem-a"

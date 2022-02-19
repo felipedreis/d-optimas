@@ -1,0 +1,74 @@
+---
+# tasks file for d_optimas_prod
+- name: "create script dir"
+  file:
+    path: "{{ work_dir }}/scripts"
+    state: directory
+
+- name: "create results dir"
+  file:
+    path: "{{ work_dir }}/results"
+    state: directory
+
+- name: "install pip3"
+  apt:
+    update_cache: True
+    name: python3-pip
+
+- name: "install docker"
+  apt:
+    pkg:
+      - docker
+      - docker-compose
+      - docker.io
+
+- name: "install libraries"
+  pip:
+    name: docker
+
+- name: "copy docker-compose to working dir"
+  template:
+    src: docker-compose.yml
+    dest: "{{ work_dir }}/docker-compose.yml"
+
+- name: "copy cql database creation file"
+  template:
+    src: db_local.cql
+    dest: "{{ work_dir }}/scripts/db_local.cql"
+
+- name: "copy cql cluster database creation file"
+  template:
+    src: db.cql
+    dest: "{{ work_dir }}/scripts/db.cql"
+
+- name: "copy d-optimas-post-exec"
+  template:
+    src: d-optimas-post-exec.sh
+    dest: "{{ work_dir }}/scripts/d-optimas-post-exec.sh"
+    mode: 770
+
+- name: "start compose"
+  docker_compose:
+    project_src: "{{ work_dir }}"
+  register: compose_result
+
+- name: "show the compose result"
+  debug:
+    var: compose_result
+
+- name: "checking that d-optimas is running"
+  assert:
+    that:
+      - "compose_result.ansible_facts['d-optimas-1']['d-optimas-1'].state.running"
+
+# copy systemctl service template
+- name: "copying watcher service"
+  template:
+    src: d-optimas-watcher
+    dest: '/etc/systemd/system/d-optimas-watcher.service'
+    mode: 644
+
+- name: "starting watcher service"
+  systemd:
+    name: d-optimas-watcher
+    state: started

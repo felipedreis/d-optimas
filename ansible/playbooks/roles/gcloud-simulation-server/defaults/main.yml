@@ -1,0 +1,10 @@
+---
+# defaults file for gcloud-simulation-server
+experiment_name: "experiment"
+gcp_project: "project"
+gcp_cred_kind: "kind"
+gcp_cred_file: "file"
+experiment_instance: "instance"
+storage_account_email: "email"
+zone: "europe-west2-a"
+region: "europe-west2"
