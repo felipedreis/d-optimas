@@ -16,6 +16,7 @@ import br.cefetmg.lsi.bimasco.persistence.dao.MessageStateDAO;
 import br.cefetmg.lsi.bimasco.persistence.dao.RegionStateDAO;
 import br.cefetmg.lsi.bimasco.persistence.dao.SolutionStateDAO;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
+import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 import static java.lang.String.format;
 
 //TODO: Change element's name
@@ -183,7 +185,11 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         logger.info("Region " + persistenceId() + " handling merge request from " + sender().path().name());
         persistMessage(received(request, time, persistenceId()));
 
+        EuclideanDistance distanceCalculator = new EuclideanDistance();
+
         StatisticalSummary merged = AggregateSummaryStatistics.aggregate(List.of(region.getSummary(), request.summary));
+        double distance = distanceCalculator.compute(region.getSearchSpaceSummary().getMean(),
+                request.searchSpaceSummary.getMean());
 
         if (StatisticsHelper.variationRate(merged) < StatisticsHelper.variationRate(region.getSummary())) {
             MergeResponse response = new MergeResponse(id, request.senderId);
@@ -263,7 +269,8 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
                 logger.info("Region " + persistenceId() + " split. Staying with the lower solutions");
             } else {
-                MergeRequest mergeRequest = new MergeRequest(id, Messages.Everybody, region.getSummary());
+                MergeRequest mergeRequest = new MergeRequest(id, Messages.Everybody, region.getSummary(),
+                        region.getSearchSpaceSummary());
                 leader.tell(mergeRequest, self());
                 persistMessage(sent(mergeRequest, time, persistenceId()));
             }

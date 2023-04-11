@@ -285,6 +285,10 @@ public abstract class Solution <Domain extends Element, Image extends Number & C
         this.initialSolutionCreator = initialSolutionCreator;
     }
 
+    public double[] toDoubleArray() {
+        return solutionsVector.stream().mapToDouble(Element::toDoubleValue).toArray();
+    }
+
     public P getProblem() {
         return problem;
     }

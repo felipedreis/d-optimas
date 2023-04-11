@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.join;
 
@@ -119,7 +120,6 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(SetLeader.class,  this::onNewLeader)
                 .match(SolutionRequest.class, this::onSolutionRequest)
                 .match(SolutionResponse.class, this::onSolutionResponse)
                 .match(CreateAgent.class, this::onBootstrap)

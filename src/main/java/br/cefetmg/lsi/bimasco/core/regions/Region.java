@@ -7,6 +7,7 @@ import br.cefetmg.lsi.bimasco.settings.ProblemSettings;
 import br.cefetmg.lsi.bimasco.settings.RegionSettings;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,8 @@ public class Region implements Serializable {
 
     private SummaryStatistics summary;
 
+    private MultivariateSummaryStatistics searchSpaceSummary;
+
     private SolutionAnalyser analyser;
 
     private Solution bestSolution;
@@ -47,7 +50,7 @@ public class Region implements Serializable {
 
         problem = Problem.buildProblem(problemSettings);
         analyser = SolutionAnalyser.buildSolutionAnalyser(problem);
-
+        searchSpaceSummary = new MultivariateSummaryStatistics(problem.getDimension(), false);
         bestSolution = null;
     }
 
@@ -86,6 +89,7 @@ public class Region implements Serializable {
         solutionList.add(solution);
         stats.addValue(((Number) solution.getFunctionValue()).doubleValue());
         summary.addValue(((Number) solution.getFunctionValue()).doubleValue());
+        searchSpaceSummary.addValue(solution.toDoubleArray());
         //TODO: Save on DB the new solution and the best current solution on region
         //TODO: Save also a agentId on DB
     }
@@ -140,10 +144,19 @@ public class Region implements Serializable {
         return summary;
     }
 
+    public MultivariateSummaryStatistics getSearchSpaceSummary() {
+        return searchSpaceSummary;
+    }
+
+    public void setSearchSpaceSummary(MultivariateSummaryStatistics searchSpaceSummary) {
+        this.searchSpaceSummary = searchSpaceSummary;
+    }
+
     public void clear(){
         solutionList.clear();
         stats.clear();
         summary.clear();
+        searchSpaceSummary.clear();
     }
 }
 

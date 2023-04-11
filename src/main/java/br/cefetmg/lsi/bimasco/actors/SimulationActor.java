@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
+import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 import static akka.cluster.ClusterEvent.*;
 import static java.lang.String.format;
 

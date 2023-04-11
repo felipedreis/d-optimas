@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 /**
  * Data extractor actor based on asynchronous
  */
