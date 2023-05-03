@@ -3,14 +3,15 @@ package br.cefetmg.lsi.bimasco.coco;
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.solutions.element.FunctionSolutionElement;
+import br.cefetmg.lsi.bimasco.util.EuclideanVector;
 
-public class BenchmarkSolution extends Solution<FunctionSolutionElement, Double, BenchmarkProblem> {
+public class BenchmarkSolution extends Solution<FunctionSolutionElement, EuclideanVector<Double>, BenchmarkProblem> {
 
     public BenchmarkSolution(Problem problem) {
         super(problem);
     }
 
-    public BenchmarkSolution(Solution<FunctionSolutionElement, Double, BenchmarkProblem> another) {
+    public BenchmarkSolution(Solution<FunctionSolutionElement, EuclideanVector<Double>, BenchmarkProblem> another) {
         super(another);
     }
 

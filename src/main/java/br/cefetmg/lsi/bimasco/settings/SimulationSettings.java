@@ -26,6 +26,8 @@ public class SimulationSettings implements Serializable {
 
     private final String extractPath;
 
+    private final boolean benchmark;
+
     public SimulationSettings(Config config) {
         config = config.getConfig("simulation");
 
@@ -44,6 +46,8 @@ public class SimulationSettings implements Serializable {
         executionTime = config.getLong("executionTime");
         extractPath = config.getString("extractPath");
         nodes = config.getInt("nodes");
+
+        benchmark = config.hasPath("benchmark") ? config.getBoolean("benchmark") : false ;
     }
 
     public String getName() {
@@ -80,5 +84,9 @@ public class SimulationSettings implements Serializable {
 
     public String getExtractPath() {
         return extractPath;
+    }
+
+    public boolean isBenchmark() {
+        return benchmark;
     }
 }

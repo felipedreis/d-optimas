@@ -151,9 +151,10 @@ public class ILS extends MetaHeuristic {
 
         currentSolution = bestSolution;
 
-        initialTime = System.currentTimeMillis();
+        getStopWatch().reset();
+        getStopWatch().start();
 
-        while (!stopCondition.isSatisfied(f0, time, iteracoes, iteracoesSM, metaHeuristicParameters)) {//&& (!getAgentPaused()) ){
+        while (!stopCondition.isSatisfied(f0, getStopWatch().getTime(), iteracoes, iteracoesSM, metaHeuristicParameters)) {//&& (!getAgentPaused()) ){
             iteration++;
             logger.debug(format("Iteration %d", iteracoes));
             logger.debug(format("Current solution: %s", currentSolution));
@@ -212,9 +213,7 @@ public class ILS extends MetaHeuristic {
             finalTime = System.currentTimeMillis();
             time = ((finalTime - initialTime) / c_TimeDivisor);
         }
-        finalTime = System.currentTimeMillis();
-        time = ((finalTime - initialTime) / c_TimeDivisor);
-        bestSolution.setExecutionTime(time);
+        getStopWatch().stop();
         return bestSolution;
     }
 

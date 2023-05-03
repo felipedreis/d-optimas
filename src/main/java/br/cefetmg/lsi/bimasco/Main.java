@@ -92,7 +92,8 @@ public class Main {
 
                 DatabaseCleaner cleaner = new DatabaseCleaner();
                 cleaner.cleanup(system);
-                ActorRef simulationManager = system.actorOf(Props.create(SimulationActor.class, settings), "manager");
+                ActorRef mainActor = system.actorOf(Props.create(MainActor.class), "main");
+                mainActor.tell(settings, mainActor);
             }
         } catch (ParseException e) {
             e.printStackTrace();

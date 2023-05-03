@@ -1,11 +1,14 @@
-FROM openjdk:14-jdk AS run
+FROM openjdk:11 AS run
 
 WORKDIR /d-optimas/run
 
-COPY config/docker-config.conf ./
-COPY experiments ./experiments/
+COPY ../config/docker-config.conf ./
+COPY ../experiments ./experiments/
 COPY target/*-deploy.jar ./d-optimas.jar
-COPY scripts/run-d-optimas.sh ./
+COPY ../scripts/run-d-optimas.sh ./
+
+RUN apt update
+RUN apt install -y liblmdb-dev
 
 ENV CONFIG_FILE="docker-config.conf"
 ENV REPEAT=1

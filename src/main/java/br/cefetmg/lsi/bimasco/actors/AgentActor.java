@@ -84,16 +84,6 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         String[] tokens = self().path().name().split("-");
         id = Integer.parseInt(tokens[1]);
 
-        InternalStimulus internalStimulusMessage = new InternalStimulus();
-        internalStimulusMessage.setInformation(Stimulus.StimulusInformation.CHANGE_MY_STATE);
-
-        internalTask = context().system().scheduler().schedule(
-                Duration.create(10, TimeUnit.MILLISECONDS),
-                Duration.create(5, TimeUnit.SECONDS),
-                self(),
-                internalStimulusMessage,
-                context().system().dispatcher(),
-                self());
         agentStateDAO = DatabaseHelper.getMapper().agentStateDAO();
         messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
         memoryStateDAO = DatabaseHelper.getMapper().memoryStateDAO();
@@ -122,10 +112,38 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         return receiveBuilder()
                 .match(SolutionRequest.class, this::onSolutionRequest)
                 .match(SolutionResponse.class, this::onSolutionResponse)
-                .match(CreateAgent.class, this::onBootstrap)
+                .match(CreateAgent.class, this::onCreateAgent)
                 .match(InternalStimulus.class, this::onInternalStimulus)
                 .match(UpdateGlobalSummary.class, this::onUpdateGlobalSummary)
+                .match(StartSimulation.class, this::onStartSimulation)
+                .match(StopSimulation.class, this::onStopSimulation)
+                .matchAny((any) -> logger.info("Not handling " + any))
                 .build();
+    }
+
+    private void onStartSimulation(StartSimulation startSimulation) {
+        leader.tell(new AgentRegister(id), self());
+        startSimulation.problem.ifPresent(agent::reset);
+        startInternalTask();
+    }
+
+    private void onStopSimulation(StopSimulation stopSimulation) {
+        leader.tell(new AgentRelease(id), self());
+        internalTask.cancel();
+        sender().tell(new SimulationStopped(), self());
+    }
+
+    private void startInternalTask() {
+        InternalStimulus internalStimulusMessage = new InternalStimulus();
+        internalStimulusMessage.setInformation(Stimulus.StimulusInformation.CHANGE_MY_STATE);
+
+        internalTask = context().system().scheduler().schedule(
+                Duration.create(10, TimeUnit.MILLISECONDS),
+                Duration.create(5, TimeUnit.SECONDS),
+                self(),
+                internalStimulusMessage,
+                context().system().dispatcher(),
+                self());
     }
 
     private void onNewLeader(SetLeader leadership) {
@@ -163,9 +181,10 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         leader.tell(new AgentRegister(id), self());
     }
 
-    private void onBootstrap(CreateAgent createAgent){
+    private Object onCreateAgent(CreateAgent createAgent){
         initialize(createAgent);
         saveSnapshot(new AgentActorSnapshot(agent, agentsShard, regionsShard, leader));
+        return null;
     }
 
     private void onInternalStimulus(InternalStimulus internalStimulus) {

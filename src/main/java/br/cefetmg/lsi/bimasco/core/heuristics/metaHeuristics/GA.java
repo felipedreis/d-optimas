@@ -15,6 +15,7 @@ import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySuppor
 import br.cefetmg.lsi.bimasco.core.utils.SolutionManipulationKeys;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.SolutionManipulation;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -190,9 +191,11 @@ public class GA extends MetaHeuristic {
         int iteracoes = 0;
         int iteracoesSM = 0;
 
-        tempoInicial = System.currentTimeMillis();
 
-        while (!stopCondition.isSatisfied(f0, tempo, iteracoes, iteracoesSM, metaHeuristicParameters)) {
+        getStopWatch().reset();
+        getStopWatch().start();
+
+        while (!stopCondition.isSatisfied(f0, stopWatch.getTime(), iteracoes, iteracoesSM, metaHeuristicParameters)) {
             logger.debug(format("Iteration %d", iteracoes));
             proxPopulacao = new ArrayList<>();
             proxPopulacao = SolutionsCollectionUtils.copyValues(population, problem);
@@ -242,13 +245,12 @@ public class GA extends MetaHeuristic {
             iteracoes++;
             iteracoesSM++;
 
-            tempoFinal = System.currentTimeMillis();
-            tempo = ((tempoFinal - tempoInicial) / C_TIME_DIVISOR);
+
         }
 
-        tempoFinal = System.currentTimeMillis();
-        tempo = ((tempoFinal - tempoInicial) / C_TIME_DIVISOR);
-        bestIterationSolution.setExecutionTime(tempo);
+        getStopWatch().stop();
+
+        bestIterationSolution.setExecutionTime(getStopWatch().getTime());
     }
 
     private List<Solution> parentsChoice() {

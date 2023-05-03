@@ -1,0 +1,59 @@
+version: "3.4"
+
+networks:
+  d-optimas-net:
+    driver: bridge
+
+volumes:
+  results:
+
+services:
+  d-optimas-1:
+    container_name: d-optimas-1
+    image: felipedreis/d-optimas:2.10
+    ports:
+      - 2551:2551
+    environment:
+      DOPTIMAS_PORT: 2551
+      DOPTIMAS_HOST: localhost
+      DOPTIMAS_EXP_FILE: experiments/preliminar/A.conf
+      CASSANDRA_HOST: cassandra
+      REPEAT: 2
+    depends_on:
+      - cassandra_init
+    restart: on-failure
+    volumes:
+      - type: bind
+        source: ../results
+        target: /data
+        read_only: false
+    networks:
+      - d-optimas-net
+
+  cassandra:
+    container_name: cassandra
+    image: cassandra:latest
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_DATACENTER=datacenter1
+      - CASSANDRA_CLUSTER_NAME=d-optimas-db
+      - CASSANDRA_PASSWORD_SEEDER=yes
+    ports:
+      - 9042:9042
+      #- 7001:7000
+    restart: always
+    volumes:
+      - ../src/main/resources/cassandra/db_local.cql:/docker-entrypoint-initdb.d/init.cql
+    networks:
+      - d-optimas-net
+
+  cassandra_init:
+    container_name: cassandra_init
+    image: cassandra:latest
+    volumes:
+      - ../src/main/resources/cassandra/init.sh:/docker-entrypoint.sh/init.sh
+      - ../src/main/resources/cassandra/db_local.cql:/tmp/cql/init.cql
+    networks:
+      - d-optimas-net
+    command: >
+      bash ./docker-entrypoint.sh/init.sh 

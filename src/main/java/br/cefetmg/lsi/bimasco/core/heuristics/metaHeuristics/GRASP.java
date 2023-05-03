@@ -122,11 +122,12 @@ public class GRASP extends MetaHeuristic {
         int iteracoes = 0;
         int iteracoesSM = 0;
 
-        this.initialTime = System.currentTimeMillis();
+        getStopWatch().reset();
+        getStopWatch().start();
 
         Solution solution = Solution.buildSolution(problem);
 
-        while (!this.stopCondition.isSatisfied(f0, this.time, iteracoes, iteracoesSM, this.metaHeuristicParameters)) {
+        while (!this.stopCondition.isSatisfied(f0, getStopWatch().getTime(), iteracoes, iteracoesSM, this.metaHeuristicParameters)) {
             this.iteracao++;
             logger.debug(format("Iteration %d", iteracoes));
             solucaoConstrucao = construcao();
@@ -164,11 +165,7 @@ public class GRASP extends MetaHeuristic {
             this.time = ((this.finalTime - this.initialTime) / c_TimeDivisor);
 
         }
-
-        this.finalTime = System.currentTimeMillis();
-        this.time = ((this.finalTime - this.initialTime) / c_TimeDivisor);
-        solution.setExecutionTime(this.time);
-
+        getStopWatch().stop();
         return solution;
     }
 

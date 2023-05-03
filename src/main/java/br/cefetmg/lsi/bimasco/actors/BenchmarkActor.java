@@ -3,6 +3,7 @@ package br.cefetmg.lsi.bimasco.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import br.cefetmg.lsi.bimasco.coco.*;
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 import com.typesafe.config.Config;
 import org.apache.log4j.Logger;
@@ -23,6 +24,10 @@ public class BenchmarkActor extends AbstractActor {
     private Config config;
 
     private ActorRef simulationActor;
+
+    private int evaluations;
+
+    private boolean runningSimulation;
 
     public BenchmarkActor(){
     }
@@ -48,15 +53,33 @@ public class BenchmarkActor extends AbstractActor {
     private void nextProblem() {
         try {
             benchmarkProblem = coCOBenchmark.getNextProblem();
-            benchmarkProblem.setBenchmarkActor(self());
+            if (benchmarkProblem != null) {
+                benchmarkProblem.setBenchmarkActor(self());
+                evaluations = 0;
+            } else {
+                stopBenchmark();
+                context().parent().tell(new Terminate(), self());
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     private void handleEvaluate(Evaluate evaluate) {
-        double [] y = CocoJNI.cocoEvaluateFunction(benchmarkProblem.getPointer(), evaluate.x);
-        sender().tell(new EvaluateResult(y), self());
+        if (!runningSimulation) {
+            sender().tell(new EvaluateResult(null), self());
+        } else {
+            double[] y = CocoJNI.cocoEvaluateFunction(benchmarkProblem.getPointer(), evaluate.x);
+            sender().tell(new EvaluateResult(y), self());
+            evaluations++;
+        }
+    }
+
+    private void checkStopCondition() {
+        if (evaluations == benchmarkProblem.getEvaluations()) {
+            simulationActor.tell(new StopSimulation(), self());
+            runningSimulation = false;
+        }
     }
 
     private void startBenchmark(){
@@ -65,7 +88,7 @@ public class BenchmarkActor extends AbstractActor {
     }
 
     private void startSimulation() {
-        simulationActor.tell(null, self()); //TODO start simulation
+        simulationActor.tell(new StartSimulation(benchmarkProblem), self()); //TODO start simulation
     }
 
     private void handleSimulationEnd() {

@@ -49,7 +49,7 @@ class RegionActorSnapshot implements Serializable {
 
 public class RegionActor extends AbstractPersistentActor implements Serializable, MessagePersister {
 
-    private static transient final Logger logger = Logger.getLogger(RegionActor.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(RegionActor.class.getSimpleName());
 
     private Region region;
 
@@ -119,6 +119,8 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 .match(MergeResult.class, this::onMergeResult)
                 .match(InternalStimulus.class, this::onInternalStimulus)
                 .match(UpdateGlobalSummary.class, this::onUpdateGlobalSummary)
+                .match(StopSimulation.class, this::onStopSimulation)
+                .matchAny(any -> logger.info("Not handling " + any.getClass()))
                 .build();
     }
 
@@ -152,6 +154,12 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         leader = sender();
         logger.info("Updating leader to " + leader.path());
         saveSnapshot(snapshot());
+    }
+
+    private void onStopSimulation(StopSimulation stopSimulation) {
+        internalTask.cancel();
+        region.clear();
+        sender().tell(new SimulationStopped(), self());
     }
 
 

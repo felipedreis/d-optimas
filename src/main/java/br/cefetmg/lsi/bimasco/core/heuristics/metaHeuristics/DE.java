@@ -70,7 +70,10 @@ public class DE extends MetaHeuristic {
         long time = 0;
         bestSolution = population.get(0);
 
-        while (!stopCondition.isSatisfied(f0, time, iteration, iterationWI, metaHeuristicParameters)){ //stopCondition.isSatisfied()) {
+        getStopWatch().reset();
+        getStopWatch().start();
+
+        while (!stopCondition.isSatisfied(f0, getStopWatch().getTime(), iteration, iterationWI, metaHeuristicParameters)){
             iteration++;
             iterationWI++;
 
@@ -81,7 +84,6 @@ public class DE extends MetaHeuristic {
                 logger.debug(format("Constructing offspring %d", i));
 
                 Object [] sample = rdg.nextSample(population, 3);
-
 
                 r1 = (Solution) sample[0];
                 r2 = (Solution) sample[1];
@@ -122,9 +124,10 @@ public class DE extends MetaHeuristic {
             }
             logger.debug(format("Iteration %d best solution: %s", iteration, bestSolution));
 
-            time = startTime - System.currentTimeMillis();
             population = nextPopulation;
         }
+
+        getStopWatch().stop();
 
         return List.of(bestSolution);
     }

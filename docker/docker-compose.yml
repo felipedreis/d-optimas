@@ -8,8 +8,7 @@ networks:
 services:
   d-optimas-1:
     container_name: d-optimas-1
-    image: felipedreis/d-optimas
-
+    image: felipedreis/d-optimas:2.10
     ports:
       - 2551:2551
     environment:
@@ -24,11 +23,9 @@ services:
     restart: on-failure
     volumes:
       - type: bind
-        source: ./results
+        source: ../results
         target: /data
         read_only: false
-        bind:
-          propagation: shared
     networks:
       - d-optimas-net
 
@@ -42,10 +39,10 @@ services:
       - CASSANDRA_PASSWORD_SEEDER=yes
     ports:
       - 9042:9042
-      - 7000:7000
+      #- 7001:7000
     restart: always
     volumes:
-      - ./src/main/resources/cassandra/db.cql:/docker-entrypoint-initdb.d/init.cql
+      - ../src/main/resources/cassandra/db.cql:/docker-entrypoint-initdb.d/init.cql
     networks:
       - d-optimas-net
 

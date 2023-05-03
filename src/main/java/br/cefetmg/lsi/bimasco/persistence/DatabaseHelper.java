@@ -47,7 +47,7 @@ public class DatabaseHelper {
                 cqlSession = CqlSession.builder().addContactPoint(new InetSocketAddress(host, 9042))
                         .withLocalDatacenter("datacenter1")
                         .withConfigLoader(loader.build())
-                        //.withAuthCredentials("cassandra", "cassandra")
+                        .withAuthCredentials("cassandra", "cassandra")
                         .build();
                 connected = true;
             } catch (Exception ex) {

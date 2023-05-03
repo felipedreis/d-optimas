@@ -6,6 +6,7 @@ import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.core.utils.BimascoClassPath;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.io.Serializable;
@@ -19,12 +20,14 @@ import java.util.logging.Logger;
 //TODO: Maybe put constants more used here
 public abstract class MetaHeuristic implements Serializable {
 
+    private static class SerializableStopWatch extends StopWatch implements Serializable {}
+
     private static final String TAG = MetaHeuristic.class.getSimpleName();
     protected Problem problem;
     protected AgentSettings agentSettings;
     protected RandomDataGenerator rnd;
     protected SolutionAnalyser solutionAnalyser;
-
+    protected StopWatch stopWatch;
 
     protected Map<String, Object> metaHeuristicParameters;
 
@@ -32,6 +35,7 @@ public abstract class MetaHeuristic implements Serializable {
         this.problem = problem;
         rnd = new RandomDataGenerator();
         solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
+        stopWatch = new SerializableStopWatch();
     }
 
     public static MetaHeuristic buildMetaHeuristic(AgentSettings agentSettings, Problem problem) {
@@ -75,5 +79,21 @@ public abstract class MetaHeuristic implements Serializable {
 
     public void setSolutionAnalyser(SolutionAnalyser solutionAnalyser) {
         this.solutionAnalyser = solutionAnalyser;
+    }
+
+    public Problem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(Problem problem) {
+        this.problem = problem;
+    }
+
+    public StopWatch getStopWatch() {
+        return stopWatch;
+    }
+
+    public void setStopWatch(StopWatch stopWatch) {
+        this.stopWatch = stopWatch;
     }
 }

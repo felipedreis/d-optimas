@@ -30,7 +30,7 @@ public abstract class Solution <Domain extends Element, Image extends Number & C
 
     private String agent;
 
-    private Double executionTime;
+    private long executionTime;
     private Object initialValueOfFunction;
     private UUID initialSolutionCreator;
     private Double deviation;
@@ -261,11 +261,11 @@ public abstract class Solution <Domain extends Element, Image extends Number & C
         this.deviation = deviation;
     }
 
-    public Double getExecutionTime() {
+    public long getExecutionTime() {
         return this.executionTime;
     }
 
-    public void setExecutionTime(Double executionTime) {
+    public void setExecutionTime(long executionTime) {
         this.executionTime = executionTime;
     }
 

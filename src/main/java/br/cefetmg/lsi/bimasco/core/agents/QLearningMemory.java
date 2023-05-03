@@ -203,6 +203,11 @@ public class QLearningMemory implements Serializable {
         return Optional.empty();
     }
 
+    public void resetMemory() {
+        bestFoundSolution = null;
+        qTable.clear();
+    }
+
     public boolean isEmpty() {
         return qTable.isEmpty();
     }

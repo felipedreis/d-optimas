@@ -5,7 +5,13 @@ CASSANDRA_HOST=$2
 DOPTIMAS_EXP_FILE=$3
 REPEAT=$4
 
-sleep 300
+
+while ! bash -c "</dev/tcp/${CASSANDRA_HOST}/9042 &>/dev/null"; do
+  echo "waiting for cassandra";
+  sleep 5
+done
+
+sleep 120
 
 echo "welcome to the docker run of d-optimas, this experiment ${DOPTIMAS_EXP_FILE} will run ${REPEAT} times in a clean environment"
 for i in `seq 1 ${REPEAT}`; do

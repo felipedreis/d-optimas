@@ -2,6 +2,7 @@ package br.cefetmg.lsi.bimasco.actors;
 
 import akka.actor.ActorRef;
 import akka.cluster.sharding.ShardRegion;
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
@@ -13,6 +14,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Messages {
@@ -65,11 +67,14 @@ public class Messages {
         final List<Solution>  initialSolutions;
         final long time;
 
+        final Problem problem;
+
         public CreateRegion(int receiverId, RegionSettings settings, long time){
             super(0, receiverId);
             this.settings = settings;
             initialSolutions = new ArrayList<>();
             this.time = time;
+            problem = null;
         }
 
         public CreateRegion(int receiverId, RegionSettings settings, long time, List<Solution> initialSolutions) {
@@ -77,6 +82,15 @@ public class Messages {
             this.settings = settings;
             this.initialSolutions = initialSolutions;
             this.time = time;
+            problem = null;
+        }
+
+        public CreateRegion(int receiverId, long time, Problem problem) {
+            super(0, receiverId);
+            this.settings = null;
+            this.problem = problem;
+            this.time = time;
+            initialSolutions = List.of();
         }
     }
 
@@ -201,6 +215,33 @@ public class Messages {
         public final double[] y;
         public EvaluateResult(double [] y) {
             this.y = y;
+        }
+    }
+
+    public static class StartSimulation implements Serializable {
+
+        public final Optional<Problem> problem;
+
+        public StartSimulation(Problem problem) {
+            this.problem = Optional.of(problem);
+        }
+
+        public StartSimulation(){
+            problem = Optional.empty();
+        }
+    }
+
+    public static class SimulationReady implements Serializable {}
+
+    public static class StopSimulation implements Serializable {}
+    public static class SimulationStopped implements Serializable {
+        public final List<ActorRef> nodes;
+
+        public SimulationStopped() {
+            this(List.of());
+        }
+        public SimulationStopped(List<ActorRef> nodes) {
+            this.nodes = nodes;
         }
     }
     public static class Terminate implements Serializable {}
