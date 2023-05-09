@@ -37,7 +37,7 @@ public class DE extends MetaHeuristic {
 
     private int populationSize;
 
-    private final Logger logger = Logger.getLogger(DE.class);
+    private static final Logger logger = Logger.getLogger(DE.class);
 
     public DE(Problem problem) {
         super(problem);

@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class FunctionSolutionTest {
+class EggholderFunctionSolutionTest {
 
     FunctionProblem problem;
 

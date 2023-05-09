@@ -118,7 +118,7 @@ public class FunctionProblem extends Problem {
         return step;
     }
 
-    public Double dominio(Integer variavel, Integer limite){
+    public Double domain(Integer variavel, Integer limite){
         return domain[variavel][limite];
     }
 

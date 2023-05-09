@@ -11,7 +11,7 @@ while ! bash -c "</dev/tcp/${CASSANDRA_HOST}/9042 &>/dev/null"; do
   sleep 5
 done
 
-sleep 120
+sleep 30
 
 echo "welcome to the docker run of d-optimas, this experiment ${DOPTIMAS_EXP_FILE} will run ${REPEAT} times in a clean environment"
 for i in `seq 1 ${REPEAT}`; do

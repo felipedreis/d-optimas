@@ -58,8 +58,8 @@ public class FunctionSolution extends Solution<FunctionSolutionElement, Double, 
 
         for (int i = 0; i < getProblem().getDimension() && viable; ++i) {
             FunctionSolutionElement element = solutionsVector.get(i);
-            Double min = getProblem().dominio(i, 0);
-            Double max = getProblem().dominio(i, 1);
+            Double min = getProblem().domain(i, 0);
+            Double max = getProblem().domain(i, 1);
             viable = element.getValue() >= min  && element.getValue() <= max;
         }
     }
@@ -69,8 +69,8 @@ public class FunctionSolution extends Solution<FunctionSolutionElement, Double, 
         if (getSolutionsVector().size() == getProblem().getDimension())
             return null;
 
-        Double min = getProblem().dominio(getSolutionsVector().size(), 0);
-        Double max = getProblem().dominio(getSolutionsVector().size(), 1);
+        Double min = getProblem().domain(getSolutionsVector().size(), 0);
+        Double max = getProblem().domain(getSolutionsVector().size(), 1);
 
         if (element.getValue() < min || element.getValue() > max)
             return null;
@@ -90,8 +90,8 @@ public class FunctionSolution extends Solution<FunctionSolutionElement, Double, 
         double desvio = variation;
         FunctionProblem problema = getProblem();
 
-        Double limiteInf = problema.dominio(variable, 0);
-        Double limiteSup = problema.dominio(variable, 1);
+        Double limiteInf = problema.domain(variable, 0);
+        Double limiteSup = problema.domain(variable, 1);
         Random rand = new Random();
         if ((variation + valor) > limiteSup) {
             desvio = Math.pow(-1, rand.nextInt(2)) * (limiteSup - valor) * rand.nextDouble();

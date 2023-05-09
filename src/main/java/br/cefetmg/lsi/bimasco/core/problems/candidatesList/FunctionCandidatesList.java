@@ -23,8 +23,8 @@ public class FunctionCandidatesList extends CandidatesList<FunctionProblem, Func
         List<FunctionSolutionElement> elements = new ArrayList<>();
 
         for (int i = 0; i < problem.getDimension(); ++i) {
-            Double minValue = problem.dominio(i, 0);
-            Double maxValue = problem.dominio(i, 1);
+            Double minValue = problem.domain(i, 0);
+            Double maxValue = problem.domain(i, 1);
             for (int j = 0; j < MAX_VALUES; ++j) {
                 elements.add(new FunctionSolutionElement(rnd.nextUniform(minValue, maxValue)));
             }
