@@ -1,5 +1,7 @@
 package br.cefetmg.lsi.bimasco.coco;
 
+import coco.CocoJNI;
+
 public class Suite {
 	
 	private long pointer; // Pointer to the coco_suite_t object

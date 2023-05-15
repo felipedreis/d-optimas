@@ -5,7 +5,8 @@ import br.cefetmg.lsi.bimasco.core.solutions.element.VRTWElement;
 import br.cefetmg.lsi.bimasco.core.solutions.motion.PerformsMotionHelper;
 import br.cefetmg.lsi.bimasco.core.solutions.motion.VRTWSwapPerformsMotion;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import static java.lang.String.format;
 public class VRTWSwapInsideRouteSolutionModifier
         extends SolutionModifier<VRTWElement, VehicleRoutingTimeWindowSolution> {
 
-    private static Logger logger = Logger.getLogger(VRTWSwapInsideRouteSolutionModifier.class);
+    private static final Logger logger = LoggerFactory.getLogger(VRTWSwapInsideRouteSolutionModifier.class);
 
     VRTWSwapPerformsMotion swap;
     RandomDataGenerator rnd;

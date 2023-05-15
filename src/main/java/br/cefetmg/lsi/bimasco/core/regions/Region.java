@@ -9,7 +9,9 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 //TODO: Improve performance
 public class Region implements Serializable {
 
-    private final static Logger logger = Logger.getLogger(Region.class);
+    private final static Logger logger = LoggerFactory.getLogger(Region.class);
 
     private final long id;
 

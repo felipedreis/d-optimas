@@ -10,7 +10,8 @@ import br.cefetmg.lsi.bimasco.persistence.MemoryState;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,14 +20,14 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 public class Agent implements Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(Agent.class);
+
     private AgentSettings agentSettings;
     private MetaHeuristic metaHeuristic;
 
     private QLearningMemory qLearningMemory;
 
     private int solutionsCount;
-
-    private static Logger logger = Logger.getLogger(Agent.class);
 
     private double memoryTax;
 
@@ -126,6 +127,7 @@ public class Agent implements Serializable {
 
     public void reset(Problem problem) {
         metaHeuristic.setProblem(problem);
+        metaHeuristic.configureMetaHeuristic(agentSettings);
         qLearningMemory.resetMemory();
         context.resetContext();
     }

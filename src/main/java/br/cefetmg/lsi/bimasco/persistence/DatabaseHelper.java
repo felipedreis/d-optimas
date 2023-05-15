@@ -4,7 +4,8 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -12,14 +13,14 @@ import java.time.Duration;
 import static java.lang.String.format;
 
 public class DatabaseHelper {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseHelper.class);
+
 
     private static final int MAX_TRIES = 10;
 
     private static CqlSession cqlSession;
 
     private static DOptimasMapper mapper;
-
-    private static Logger logger = Logger.getLogger(DatabaseHelper.class);
 
     public static void initCqlSession(String host) {
         if (cqlSession == null) {
@@ -29,7 +30,7 @@ public class DatabaseHelper {
                 connect(host);
                 checkDatabase();
             } catch (Exception ex) {
-                logger.fatal("Can't connect to the database after " + MAX_TRIES + " tries");
+                logger.error("Can't connect to the database after " + MAX_TRIES + " tries");
             }
         }
     }

@@ -6,13 +6,15 @@ import akka.actor.Props;
 import br.cefetmg.lsi.bimasco.actors.BenchmarkActor;
 import br.cefetmg.lsi.bimasco.actors.SimulationActor;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 
 public class MainActor extends AbstractActor {
 
-    private static final Logger logger = Logger.getLogger(MainActor.class);
+    private static final Logger logger = LoggerFactory.getLogger(MainActor.class);
 
     private SimulationSettings settings;
 

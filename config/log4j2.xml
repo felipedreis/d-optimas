@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="WARN">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <logger name="br.cefetmg.lsi.bimasco" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.actors" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.core.heuristics" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.core.regions" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.core.problems" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.core.solutions" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+    </Loggers>
+</Configuration>

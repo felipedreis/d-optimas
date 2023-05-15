@@ -5,7 +5,8 @@ import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import org.apache.commons.math3.analysis.function.Sigmoid;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
@@ -15,7 +16,7 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 public class QLearningMemory implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(QLearningMemory.class);
+    private static final Logger logger = LoggerFactory.getLogger(QLearningMemory.class);
 
     private Solution bestFoundSolution;
     private SolutionAnalyser analyser;

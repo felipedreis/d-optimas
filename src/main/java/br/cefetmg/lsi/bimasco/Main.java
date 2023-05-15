@@ -4,22 +4,24 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import br.cefetmg.lsi.bimasco.actors.DatabaseCleaner;
-import br.cefetmg.lsi.bimasco.actors.SimulationActor;
 import br.cefetmg.lsi.bimasco.data.DataExtractionBatch;
 import br.cefetmg.lsi.bimasco.data.ExtractorsConfig;
 import br.cefetmg.lsi.bimasco.persistence.DOptimasMapper;
 import br.cefetmg.lsi.bimasco.persistence.DatabaseHelper;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
+import coco.CocoJNI;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.File;
 
 public class Main {
     final static Options options = new Options();
-    final static Logger logger = Logger.getLogger(Main.class);
+    final static Logger logger = LoggerFactory.getLogger(Main.class);
     static {
         Option help = Option.builder("help")
                 .desc("show this message")
@@ -52,6 +54,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        logger.info("AAAAAAAAAA");
+
+        CocoJNI.cocoSetLogLevel("info");
 
         CommandLineParser parser = new  DefaultParser();
         try {

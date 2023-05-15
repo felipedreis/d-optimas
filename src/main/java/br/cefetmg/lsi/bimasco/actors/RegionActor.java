@@ -19,7 +19,9 @@ import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.concurrent.duration.Duration;
 
 import java.io.Serializable;
@@ -49,7 +51,7 @@ class RegionActorSnapshot implements Serializable {
 
 public class RegionActor extends AbstractPersistentActor implements Serializable, MessagePersister {
 
-    private static final Logger logger = Logger.getLogger(RegionActor.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(RegionActor.class.getSimpleName());
 
     private Region region;
 

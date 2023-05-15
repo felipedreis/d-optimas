@@ -4,12 +4,14 @@ import akka.actor.ActorSystem;
 import akka.persistence.cassandra.cleanup.Cleanup;
 import akka.persistence.cassandra.query.javadsl.CassandraReadJournal;
 import akka.persistence.query.PersistenceQuery;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.compat.java8.FutureConverters;
 
 
 public class DatabaseCleaner {
-    private static final Logger logger = Logger.getLogger(DatabaseCleaner.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseCleaner.class);
 
     public void cleanup(ActorSystem system) {
 

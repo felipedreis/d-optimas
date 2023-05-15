@@ -15,7 +15,9 @@ import br.cefetmg.lsi.bimasco.persistence.dao.AgentStateDAO;
 import br.cefetmg.lsi.bimasco.persistence.dao.MemoryStateDAO;
 import br.cefetmg.lsi.bimasco.persistence.dao.MessageStateDAO;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.concurrent.duration.Duration;
 
 import java.io.Serializable;
@@ -47,6 +49,8 @@ class AgentActorSnapshot implements Serializable {
 //TODO: Check if all sent stimuli are saved on memory
 public class AgentActor extends AbstractPersistentActor implements Serializable, MessagePersister {
 
+    private static final Logger logger = LoggerFactory.getLogger(AgentActor.class);
+
     //TODO: Put this on simulation settings later
     private final String simulationId;
     private Agent agent;
@@ -66,8 +70,6 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private long globalTime;
 
     private Cancellable internalTask;
-
-    private static final Logger logger = Logger.getLogger(AgentActor.class);
 
     public AgentActor(){
         simulationId = "";
@@ -122,6 +124,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     }
 
     private void onStartSimulation(StartSimulation startSimulation) {
+        logger.info("Handling start simulation " + startSimulation);
         leader.tell(new AgentRegister(id), self());
         startSimulation.problem.ifPresent(agent::reset);
         startInternalTask();

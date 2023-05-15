@@ -14,7 +14,8 @@ import br.cefetmg.lsi.bimasco.core.solutions.modifiesSolutionCollections.Solutio
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ import static java.lang.String.format;
 
 public class PSO extends MetaHeuristic {
 
-    private static final Logger logger = Logger.getLogger(PSO.class);
+    private static final Logger logger = LoggerFactory.getLogger(PSO.class);
 
     private CandidatesList velocitiesCandidateList;
     private List<Solution> particles;

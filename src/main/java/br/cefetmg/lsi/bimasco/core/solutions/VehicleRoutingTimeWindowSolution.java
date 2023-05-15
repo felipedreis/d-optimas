@@ -4,7 +4,9 @@ import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.problems.VehicleRoutingTimeWindowProblem;
 import br.cefetmg.lsi.bimasco.core.solutions.element.VRTWElement;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import static java.lang.String.format;
 
 public class VehicleRoutingTimeWindowSolution extends Solution <VRTWElement, Double, VehicleRoutingTimeWindowProblem> {
 
-    private static Logger logger = Logger.getLogger(VehicleRoutingTimeWindowSolution.class);
+    private static final Logger logger = LoggerFactory.getLogger(VehicleRoutingTimeWindowSolution.class);
 
     public VehicleRoutingTimeWindowSolution(Problem problem) {
         super(problem);

@@ -7,7 +7,9 @@ import br.cefetmg.lsi.bimasco.core.problems.FunctionProblem;
 import br.cefetmg.lsi.bimasco.core.solutions.FunctionSolution;
 import br.cefetmg.lsi.bimasco.core.solutions.element.FunctionSolutionElement;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,7 @@ import static java.lang.String.format;
 
 public class DEFunctionProblemSumModifiesSolutionCollections extends ModifiesSolutionCollections <FunctionProblem, FunctionSolution> {
 
-    private static final Logger logger = Logger.getLogger(DEFunctionProblemSumModifiesSolutionCollections.class);
+    private static final Logger logger = LoggerFactory.getLogger(DEFunctionProblemSumModifiesSolutionCollections.class);
 
     private RandomDataGenerator rdg;
 

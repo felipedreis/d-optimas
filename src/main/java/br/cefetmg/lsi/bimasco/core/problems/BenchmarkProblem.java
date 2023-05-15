@@ -1,16 +1,19 @@
-package br.cefetmg.lsi.bimasco.coco;
+package br.cefetmg.lsi.bimasco.core.problems;
 
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;
-import akka.util.Timeout;
 import br.cefetmg.lsi.bimasco.core.Problem;
+import br.cefetmg.lsi.bimasco.settings.ProblemSettings;
+import coco.CocoJNI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 /**
@@ -18,6 +21,7 @@ import static br.cefetmg.lsi.bimasco.actors.Messages.*;
  * through its getter functions.
  */
 public class BenchmarkProblem extends Problem {
+	private static final Logger logger = LoggerFactory.getLogger(BenchmarkProblem.class);
 	private long pointer; // Pointer to the coco_problem_t object
 
 	private int number_of_objectives;
@@ -33,6 +37,8 @@ public class BenchmarkProblem extends Problem {
 	private long index;
 
 	private ActorRef benchmarkActor;
+
+	public BenchmarkProblem() {}
 
 	/**
 	 * Constructs the problem from the pointer.
@@ -57,17 +63,21 @@ public class BenchmarkProblem extends Problem {
 			this.index = CocoJNI.cocoProblemGetIndex(pointer);
 			
 			this.pointer = pointer;
+
+			setProblemSettings(new ProblemSettings("Benchmark", "Real", "", false, getClass().getName(),
+					Collections.emptyList(), "Benchmark"));
 		} catch (Exception e) {
-			throw new Exception("Problem constructor failed.\n" + e.toString());
+			throw new Exception("Problem constructor failed.\n", e);
 		}
 	}
-	
+
 	/**
 	 * Evaluates the function in point x and returns the result as an array of doubles. 
 	 * @param x
 	 * @return the result of the function evaluation in point x
 	 */
 	public double[] evaluateFunction(double[] x) {
+		logger.debug("Evaluating {}", x);
 		CompletableFuture<Object> evaluateFuture =
 				Patterns.ask(benchmarkActor, new Evaluate(x),
 						Duration.ofSeconds(1)).toCompletableFuture();
@@ -75,9 +85,9 @@ public class BenchmarkProblem extends Problem {
 			EvaluateResult result = (EvaluateResult) evaluateFuture.get();
 			return result.y;
 		} catch (InterruptedException ex) {
-
+			logger.error("", ex);
 		} catch (ExecutionException ex) {
-
+			logger.error("", ex);
 		}
 
 		return new double[x.length];
@@ -98,7 +108,7 @@ public class BenchmarkProblem extends Problem {
 	}
 	@Override
 	public Integer getSolutionElementsCount() {
-		return null;
+		return getNumberOfIntegerVariabls();
 	}
 
 	@Override

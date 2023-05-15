@@ -13,7 +13,8 @@ import br.cefetmg.lsi.bimasco.core.problems.candidatesList.CandidatesListHelper;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,26 +27,17 @@ import static java.lang.String.format;
 
 public class GRASP extends MetaHeuristic {
 
-    public static int c_TimeDivisor = 1000;
-
-    //TODO: Change this of location to reuse on every part of the code
-
+    private static final Logger logger = LoggerFactory.getLogger(GRASP.class);
     private Integer maxIterations;
     private Double alpha;
     private String candidatesListName;
-    private SolutionAnalyser solutionAnalyser;
-    private double initialTime;
-    private double finalTime;
-    private double time;
+
     private Object limit;
 
-    // Inclusao: Verificar como isso pode modificar a questão da alterações do parametros do agente
     private CandidatesList<Problem, Element> candidatesList;
     private LocalSearch localSearch;
     private StopCondition stopCondition;
-    private Integer iteracao;
 
-    private static Logger logger = Logger.getLogger(GRASP.class);
 
     public GRASP(Problem problem) {
         super(problem);
@@ -53,8 +45,6 @@ public class GRASP extends MetaHeuristic {
 
     @Override
     public void configureMetaHeuristic(AgentSettings agentSettings) {
-
-        iteracao = 0;
         metaHeuristicParameters = agentSettings.getMetaHeuristicParameters();
 
         maxIterations = (Integer) metaHeuristicParameters
@@ -72,36 +62,18 @@ public class GRASP extends MetaHeuristic {
 
         solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
 
-        Solution auxiliarySolution = null;
-        if (problem.getProblemSettings().getName() != null) {
-            auxiliarySolution = Solution.buildSolution(problem);
-        } else {
-            System.out.print("ERRO");
-        }
-
         candidatesList = CandidatesListHelper.buildCandidatesList(candidatesListName, problem);
         localSearch = LocalSearchHelper.buildLocalSearch(localSearchName, problem, metaHeuristicParameters);
 
         stopCondition = StopConditionHelper.buildStopCondition(stopConditionName, problem);
-        time = 0;
-        finalTime = 0;
-        initialTime = 0;
     }
 
     @SuppressWarnings("empty-statement")
     @Override
     public List<Solution> runMetaHeuristic(List<Solution> externalSolution, Context context) {
-        double initialTime = 0;
-        double finalTime = 0;
-        double end = 0;
-
-        initialTime = System.currentTimeMillis();
-
-        logger.debug(format("Starting GRASP execution at %f", initialTime));
+        logger.debug(format("Starting GRASP execution"));
         Solution solution = this.internalExecutionGRASP(context);
-        finalTime = System.currentTimeMillis();
-        end = ((finalTime - initialTime) / c_TimeDivisor);
-        logger.debug(format("Stopped GRASP execution at %f, duration of %f",finalTime, end));
+        logger.debug(format("Stopped GRASP execution, duration of %d", getStopWatch().getTime()));
         logger.debug(format("Produced solution: %s", solution));
         System.gc();
 
@@ -112,13 +84,11 @@ public class GRASP extends MetaHeuristic {
     }
 
     public Solution internalExecutionGRASP(Context context)  {
-        int divisor = 0;
-        Solution solucaoBuscaLocal = null;
-        Solution solucaoConstrucao = null;
+        Solution solucaoBuscaLocal;
+        Solution solucaoConstrucao;
 
-        Object sBL = null;
         Object f0 = this.limit;
-        Object mS = f0;
+        Object mS;
         int iteracoes = 0;
         int iteracoesSM = 0;
 
@@ -128,7 +98,6 @@ public class GRASP extends MetaHeuristic {
         Solution solution = Solution.buildSolution(problem);
 
         while (!this.stopCondition.isSatisfied(f0, getStopWatch().getTime(), iteracoes, iteracoesSM, this.metaHeuristicParameters)) {
-            this.iteracao++;
             logger.debug(format("Iteration %d", iteracoes));
             solucaoConstrucao = construcao();
             logger.debug(format("Constructed solution: %s", solucaoConstrucao));
@@ -155,15 +124,6 @@ public class GRASP extends MetaHeuristic {
             logger.debug(format("Best solution found at iteration %d: %s", iteracoes, solution));
             iteracoes++;
             iteracoesSM++;
-
-            if (divisor == 0)
-                divisor = this.maxIterations / 10;
-            if (iteracoes % (divisor < 2 ? 2 : divisor) == 0)
-                System.gc();
-
-            this.finalTime = System.currentTimeMillis();
-            this.time = ((this.finalTime - this.initialTime) / c_TimeDivisor);
-
         }
         getStopWatch().stop();
         return solution;
@@ -180,7 +140,7 @@ public class GRASP extends MetaHeuristic {
         solution = Solution.buildSolution(problem);
 
         candidates = candidatesList.getCandidates();
-        logger.debug(format("Candidate list generated: %s", candidatesList.toString()));
+        logger.debug("Candidate list generated: {}", candidates);
 
         while (!candidates.isEmpty()) {
             Map<Element, Number> adaptiveFunctionValues = candidates.stream()

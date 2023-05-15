@@ -12,10 +12,7 @@ import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class Messages {
     public static final MessageExtractor agentMessageExtractor = new MessageExtractor("agent");
@@ -209,6 +206,13 @@ public class Messages {
         public Evaluate(double[] x) {
             this.x = x;
         }
+
+        @Override
+        public String toString() {
+            return "Evaluate{" +
+                    "x=" + Arrays.toString(x) +
+                    '}';
+        }
     }
 
     public static class EvaluateResult implements Serializable {
@@ -228,6 +232,13 @@ public class Messages {
 
         public StartSimulation(){
             problem = Optional.empty();
+        }
+
+        @Override
+        public String toString() {
+            return "StartSimulation{" +
+                    "problem=" + problem +
+                    '}';
         }
     }
 

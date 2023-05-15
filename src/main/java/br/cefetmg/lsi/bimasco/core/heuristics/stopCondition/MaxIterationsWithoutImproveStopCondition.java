@@ -3,19 +3,21 @@ package br.cefetmg.lsi.bimasco.core.heuristics.stopCondition;
 
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.Map;
 
 import static java.lang.String.format;
 
 public class MaxIterationsWithoutImproveStopCondition implements StopCondition {
+    private static final Logger logger = LoggerFactory.getLogger(MaxIterationsWithoutImproveStopCondition.class);
 
     private final Problem problem;
     private boolean isSatisfied;
     private Integer maxIterationsWithoutImprove;
 
-    private static Logger logger = Logger.getLogger(MaxIterationsWithoutImproveStopCondition.class);
 
     public MaxIterationsWithoutImproveStopCondition(Problem problem) {
         this.problem = problem;

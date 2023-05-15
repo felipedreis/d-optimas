@@ -1,6 +1,8 @@
 package br.cefetmg.lsi.bimasco.data;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,7 +18,7 @@ public interface Extractor<T> {
     String getFileName();
 
     default void extractData(String path) {
-        final Logger logger = Logger.getLogger(this.getClass());
+        final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         File file = new File(path + getFileName() + ".csv");
 

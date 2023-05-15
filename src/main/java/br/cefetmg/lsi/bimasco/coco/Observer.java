@@ -1,5 +1,7 @@
 package br.cefetmg.lsi.bimasco.coco;
 
+import coco.CocoJNI;
+
 public class Observer {
 	
 	private long pointer; // Pointer to the coco_observer_t object

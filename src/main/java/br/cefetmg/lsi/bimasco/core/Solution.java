@@ -1,7 +1,8 @@
 package br.cefetmg.lsi.bimasco.core;
 
 import br.cefetmg.lsi.bimasco.core.utils.BimascoClassPath;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -24,8 +25,7 @@ import static java.lang.String.format;
 public abstract class Solution <Domain extends Element, Image extends Number & Comparable, P extends Problem>
         implements Comparable<Solution>, Serializable, Cloneable {
 
-    private static final String TAG = Solution.class.getSimpleName();
-
+    private static final Logger logger = LoggerFactory.getLogger(Solution.class);
     private UUID id;
 
     private String agent;
@@ -40,8 +40,6 @@ public abstract class Solution <Domain extends Element, Image extends Number & C
     protected List<Domain> solutionsVector;
     protected Image functionValue;
     protected boolean viable;
-
-    private static Logger logger = Logger.getLogger(Solution.class);
 
     private boolean changed;
 
@@ -79,7 +77,7 @@ public abstract class Solution <Domain extends Element, Image extends Number & C
             solution = constructor.newInstance(problem);
             solution.initialize();
         } catch (Exception ex) {
-            Logger.getLogger(Solution.class).error("", ex);
+            logger.error("", ex);
         }
 
 

@@ -2,12 +2,12 @@ package br.cefetmg.lsi.bimasco.core.solutions.analyser;
 
 import br.cefetmg.lsi.bimasco.core.problems.FunctionProblem;
 import br.cefetmg.lsi.bimasco.core.solutions.FunctionSolution;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FunctionSolutionAnalyser extends SolutionAnalyser<FunctionProblem, FunctionSolution> {
 
-    private static final Logger logger = LogManager.getLogger(FunctionSolutionAnalyser.class);
+    private static final Logger logger = LoggerFactory.getLogger(FunctionSolutionAnalyser.class);
 
     public FunctionSolutionAnalyser(FunctionProblem problem) {
         super(problem);

@@ -3,7 +3,9 @@ package br.cefetmg.lsi.bimasco.core.solutions.analyser;
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.utils.BimascoClassPath;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -14,7 +16,7 @@ import java.util.Optional;
 //TODO: Think about change this class to abstract type
 public abstract class SolutionAnalyser <P extends Problem, S extends Solution<?, ?, P>> implements Serializable, Comparator<S> {
 
-    private static final Logger logger = Logger.getLogger(SolutionAnalyser.class);
+    private static final Logger logger = LoggerFactory.getLogger(SolutionAnalyser.class);
 
     private P problem;
 
@@ -32,14 +34,14 @@ public abstract class SolutionAnalyser <P extends Problem, S extends Solution<?,
             Constructor constructor = solutionAnalyserClass.getConstructor(problem.getClass());
             solutionAnalyser = (SolutionAnalyser) constructor.newInstance(problem);
         } catch (Exception ex) {
-            logger.fatal("Could not create the solution analyser " + solutionAnalyserName, ex);
+            logger.error("Could not create the solution analyser " + solutionAnalyserName, ex);
         }
 
         return solutionAnalyser;
     }
 
     public Optional<S> findBestSolution(final Collection<S> solutions) {
-        logger.debug(solutions);
+        logger.debug("findBestSolution {}", solutions);
         return solutions.stream().reduce(this::getBestSolution);
     }
 

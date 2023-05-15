@@ -1,6 +1,7 @@
-package br.cefetmg.lsi.bimasco.coco;
+package br.cefetmg.lsi.bimasco.core.solutions.analyser;
 
-import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
+import br.cefetmg.lsi.bimasco.core.problems.BenchmarkProblem;
+import br.cefetmg.lsi.bimasco.core.solutions.BenchmarkSolution;
 
 public class BenchmarkSolutionAnalyser extends SolutionAnalyser<BenchmarkProblem, BenchmarkSolution> {
     public BenchmarkSolutionAnalyser(BenchmarkProblem problem) {

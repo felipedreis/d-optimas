@@ -23,7 +23,9 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.time.Duration;
 import java.util.*;
@@ -36,7 +38,7 @@ import static akka.cluster.ClusterEvent.*;
 import static java.lang.String.format;
 
 public class SimulationActor extends AbstractActor implements MessagePersister {
-    Logger logger = Logger.getLogger(SimulationActor.class);
+    private final static Logger logger = LoggerFactory.getLogger(SimulationActor.class);
 
     private static final String ENTITY_ID = "leader";
 

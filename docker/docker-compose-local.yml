@@ -16,7 +16,7 @@ services:
     environment:
       DOPTIMAS_PORT: 2551
       DOPTIMAS_HOST: localhost
-      DOPTIMAS_EXP_FILE: experiments/artigo/A.DE.conf
+      DOPTIMAS_EXP_FILE: experiments/artigo/COCO.conf
       CASSANDRA_HOST: cassandra
       REPEAT: 2
     depends_on:

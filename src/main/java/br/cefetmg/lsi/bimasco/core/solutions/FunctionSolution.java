@@ -4,7 +4,9 @@ import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.problems.FunctionProblem;
 import br.cefetmg.lsi.bimasco.core.solutions.element.FunctionSolutionElement;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 //TODO: Fix elements name
 public class FunctionSolution extends Solution<FunctionSolutionElement, Double, FunctionProblem> {
 
-    private static Logger logger = Logger.getLogger(FunctionSolution.class);
+    private static final Logger logger = LoggerFactory.getLogger(FunctionSolution.class);
 
     public FunctionSolution(Problem problem) {
         super(problem);

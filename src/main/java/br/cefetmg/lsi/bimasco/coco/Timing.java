@@ -1,5 +1,8 @@
 package br.cefetmg.lsi.bimasco.coco;
 
+import br.cefetmg.lsi.bimasco.core.problems.BenchmarkProblem;
+import coco.CocoJNI;
+
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 

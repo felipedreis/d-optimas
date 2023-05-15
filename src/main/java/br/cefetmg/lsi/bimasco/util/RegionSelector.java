@@ -4,13 +4,14 @@ import akka.actor.ActorRef;
 import br.cefetmg.lsi.bimasco.actors.StatisticsHelper;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RegionSelector {
-    private static final Logger logger = Logger.getLogger(RegionSelector.class);
+    private static final Logger logger = LoggerFactory.getLogger(RegionSelector.class);
 
     private final List<Integer> regionUsedIds;
 

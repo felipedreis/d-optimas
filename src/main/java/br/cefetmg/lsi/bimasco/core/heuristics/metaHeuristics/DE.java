@@ -11,7 +11,9 @@ import br.cefetmg.lsi.bimasco.core.solutions.modifiesSolutionCollections.Modifie
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.Map;
 import static java.lang.String.format;
 
 public class DE extends MetaHeuristic {
+
+    private static final Logger logger = LoggerFactory.getLogger(DE.class);
 
     List<Solution> population;
     StopCondition stopCondition;
@@ -36,8 +40,6 @@ public class DE extends MetaHeuristic {
     private ModifiesSolutionCollections deSum;
 
     private int populationSize;
-
-    private static final Logger logger = Logger.getLogger(DE.class);
 
     public DE(Problem problem) {
         super(problem);

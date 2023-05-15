@@ -3,7 +3,9 @@ package br.cefetmg.lsi.bimasco.actors;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.persistence.*;
 import br.cefetmg.lsi.bimasco.persistence.dao.*;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,7 +21,7 @@ import static br.cefetmg.lsi.bimasco.actors.Messages.*;
  */
 public class DataExtractor  {
 
-    final Logger logger = Logger.getLogger(DataExtractor.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataExtractor.class);
 
     private GlobalStateDAO globalStateDAO;
     private RegionStateDAO regionStateDAO;
@@ -292,7 +294,7 @@ public class DataExtractor  {
             for (String key : suppliers.keySet()) {
                 logger.info("Processing " + key);
                 Collection<T> data = suppliers.get(key).get();
-                logger.info(data);
+                logger.info(data.toString());
                 logger.info("Recovered " + data.size() + " States");
 
                 File file = new File(path + key + ".csv");
@@ -325,7 +327,7 @@ public class DataExtractor  {
                 writer.close();
             }
         } catch (IOException ex) {
-            logger.info(ex);
+            logger.info("", ex);
         }
     }
 
@@ -334,7 +336,7 @@ public class DataExtractor  {
             logger.debug(String.format("Writing line %s to file %s", line, writer.toString()));
             writer.write(line);
         } catch (IOException ex) {
-            logger.trace(ex);
+            logger.error("", ex);
         }
     }
 }

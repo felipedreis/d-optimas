@@ -15,8 +15,8 @@ import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySuppor
 import br.cefetmg.lsi.bimasco.core.utils.SolutionManipulationKeys;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.SolutionManipulation;
-import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -24,6 +24,7 @@ import static java.lang.String.format;
 
 public class GA extends MetaHeuristic {
 
+    private static final Logger logger = LoggerFactory.getLogger(GA.class);
     public static int C_TIME_DIVISOR = 1000;
 
     private List<Solution> population;
@@ -53,7 +54,6 @@ public class GA extends MetaHeuristic {
     private ModifiesSolutionCollections nextPopulation;
     private SolutionModifier mutation;
 
-    private static Logger logger = Logger.getLogger(GA.class);
 
     public GA(Problem problem) {
         super(problem);

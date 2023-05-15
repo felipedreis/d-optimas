@@ -3,7 +3,8 @@ package br.cefetmg.lsi.bimasco.core.heuristics.stopCondition;
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -11,12 +12,12 @@ import static java.lang.String.format;
 
 public class F0StopCondition implements StopCondition {
 
+    private static final Logger logger = LoggerFactory.getLogger(F0StopCondition.class);
     private final Problem problem;
     private boolean isSatisfied;
     private Object objectiveFunction;
     private SolutionAnalyser solutionAnalyser;
 
-    private static Logger logger = Logger.getLogger(F0StopCondition.class);
 
     public F0StopCondition(Problem problem) {
         this.problem = problem;

@@ -5,7 +5,8 @@ import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class RandomLocalSearch extends LocalSearch {
 
     private Integer iterationsLocalSearchCount = 0;
 
-    private static Logger logger = Logger.getLogger(RandomLocalSearch.class);
+    private static Logger logger = LoggerFactory.getLogger(RandomLocalSearch.class);
 
     public RandomLocalSearch(Problem problem, Map<String, Object> parameters){
         super(problem, parameters);

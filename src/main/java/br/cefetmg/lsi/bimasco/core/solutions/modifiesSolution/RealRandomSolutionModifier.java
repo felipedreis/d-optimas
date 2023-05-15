@@ -5,7 +5,8 @@ import br.cefetmg.lsi.bimasco.core.solutions.element.FunctionSolutionElement;
 import br.cefetmg.lsi.bimasco.core.solutions.motion.PerformsMotionHelper;
 import br.cefetmg.lsi.bimasco.core.solutions.motion.RealPerformsMotion;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,11 @@ import static java.lang.String.format;
 
 public class RealRandomSolutionModifier
         extends SolutionModifier<FunctionSolutionElement, FunctionSolution> {
+    private static final Logger logger = LoggerFactory.getLogger(RealRandomSolutionModifier.class);
 
     private RandomDataGenerator rnd;
     private RealPerformsMotion performsMotion;
 
-    private static Logger logger = Logger.getLogger(RealRandomSolutionModifier.class);
 
     public RealRandomSolutionModifier() {
         rnd = new RandomDataGenerator();

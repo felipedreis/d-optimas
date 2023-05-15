@@ -1,5 +1,8 @@
 package br.cefetmg.lsi.bimasco.coco;
 
+import br.cefetmg.lsi.bimasco.core.problems.BenchmarkProblem;
+import coco.CocoJNI;
+
 /**
  * The benchmark contains a suite and an observer and is able to return the next problem. 
  */
@@ -32,7 +35,7 @@ public class CoCOBenchmark {
 			
 			return new BenchmarkProblem(problemPointer);
 		} catch (Exception e) {
-			throw new Exception("Fetching of next problem failed.\n" + e.toString());
+			throw new Exception("Fetching of next problem failed.\n" + e.getMessage());
 		}
 	}
 	
@@ -47,7 +50,7 @@ public class CoCOBenchmark {
 			observer.finalizeObserver();
 			suite.finalizeSuite();
 		} catch (Exception e) {
-			throw new Exception("Benchmark finalization failed.\n" + e.toString());
+			throw new Exception("Benchmark finalization failed.\n" + e.getMessage());
 		}
 	}
 }

@@ -16,7 +16,8 @@ import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySuppor
 import br.cefetmg.lsi.bimasco.core.utils.SolutionManipulationKeys;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.SolutionManipulation;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,9 +29,9 @@ import static java.lang.String.format;
 //TODO: Rename elements
 public class ILS extends MetaHeuristic {
 
+    private static Logger logger = LoggerFactory.getLogger(ILS.class);
     public static int c_TimeDivisor = 1000;
     public Integer iteration;
-    //private ArrayList<Solution> bestSolutionsList;
     private Solution currentSolution;
     private Solution bestSolution;
 
@@ -53,7 +54,6 @@ public class ILS extends MetaHeuristic {
 
     private SolutionModifier solutionDisturb;
 
-    private static Logger logger = Logger.getLogger(ILS.class);
 
     public ILS(Problem problem) {
         super(problem);

@@ -26,6 +26,17 @@ public class ProblemSettings implements Serializable {
     public ProblemSettings() {
     }
 
+    public ProblemSettings(String name, String type, String description, Boolean isMax, String classPath,
+                           List<List> problemData, String solutionAnalyserName) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.isMax = isMax;
+        this.classPath = classPath;
+        this.problemData = problemData;
+        this.solutionAnalyserName = solutionAnalyserName;
+    }
+
     public ProblemSettings(Config config){
         name = config.getString("name");
         type = config.getString("type");

@@ -2,16 +2,15 @@ package br.cefetmg.lsi.bimasco.core;
 
 import br.cefetmg.lsi.bimasco.core.utils.BimascoClassPath;
 import br.cefetmg.lsi.bimasco.settings.ProblemSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //TODO: analyse type of returns
 public abstract class Problem implements Serializable  {
-
-    private static final String TAG = Problem.class.getSimpleName();
+    private static final Logger logger = LoggerFactory.getLogger(Problem.class);
 
     private ProblemSettings problemSettings;
 
@@ -33,11 +32,11 @@ public abstract class Problem implements Serializable  {
             problemClass = Class.forName(String.format(BimascoClassPath.PROBLEMS, problemSettings.getName()));
             problem = (Problem)problemClass.newInstance();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TAG).log(Level.SEVERE, null, ex);
+            logger.error("", ex);
         } catch (IllegalAccessException ex){
-            Logger.getLogger(TAG).log(Level.SEVERE, null, ex);
+            logger.error("", ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(TAG).log(Level.SEVERE, null, ex);
+            logger.error("", ex);
         }
 
         problem.setProblemSettings(problemSettings);
