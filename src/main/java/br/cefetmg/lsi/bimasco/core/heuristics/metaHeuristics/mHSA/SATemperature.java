@@ -7,6 +7,7 @@ import br.cefetmg.lsi.bimasco.core.solutions.modifiesSolution.SolutionModifier;
 import br.cefetmg.lsi.bimasco.core.solutions.modifiesSolution.SolutionModifierHelper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 //TODO: analyse type of returns
@@ -33,7 +34,7 @@ public class  SATemperature implements Temperature{
 
         solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
 
-        solutionModifier = SolutionModifierHelper.buildModifiesSolution(problem.getProblemSettings().getType() + neighbor, this.problem);
+        solutionModifier = SolutionModifierHelper.buildModifiesSolution(problem.getProblemSettings().getType() + neighbor, this.problem, Map.of());
         solutionBase = Solution.buildSolution(problem);
 
         solutionBase.generateInitialSolution();

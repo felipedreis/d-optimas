@@ -8,16 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: Fix elements name
 public class FunctionSolution extends Solution<FunctionSolutionElement, Double, FunctionProblem> {
 
     private static final Logger logger = LoggerFactory.getLogger(FunctionSolution.class);
+
+    private static final Comparator<FunctionSolution> functionSolutionComparator =
+            Comparator.comparingDouble(FunctionSolution::getFunctionValue);
 
     public FunctionSolution(Problem problem) {
         super(problem);

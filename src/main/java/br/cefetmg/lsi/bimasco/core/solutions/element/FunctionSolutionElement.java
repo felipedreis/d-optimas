@@ -20,8 +20,6 @@ public class FunctionSolutionElement implements Element {
 
     @Override
     public String toString() {
-        return "{" +
-                "value=" + value +
-                '}';
+        return String.format("%.6f", value);
     }
 }

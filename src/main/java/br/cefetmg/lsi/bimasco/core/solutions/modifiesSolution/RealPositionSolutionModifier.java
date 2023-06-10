@@ -9,12 +9,14 @@ import br.cefetmg.lsi.bimasco.core.solutions.motion.PerformsMotionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class RealPositionSolutionModifier
         extends SolutionModifier<FunctionSolutionElement, FunctionSolution> {
 
-    public RealPositionSolutionModifier(Problem problem) {
+    public RealPositionSolutionModifier(Map<String, Object> parameters) {
+        super(parameters);
     }
 
     @Override

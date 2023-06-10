@@ -103,6 +103,7 @@ public class FunctionProblem extends Problem {
     }
 
     @Override
+    @Deprecated
     public Object getLimit(){
         return upperBound;
     }
@@ -132,5 +133,29 @@ public class FunctionProblem extends Problem {
 
     public Function getFunction() {
         return function;
+    }
+
+    public void setInitialPoint(List<Double> initialPoint) {
+        this.initialPoint = initialPoint;
+    }
+
+    public void setStep(double step) {
+        this.step = step;
+    }
+
+    public void setParameters(ArrayList<Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    public double getUpperBound() {
+        return upperBound;
+    }
+
+    public void setUpperBound(double upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public void setFunction(Function function) {
+        this.function = function;
     }
 }

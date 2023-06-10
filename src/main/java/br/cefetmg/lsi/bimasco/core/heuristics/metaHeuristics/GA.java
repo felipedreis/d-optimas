@@ -118,7 +118,7 @@ public class GA extends MetaHeuristic {
 
         solucaoInicial = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolheSolucaoInicial, problem);
         selection = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolhaPais, problem);
-        mutation = SolutionModifierHelper.buildModifiesSolution(mutacao, problem);
+        mutation = SolutionModifierHelper.buildModifiesSolution(mutacao, problem, metaHeuristicParameters);
         reproduction =
                 ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(crossover, problem);
         nextPopulation = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolhaProxPopulacao, problem);

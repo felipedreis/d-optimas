@@ -121,7 +121,7 @@ public class VNS extends MetaHeuristic {
     public void metodo_VNS(Context context) {
         int divisor = 0;
         SolutionModifier vizinho = SolutionModifierHelper
-                .buildModifiesSolution(problem.getProblemSettings().getType() + this.neighbor, this.problem);
+                .buildModifiesSolution(problem.getProblemSettings().getType() + this.neighbor, this.problem, metaHeuristicParameters);
 
         int vizinhanca = 2;
         Object sBL;

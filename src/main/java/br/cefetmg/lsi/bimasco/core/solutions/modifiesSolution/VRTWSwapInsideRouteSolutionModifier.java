@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -20,7 +21,8 @@ public class VRTWSwapInsideRouteSolutionModifier
     VRTWSwapPerformsMotion swap;
     RandomDataGenerator rnd;
 
-    public VRTWSwapInsideRouteSolutionModifier() {
+    public VRTWSwapInsideRouteSolutionModifier(Map<String, Object> parameters) {
+        super(parameters);
         swap = (VRTWSwapPerformsMotion) PerformsMotionHelper.buildPerformsMotion("VRTWSwap");
         rnd = new RandomDataGenerator();
     }

@@ -96,7 +96,7 @@ public class ILS extends MetaHeuristic {
         modifiesSolutionCollections = ModifiesSolutionCollectionsHelper
                 .buildModifiesSolutionCollection(chooseInitialSolution, problem);
         solutionDisturb = SolutionModifierHelper
-                .buildModifiesSolution(disturb, problem);
+                .buildModifiesSolution(disturb, problem, metaHeuristicParameters);
 
         time = 0;
         finalTime = 0;

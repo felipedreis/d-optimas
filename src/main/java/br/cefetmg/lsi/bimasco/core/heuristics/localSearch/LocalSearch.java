@@ -22,7 +22,8 @@ public abstract class LocalSearch implements Serializable {
     public LocalSearch(Problem problem, Map<String, Object> parameters) {
         this.problem = problem;
         this.neighbor = SolutionModifierHelper
-                .buildModifiesSolution(parameters.get(DefaultMetaHeuristicParametersKeySupported.LOCAL_SEARCH_NEIGHBOR_KEY).toString(), problem);
+                .buildModifiesSolution(parameters.get(DefaultMetaHeuristicParametersKeySupported.LOCAL_SEARCH_NEIGHBOR_KEY).toString(), problem, parameters);
+        this.parameters = parameters;
     }
 
     public abstract Solution search(Solution solution, Context context);

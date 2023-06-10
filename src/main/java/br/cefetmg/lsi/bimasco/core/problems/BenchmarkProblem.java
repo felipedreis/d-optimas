@@ -3,8 +3,11 @@ package br.cefetmg.lsi.bimasco.core.problems;
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import br.cefetmg.lsi.bimasco.core.Problem;
+import br.cefetmg.lsi.bimasco.core.problems.functions.Function;
 import br.cefetmg.lsi.bimasco.settings.ProblemSettings;
 import coco.CocoJNI;
+import org.agrona.collections.ArrayUtil;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,8 @@ public class BenchmarkProblem extends Problem {
 
 	private ActorRef benchmarkActor;
 
+	private FunctionEvaluator evaluator;
+
 	public BenchmarkProblem() {}
 
 	/**
@@ -64,11 +69,47 @@ public class BenchmarkProblem extends Problem {
 			
 			this.pointer = pointer;
 
+			evaluator = (double [] values) -> {
+				logger.debug("Evaluating {}", values);
+				CompletableFuture<Object> evaluateFuture =
+						Patterns.ask(benchmarkActor, new Evaluate(values),
+								Duration.ofSeconds(1)).toCompletableFuture();
+				try {
+					EvaluateResult result = (EvaluateResult) evaluateFuture.get();
+					return result.y;
+				} catch (InterruptedException ex) {
+					logger.error("", ex);
+				} catch (ExecutionException ex) {
+					logger.error("", ex);
+				}
+				return new double[dimension];
+			};
+
 			setProblemSettings(new ProblemSettings("Benchmark", "Real", "", false, getClass().getName(),
 					Collections.emptyList(), "Benchmark"));
 		} catch (Exception e) {
 			throw new Exception("Problem constructor failed.\n", e);
 		}
+	}
+
+	public FunctionProblem asFunctionProblem() {
+		FunctionProblem functionProblem = new FunctionProblem();
+		Double[][] domain = new Double[dimension][2];
+
+		for (int i = 0; i < dimension; ++i) {
+			domain[i][0] = getSmallestValueOfInterest(i);
+			domain[i][1] = getLargestValueOfInterest(i);
+		}
+
+		functionProblem.setDomain(domain);
+		functionProblem.setDimension(dimension);
+		functionProblem.setFunction(points -> {
+			double[] arrayPoints = ArrayUtils.toPrimitive(points.toArray(Double[]::new));
+			double[] ans = evaluator.evaluate(arrayPoints);
+			return ArrayUtils.toObject(ans)[0];
+		});
+
+		return functionProblem;
 	}
 
 	/**
@@ -77,20 +118,7 @@ public class BenchmarkProblem extends Problem {
 	 * @return the result of the function evaluation in point x
 	 */
 	public double[] evaluateFunction(double[] x) {
-		logger.debug("Evaluating {}", x);
-		CompletableFuture<Object> evaluateFuture =
-				Patterns.ask(benchmarkActor, new Evaluate(x),
-						Duration.ofSeconds(1)).toCompletableFuture();
-		try {
-			EvaluateResult result = (EvaluateResult) evaluateFuture.get();
-			return result.y;
-		} catch (InterruptedException ex) {
-			logger.error("", ex);
-		} catch (ExecutionException ex) {
-			logger.error("", ex);
-		}
-
-		return new double[x.length];
+		return evaluator.evaluate(x);
 	}
 
 	/**
@@ -99,6 +127,9 @@ public class BenchmarkProblem extends Problem {
 	 * @return the result of the constraint evaluation in point x
 	 */
 	public double[] evaluateConstraint(double[] x) {
+		if (x.length == 0)
+			throw new IllegalArgumentException("Deu merda");
+
 		return CocoJNI.cocoEvaluateConstraint(this.pointer, x);
 	}
 
@@ -199,5 +230,14 @@ public class BenchmarkProblem extends Problem {
 
 	public void setBenchmarkActor(ActorRef benchmarkActor) {
 		this.benchmarkActor = benchmarkActor;
+	}
+
+
+	public FunctionEvaluator getEvaluator() {
+		return evaluator;
+	}
+
+	public void setEvaluator(FunctionEvaluator evaluator) {
+		this.evaluator = evaluator;
 	}
 }

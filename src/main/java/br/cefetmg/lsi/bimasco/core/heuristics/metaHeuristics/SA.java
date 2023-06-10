@@ -75,7 +75,7 @@ public class SA extends MetaHeuristic {
         temperatureSA = Temperature.buildTemperature(problem, temperatureName);
 
         solutionModifier = SolutionModifierHelper
-                .buildModifiesSolution(problem.getProblemSettings().getType() + modifieSolutionName, problem);
+                .buildModifiesSolution(problem.getProblemSettings().getType() + modifieSolutionName, problem, metaHeuristicParameters);
         time = 0;
     }
 

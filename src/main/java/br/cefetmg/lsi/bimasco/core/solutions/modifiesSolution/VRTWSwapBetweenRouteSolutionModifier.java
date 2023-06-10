@@ -7,6 +7,7 @@ import br.cefetmg.lsi.bimasco.core.solutions.motion.PerformsMotionHelper;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.util.List;
+import java.util.Map;
 
 public class VRTWSwapBetweenRouteSolutionModifier
         extends SolutionModifier<VRTWElement, VehicleRoutingTimeWindowSolution> {
@@ -14,7 +15,8 @@ public class VRTWSwapBetweenRouteSolutionModifier
     private PerformsMotion swapMotion;
     private RandomDataGenerator rnd;
 
-    public VRTWSwapBetweenRouteSolutionModifier() {
+    public VRTWSwapBetweenRouteSolutionModifier(Map<String, Object> parameters) {
+        super(parameters);
         swapMotion = PerformsMotionHelper.buildPerformsMotion("");
         rnd = new RandomDataGenerator();
     }

@@ -7,6 +7,7 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class BinaryPartitionRandomChangeSolutionModifier
         extends SolutionModifier<BinaryPartitionNumberElementSolution, BinaryPartitionNumberSolution> {
@@ -15,7 +16,8 @@ public class BinaryPartitionRandomChangeSolutionModifier
 
     private BinaryPartitionChangePerformsMotion motion;
 
-    public BinaryPartitionRandomChangeSolutionModifier() {
+    public BinaryPartitionRandomChangeSolutionModifier(Map<String, Object> parameters) {
+        super(parameters);
         rnd = new RandomDataGenerator();
         motion = new BinaryPartitionChangePerformsMotion();
     }

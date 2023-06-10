@@ -12,6 +12,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +32,7 @@ public class VRTWSwapInsideRouteTest  {
     public void config() {
         problem = Problem.buildProblem(settings.getProblem());
         solution = Solution.buildSolution(problem);
-        modifier = SolutionModifierHelper.buildModifiesSolution("VRTWSwapInsideRoute", problem);
+        modifier = SolutionModifierHelper.buildModifiesSolution("VRTWSwapInsideRoute", problem, Map.of());
     }
 
     @RepeatedTest(100)

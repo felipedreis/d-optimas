@@ -32,7 +32,7 @@ public class BetterNeighborhoodLocalSearch extends LocalSearch {
         NeighborsList neighborsList;
 
         solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
-        solutionModifier = SolutionModifierHelper.buildModifiesSolution(problem.getProblemSettings().getType() + neighbor, this.problem);
+        solutionModifier = SolutionModifierHelper.buildModifiesSolution(problem.getProblemSettings().getType() + neighbor, this.problem, parameters);
 
 
         bestSolution = Solution.buildSolution(problem);

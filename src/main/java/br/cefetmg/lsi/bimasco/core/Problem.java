@@ -61,6 +61,7 @@ public abstract class Problem implements Serializable  {
     };
 
     //TODO: Think if put this kind of method is a good thing
+    @Deprecated
     public abstract double getStep();
 
     public abstract Object getFitnessFunction(List<Object> element);
@@ -81,5 +82,9 @@ public abstract class Problem implements Serializable  {
 
     public void setNullInit(boolean nullInit) {
         this.nullInit = nullInit;
+    }
+
+    public void setDimension(Integer dimension) {
+        this.dimension = dimension;
     }
 }
