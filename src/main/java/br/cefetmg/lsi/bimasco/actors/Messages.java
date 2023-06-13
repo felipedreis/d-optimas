@@ -66,20 +66,20 @@ public class Messages {
 
         final Problem problem;
 
-        public CreateRegion(int receiverId, RegionSettings settings, long time){
+        public CreateRegion(int receiverId, RegionSettings settings, long time, Problem problem){
             super(0, receiverId);
             this.settings = settings;
             initialSolutions = new ArrayList<>();
             this.time = time;
-            problem = null;
+            this.problem = problem;
         }
 
-        public CreateRegion(int receiverId, RegionSettings settings, long time, List<Solution> initialSolutions) {
+        public CreateRegion(int receiverId, RegionSettings settings, long time, List<Solution> initialSolutions, Problem problem) {
             super(0, receiverId);
             this.settings = settings;
             this.initialSolutions = initialSolutions;
             this.time = time;
-            problem = null;
+            this.problem = problem;
         }
 
         public CreateRegion(int receiverId, long time, Problem problem) {

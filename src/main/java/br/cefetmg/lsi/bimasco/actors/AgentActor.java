@@ -71,6 +71,8 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private Cancellable internalTask;
 
+    private boolean agentStarted;
+
     public AgentActor(){
         simulationId = "";
     }
@@ -125,14 +127,16 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private void onStartSimulation(StartSimulation startSimulation) {
         logger.info("Handling start simulation " + startSimulation);
-        leader.tell(new AgentRegister(id), self());
         startSimulation.problem.ifPresent(agent::reset);
+        agentStarted = true;
         startInternalTask();
+        leader.tell(new AgentRegister(id), self());
     }
 
     private void onStopSimulation(StopSimulation stopSimulation) {
         leader.tell(new AgentRelease(id), self());
         internalTask.cancel();
+        agentStarted = false;
         sender().tell(new SimulationStopped(), self());
     }
 
@@ -187,12 +191,18 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private Object onCreateAgent(CreateAgent createAgent){
         initialize(createAgent);
         saveSnapshot(new AgentActorSnapshot(agent, agentsShard, regionsShard, leader));
+        sender().tell("ok", self());
         return null;
     }
 
     private void onInternalStimulus(InternalStimulus internalStimulus) {
         if (agent == null) {
             logger.info(format("Agent %s not proper initialized yet", persistenceId()));
+            return;
+        }
+
+        if (!agentStarted) {
+            logger.info("Agent {} not started",persistenceId());
             return;
         }
 

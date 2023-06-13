@@ -46,7 +46,7 @@ public class EuclideanVector<T extends Number> extends Number implements Compara
 
     @Override
     public double doubleValue() {
-        return 0;
+        return values.get(0).doubleValue();
     }
 
     @Override

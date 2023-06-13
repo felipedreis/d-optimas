@@ -15,16 +15,16 @@
         <logger name="br.cefetmg.lsi.bimasco.actors" additivity="false" level="DEBUG">
             <AppenderRef ref="Console"/>
         </logger>
-        <logger name="br.cefetmg.lsi.bimasco.core.heuristics" additivity="false" level="DEBUG">
+        <logger name="br.cefetmg.lsi.bimasco.core.heuristics" additivity="false" level="INFO">
             <AppenderRef ref="Console"/>
         </logger>
         <logger name="br.cefetmg.lsi.bimasco.core.regions" additivity="false" level="DEBUG">
             <AppenderRef ref="Console"/>
         </logger>
-        <logger name="br.cefetmg.lsi.bimasco.core.problems" additivity="false" level="DEBUG">
+        <logger name="br.cefetmg.lsi.bimasco.core.problems" additivity="false" level="INFO">
             <AppenderRef ref="Console"/>
         </logger>
-        <logger name="br.cefetmg.lsi.bimasco.core.solutions" additivity="false" level="DEBUG">
+        <logger name="br.cefetmg.lsi.bimasco.core.solutions" additivity="false" level="INFO">
             <AppenderRef ref="Console"/>
         </logger>
     </Loggers>

@@ -15,6 +15,7 @@ journal/
 snapshots/
 ddata*/
 output/
+exdata/
 
 #python
 venv
@@ -22,3 +23,4 @@ venv
 *.tar
 *.tar.gz
 *.zip
+*.dat

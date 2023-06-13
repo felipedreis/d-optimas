@@ -56,6 +56,19 @@ public class Region implements Serializable {
         bestSolution = null;
     }
 
+    public Region(long id, Problem problem, RegionSettings settings) {
+        this.regionSettings = settings;
+        solutionList = new ArrayList<>();
+        stats = new DescriptiveStatistics();
+        summary = new SummaryStatistics();
+        this.id = id;
+
+        this.problem = problem;
+        analyser = SolutionAnalyser.buildSolutionAnalyser(problem);
+        searchSpaceSummary = new MultivariateSummaryStatistics(problem.getDimension(), false);
+        bestSolution = null;
+    }
+
     public void addSolutionsCollection(List<Solution> solutions) {
         logger.debug("Adding " + solutions.size() + " solutions to region " + id);
 

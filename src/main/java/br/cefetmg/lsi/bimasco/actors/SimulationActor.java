@@ -10,6 +10,7 @@ import akka.cluster.sharding.ClusterShardingSettings;
 import akka.cluster.sharding.ShardRegion;
 import akka.pattern.Patterns;
 import akka.pattern.Patterns$;
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.persistence.DatabaseHelper;
 import br.cefetmg.lsi.bimasco.persistence.GlobalState;
@@ -64,6 +65,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     private SummaryStatistics[] regionsSummary;
     private StatisticalSummary globalStatistics;
 
+    private Problem problem;
 
     private GlobalStateDAO globalStateDAO;
     private MessageStateDAO messageStateDAO;
@@ -207,6 +209,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      */
     void onStartSimulation(StartSimulation startSimulation) {
         logger.info("Starting the simulation");
+        startSimulation.problem.ifPresent(p -> problem = p);
         Arrays.stream(agents)
                 .filter(Objects::nonNull)
                 .forEach(agent -> agent.tell(startSimulation, self()));
@@ -367,7 +370,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      */
     private void createRegion(Integer id, List<Solution> solutions) {
         logger.info(format("Creating region-%d", id));
-        regionShard.tell(new CreateRegion(id, simulationSettings.getRegion(), time, solutions), self());
+        regionShard.tell(new CreateRegion(id, simulationSettings.getRegion(), time, solutions, problem), self());
     }
 
     /**
@@ -432,13 +435,8 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         logger.info("Registering " + sender().path().name() + " for broadcasting");
         agents[register.senderId] = sender();
 
-        if (amILeader) {
+        if (amILeader)
             forwardToAllNodes(register);
-
-            if (Arrays.stream(agents).noneMatch(Objects::isNull) && !simulationStarted) {
-                context().parent().tell(new SimulationReady(), self());
-            }
-        }
     }
 
     /**
@@ -477,6 +475,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         if (amILeader) {
             Optional<Integer> id;
 
+            List<CompletableFuture> completionStages = new ArrayList<>();
             for (AgentSettings agentSettings : simulationSettings.getAgents()) {
                 for (int i = 0; i < agentSettings.getCount(); ++i) {
                     id = nextAgentId();
@@ -484,9 +483,19 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                     if (id.isPresent()) {
                         Integer agentId = id.get();
                         CreateAgent createAgent = new CreateAgent(agentId, agentShard, regionShard, self(), agentSettings);
+                        CompletableFuture t = Patterns.ask(agentShard, createAgent, Duration.ofSeconds(1)).toCompletableFuture();
+                        completionStages.add(t);
                         agentShard.tell(createAgent, self());
                         logger.info("Constructing agent-" + agentId);
                     }
+                }
+            }
+
+            completionStages.forEach(CompletableFuture::join);
+
+            if (amILeader) {
+                if (Arrays.stream(agents).noneMatch(Objects::isNull) && !simulationStarted) {
+                    context().parent().tell(new SimulationReady(), self());
                 }
             }
         }
@@ -514,14 +523,14 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 logger.info("Updating running agents");
                 for (ActorRef agent : agents) {
                     if (agent != null) {
-                        logger.info(format("Updating agent %s", agent.toString()));
+                        logger.info(format("Updating agent %s", agent));
                         agent.tell(new SetLeader(self()), self());
                     }
                 }
 
                 for (ActorRef region : regions) {
                     if (region != null) {
-                        logger.info(format("Updating region %s", region.toString()));
+                        logger.info(format("Updating region %s", region));
                         region.tell(new SetLeader(self()), self());
                     }
                 }

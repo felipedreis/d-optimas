@@ -67,6 +67,8 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
     private long time;
 
+    private boolean regionStarted;
+
     private RegionStateDAO regionStateDAO;
 
     private SolutionStateDAO solutionStateDAO;
@@ -127,7 +129,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     }
 
     private void initialize(CreateRegion config) {
-        region = new Region(id, settings.getProblem(), config.settings);
+        region = new Region(id, config.problem, config.settings);
         time = config.time;
         leader = sender();
         addSolutions(config.initialSolutions);
@@ -144,6 +146,8 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 internalStimulusMessage,
                 context().system().dispatcher(),
                 self());
+
+        regionStarted = true;
     }
 
     private void onCreate(CreateRegion config) {
@@ -161,6 +165,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     private void onStopSimulation(StopSimulation stopSimulation) {
         internalTask.cancel();
         region.clear();
+        regionStarted = false;
         sender().tell(new SimulationStopped(), self());
     }
 
@@ -258,12 +263,16 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
     private void onInternalStimulus(InternalStimulus stimulus) {
         if (region == null) {
-            logger.info("Region " + persistenceId() + " not initialized yet");
+            logger.info("Region {} not initialized yet", persistenceId());
             return;
         }
 
+        if (!regionStarted) {
+            logger.info("Region {} not started", persistenceId());
+        }
+
         if (globalSummary == null) {
-            logger.info("Global statistics not available yet at " + persistenceId());
+            logger.info("Global statistics not available yet at {}", persistenceId());
             return;
         }
 

@@ -76,6 +76,7 @@ public class BenchmarkProblem extends Problem {
 								Duration.ofSeconds(1)).toCompletableFuture();
 				try {
 					EvaluateResult result = (EvaluateResult) evaluateFuture.get();
+					logger.debug("Evaluation result {}", result.y);
 					return result.y;
 				} catch (InterruptedException ex) {
 					logger.error("", ex);
