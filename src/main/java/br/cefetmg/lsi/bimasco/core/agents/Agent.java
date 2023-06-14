@@ -6,6 +6,7 @@ import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.heuristics.metaHeuristics.MetaHeuristic;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.core.utils.DefaultMetaHeuristicParametersKeySupported;
+import br.cefetmg.lsi.bimasco.core.utils.ObjectiveFunctionEvaluationException;
 import br.cefetmg.lsi.bimasco.persistence.MemoryState;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
@@ -108,6 +109,8 @@ public class Agent implements Serializable {
         try {
             logger.debug(join("Running meta-heuristic ", metaHeuristic.getClass().getSimpleName()));
             result = metaHeuristic.runMetaHeuristic(solutions, context);
+        } catch (ObjectiveFunctionEvaluationException ex) {
+            logger.warn("Can't evaluate the objective function anymore", ex);
         } catch (Exception exception) {
             logger.error("Error running meta-heuristic", exception);
         }

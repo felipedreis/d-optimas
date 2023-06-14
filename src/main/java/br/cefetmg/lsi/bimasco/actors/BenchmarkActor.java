@@ -29,7 +29,7 @@ public class BenchmarkActor extends AbstractActor {
 
     private int evaluations;
 
-    private int evaluationsBudget = 3000;
+    private int evaluationsBudget = 10;
 
     private boolean runningSimulation;
 
@@ -82,7 +82,7 @@ public class BenchmarkActor extends AbstractActor {
         logger.info("Handling evaluate of " + evaluate);
         if (!runningSimulation) {
             logger.warn("Can't evaluate function when simulation is not running");
-            sender().tell(new EvaluateResult(new double[] { Double.MAX_VALUE }), self());
+            sender().tell(new EvaluateResult(), self());
         } else {
             try {
                 double[] y = CocoJNI.cocoEvaluateFunction(benchmarkProblem.getPointer(), evaluate.x);
@@ -107,12 +107,14 @@ public class BenchmarkActor extends AbstractActor {
     private void startBenchmark(StartSimulation startSimulation){
         logger.info("Simulation ready to start");
         nextProblem();
-        startSimulation();
+        if (benchmarkProblem != null)
+            startSimulation();
     }
 
     private void startSimulation() {
         if (!runningSimulation) {
             runningSimulation = true;
+            evaluations = 0;
             StartSimulation startSimulation = new StartSimulation(benchmarkProblem);
             simulationActor.tell(startSimulation, self());
             logger.debug("Sending message to simulationActor {}", startSimulation);

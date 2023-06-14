@@ -12,6 +12,7 @@ import akka.pattern.Patterns;
 import akka.pattern.Patterns$;
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
+import br.cefetmg.lsi.bimasco.core.regions.Region;
 import br.cefetmg.lsi.bimasco.persistence.DatabaseHelper;
 import br.cefetmg.lsi.bimasco.persistence.GlobalState;
 import br.cefetmg.lsi.bimasco.persistence.dao.GlobalStateDAO;
@@ -154,6 +155,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .match(StartSimulation.class, this::onStartSimulation)
                 .match(StopSimulation.class, this::onStopSimulation)
                 .match(Terminate.class, this::terminate)
+                .matchAny(any -> logger.warn("Not handling {}", any))
                 .build();
     }
 
@@ -184,7 +186,9 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .filter(Objects::nonNull)
                 .map(region -> Patterns.ask(region, stopSimulation, Duration.ofSeconds(1)))
                 .map(CompletionStage::toCompletableFuture)
-                .forEach(CompletableFuture::join);
+                .map(CompletableFuture::join)
+                .forEach(release -> onRegionRelease((RegionRelease) release));
+        logger.info("All agents and regions stopped");
     }
 
     private void resetRegionsData() {
@@ -457,13 +461,13 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      */
     void onNewMember(Member member) {
         Address memberAddress = member.address();
-        logger.info("adding new member to cluster " + memberAddress.toString());
+        logger.info("adding new member to cluster {}", memberAddress.toString());
         ActorSelection newMemberSelection = context().system()
                 .actorSelection(memberAddress + "/user/main/manager");
 
         CompletionStage<ActorRef> future = newMemberSelection.resolveOne(Duration.ofSeconds(1));
         future.thenAccept(nodes::add).thenRun(() -> {
-            logger.info(format("Member %s added. Nodes %d/%d", memberAddress, nodes.size(), simulationSettings.getNodes()));
+            logger.info("Member {} added. Nodes {}/{}", memberAddress, nodes.size(), simulationSettings.getNodes());
             if (nodes.size() == simulationSettings.getNodes()) {
                 createAgents();
             }
@@ -484,14 +488,19 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                         Integer agentId = id.get();
                         CreateAgent createAgent = new CreateAgent(agentId, agentShard, regionShard, self(), agentSettings);
                         CompletableFuture t = Patterns.ask(agentShard, createAgent, Duration.ofSeconds(1)).toCompletableFuture();
+
                         completionStages.add(t);
                         agentShard.tell(createAgent, self());
-                        logger.info("Constructing agent-" + agentId);
+                        logger.info("Constructing agent-{}", agentId);
                     }
                 }
             }
 
-            completionStages.forEach(CompletableFuture::join);
+            completionStages.stream().map(CompletableFuture::join)
+                    .forEach(register -> {
+                        logger.info("Completed agent creation with {}", register);
+                        onAgentRegister((AgentRegister) register);
+                    });
 
             if (amILeader) {
                 if (Arrays.stream(agents).noneMatch(Objects::isNull) && !simulationStarted) {

@@ -11,6 +11,7 @@ import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
+import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.util.*;
 
@@ -216,9 +217,13 @@ public class Messages {
     }
 
     public static class EvaluateResult implements Serializable {
-        public final double[] y;
+        public final Optional<double[]> y;
         public EvaluateResult(double [] y) {
-            this.y = y;
+            this.y = Optional.of(y);
+        }
+
+        public EvaluateResult() {
+            this.y = Optional.empty();
         }
     }
 
@@ -308,7 +313,7 @@ abstract class AbstractMessage implements Serializable {
 
     @Override
     public String toString() {
-        return "AbstractMessage{" +
+        return this.getClass().getSimpleName() + "{" +
                 "messageId=" + messageId +
                 ", senderId=" + senderId +
                 ", receiverId=" + receiverId +

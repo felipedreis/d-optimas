@@ -130,11 +130,9 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         startSimulation.problem.ifPresent(agent::reset);
         agentStarted = true;
         startInternalTask();
-        leader.tell(new AgentRegister(id), self());
     }
 
     private void onStopSimulation(StopSimulation stopSimulation) {
-        leader.tell(new AgentRelease(id), self());
         internalTask.cancel();
         agentStarted = false;
         sender().tell(new SimulationStopped(), self());
@@ -184,14 +182,13 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         leader = c.leader;
         agent = new Agent(simulationSettings, c.settings);
         lifetime = c.settings.getLifetime();
-
-        leader.tell(new AgentRegister(id), self());
     }
 
     private Object onCreateAgent(CreateAgent createAgent){
+        logger.info("{} {}", sender(), createAgent);
         initialize(createAgent);
+        sender().tell(new AgentRegister(id), self());
         saveSnapshot(new AgentActorSnapshot(agent, agentsShard, regionsShard, leader));
-        sender().tell("ok", self());
         return null;
     }
 
@@ -276,7 +273,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         agent.updateMemory(update.regionIds);
 
         if (update.time > lifetime) {
-            leader.tell(new AgentRelease(id), self());
+            //leader.tell(new AgentRelease(id), self());
             internalTask.cancel();
             logger.info(format("%s stopped due to lifetime", persistenceId()));
         }

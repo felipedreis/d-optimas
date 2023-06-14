@@ -1,4 +1,4 @@
-FROM debian:latest AS coco-compile
+FROM debian:bullseye AS coco-compile
 
 WORKDIR /coco
 

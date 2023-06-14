@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.problems.functions.Function;
+import br.cefetmg.lsi.bimasco.core.utils.ObjectiveFunctionEvaluationException;
 import br.cefetmg.lsi.bimasco.settings.ProblemSettings;
 import coco.CocoJNI;
 import org.agrona.collections.ArrayUtil;
@@ -74,16 +75,23 @@ public class BenchmarkProblem extends Problem {
 				CompletableFuture<Object> evaluateFuture =
 						Patterns.ask(benchmarkActor, new Evaluate(values),
 								Duration.ofSeconds(1)).toCompletableFuture();
+
+				EvaluateResult result = null;
+
 				try {
-					EvaluateResult result = (EvaluateResult) evaluateFuture.get();
-					logger.debug("Evaluation result {}", result.y);
-					return result.y;
+					result = (EvaluateResult) evaluateFuture.get();
 				} catch (InterruptedException ex) {
 					logger.error("", ex);
+					throw new IllegalStateException(ex);
 				} catch (ExecutionException ex) {
 					logger.error("", ex);
 				}
-				return new double[dimension];
+
+				if (result.y.isPresent()) {
+					logger.debug("Evaluation result {}", result.y);
+					return result.y.get();
+				} else
+					throw new ObjectiveFunctionEvaluationException();
 			};
 
 			setProblemSettings(new ProblemSettings("Benchmark", "Real", "", false, getClass().getName(),
