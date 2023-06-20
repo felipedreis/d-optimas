@@ -34,4 +34,10 @@ for i in `seq 1 ${REPEAT}`; do
   echo "D-Optimas finished successfully"
   mv $exp_result_folder /data
   rm -rf ./data
+
+  echo "compressing coco data"
+  tar -czf coco-data-$i.tar exdata/
+  echo "moving coco data to host dir"
+  mv coco-data-$i.tar /data
+  rm -rf ./exdata
 done

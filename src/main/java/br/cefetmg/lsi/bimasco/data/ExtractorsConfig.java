@@ -19,6 +19,8 @@ public class ExtractorsConfig {
     private MessageStateDAO messageStateDAO;
     private MemoryStateDAO memoryStateDAO;
 
+    private String problemId;
+
     public ExtractorsConfig(AgentStateDAO agentStateDAO, RegionStateDAO regionStateDAO,
                             SolutionStateDAO solutionStateDAO, GlobalStateDAO globalStateDAO,
                             MessageStateDAO messageStateDAO, MemoryStateDAO memoryStateDAO) {
@@ -50,34 +52,34 @@ public class ExtractorsConfig {
         Set<String> agentNames = getAgentNames();
 
         return agentNames.stream()
-                .map(agent -> new AgentSolutionsOverTimeExtractor(agent, agentStateDAO, solutionStateDAO))
+                .map(agent -> new AgentSolutionsOverTimeExtractor(problemId, agent, agentStateDAO, solutionStateDAO))
                 .collect(Collectors.toList());
     }
 
     public Extractor<?> bestSolutionOverTimeExtractor() {
-        return new BestGlobalSolutionOverTimeExtractor(solutionStateDAO);
+        return new BestGlobalSolutionOverTimeExtractor(problemId, solutionStateDAO);
     }
 
     public Extractor<?> globalStatesOverTime() {
-        return new GlobalStatisticsOverTimeExtractor(globalStateDAO);
+        return new GlobalStatisticsOverTimeExtractor(problemId, globalStateDAO);
     }
 
     public Extractor<?> mergeSplitOverTime() {
-        return new MergeSplitOverTimeExtractor(messageStateDAO);
+        return new MergeSplitOverTimeExtractor(problemId, messageStateDAO);
     }
 
     public List<Extractor<?>> regionBestSolutionExtractors() {
         Set<String> regionNames = getRegionNames();
 
         return regionNames.stream()
-                .map(region -> new RegionBestSolutionExtractor(region, regionStateDAO, solutionStateDAO))
+                .map(region -> new RegionBestSolutionExtractor(problemId, region, regionStateDAO, solutionStateDAO))
                 .collect(Collectors.toList());
     }
 
     public List<Extractor<?>> regionSolutionValuesOvertimeExtractors() {
         Set<String> regionNames = getRegionNames();
         return regionNames.stream()
-                .map(region -> new RegionSolutionValuesOverTimeExtractor(region, regionStateDAO, solutionStateDAO))
+                .map(region -> new RegionSolutionValuesOverTimeExtractor(problemId, region, regionStateDAO, solutionStateDAO))
                 .collect(Collectors.toList());
     }
 
@@ -85,7 +87,7 @@ public class ExtractorsConfig {
         Set<String> regionNames = getRegionNames();
 
         return regionNames.stream()
-                .map(region -> new RegionsSolutionsPositionsOverTimeExtractor(region, regionStateDAO, solutionStateDAO))
+                .map(region -> new RegionsSolutionsPositionsOverTimeExtractor(problemId, region, regionStateDAO, solutionStateDAO))
                 .collect(Collectors.toList());
     }
 
@@ -93,11 +95,11 @@ public class ExtractorsConfig {
         Set<String> agentNames = getAgentNames();
 
         return agentNames.stream()
-                .map(agent -> new AgentMemoryProbabilitiesOverTime(memoryStateDAO, agent))
+                .map(agent -> new AgentMemoryProbabilitiesOverTime(problemId, memoryStateDAO, agent))
                 .collect(Collectors.toList());
     }
     public Extractor<?> functionEvaluationsOverTime() {
-        return new FunctionEvaluationsOverTime(agentStateDAO);
+        return new FunctionEvaluationsOverTime(problemId, agentStateDAO);
     }
 
     private Set<String> getRegionNames() {
@@ -113,5 +115,13 @@ public class ExtractorsConfig {
                 .stream()
                 .map(AgentState::getPersistentId)
                 .collect(Collectors.toSet());
+    }
+
+    public void setProblemId(String problemId) {
+        this.problemId = problemId;
+    }
+
+    public String getProblemId() {
+        return problemId;
     }
 }

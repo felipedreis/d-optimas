@@ -1,20 +1,31 @@
 package br.cefetmg.lsi.bimasco.actors;
 
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.persistence.MessageState;
 import br.cefetmg.lsi.bimasco.persistence.dao.MessageStateDAO;
 
 public interface MessagePersister {
 
-
-
-    default MessageState received(AbstractMessage message, long time, String entityId) {
-        return new MessageState(message.messageId, time, System.currentTimeMillis(), entityId,
-                message.getClass().getSimpleName(), MessageState.RECEIVED);
+    default MessageState received(String problemId, AbstractMessage message, long time, String entityId) {
+        return new MessageState(
+                message.messageId,
+                problemId,
+                time,
+                System.currentTimeMillis(), entityId,
+                message.getClass().getSimpleName(),
+                MessageState.RECEIVED
+        );
     }
 
-    default MessageState sent(AbstractMessage message, long time, String entityId) {
-        return new MessageState(message.messageId, time, System.currentTimeMillis(), entityId,
-                message.getClass().getSimpleName(), MessageState.SENT);
+    default MessageState sent(String problemId, AbstractMessage message, long time, String entityId) {
+        return new MessageState(
+                message.messageId,
+                problemId,
+                time,
+                System.currentTimeMillis(),
+                entityId,
+                message.getClass().getSimpleName(),
+                MessageState.SENT);
     }
 
 

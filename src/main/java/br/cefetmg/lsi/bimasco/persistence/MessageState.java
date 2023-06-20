@@ -1,5 +1,6 @@
 package br.cefetmg.lsi.bimasco.persistence;
 
+import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
 
@@ -13,6 +14,9 @@ public class MessageState {
     @PartitionKey
     private UUID id;
 
+    @ClusteringColumn
+    private String problemName;
+
     private long time;
 
     private long timestamp;
@@ -25,8 +29,15 @@ public class MessageState {
 
     public MessageState(){}
 
-    public MessageState(UUID id, long time, long timestamp, String entityId, String messageType, String status) {
+    public MessageState(UUID id,
+                        String problemName,
+                        long time,
+                        long timestamp,
+                        String entityId,
+                        String messageType,
+                        String status) {
         this.id = id;
+        this.problemName = problemName;
         this.time = time;
         this.timestamp = timestamp;
         this.entityId = entityId;
@@ -80,6 +91,14 @@ public class MessageState {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

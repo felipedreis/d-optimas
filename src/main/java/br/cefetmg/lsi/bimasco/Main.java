@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import br.cefetmg.lsi.bimasco.actors.DatabaseCleaner;
+import br.cefetmg.lsi.bimasco.actors.MainActor;
 import br.cefetmg.lsi.bimasco.data.DataExtractionBatch;
 import br.cefetmg.lsi.bimasco.data.ExtractorsConfig;
 import br.cefetmg.lsi.bimasco.persistence.DOptimasMapper;

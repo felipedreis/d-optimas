@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RegionBestSolutionExtractor implements Extractor<SolutionState> {
+public class RegionBestSolutionExtractor extends Extractor<SolutionState> {
 
     private String regionName;
 
@@ -18,7 +18,11 @@ public class RegionBestSolutionExtractor implements Extractor<SolutionState> {
 
     private SolutionStateDAO solutionStateDAO;
 
-    public RegionBestSolutionExtractor(String regionName, RegionStateDAO regionStateDAO, SolutionStateDAO solutionStateDAO) {
+    public RegionBestSolutionExtractor(String problem,
+                                       String regionName,
+                                       RegionStateDAO regionStateDAO,
+                                       SolutionStateDAO solutionStateDAO) {
+        super(problem);
         this.regionName = regionName;
         this.regionStateDAO = regionStateDAO;
         this.solutionStateDAO = solutionStateDAO;
@@ -26,7 +30,7 @@ public class RegionBestSolutionExtractor implements Extractor<SolutionState> {
 
     @Override
     public List<SolutionState> getData() {
-        List<RegionState> regionStates = regionStateDAO.findByName(regionName).all();
+        List<RegionState> regionStates = regionStateDAO.findByProblemAndName(problem, regionName).all();
 
         List<SolutionState> states = regionStates.stream()
                 .map(regionState -> solutionStateDAO.findById(regionState.getBestSolution(), regionName))

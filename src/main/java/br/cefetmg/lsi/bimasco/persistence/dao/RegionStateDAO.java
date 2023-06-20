@@ -15,8 +15,15 @@ public interface RegionStateDAO {
     @Select
     PagingIterable<RegionState> findAll();
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName")
+    PagingIterable<RegionState> findByProblem(String problemName);
+
+
     @Select(allowFiltering = true, customWhereClause = "name = :name")
     PagingIterable<RegionState> findByName(String name);
+
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName and name = :name")
+    PagingIterable<RegionState> findByProblemAndName(String problemName, String name);
 
     @Delete
     void delete(RegionState regionState);

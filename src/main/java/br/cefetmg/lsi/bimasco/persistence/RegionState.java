@@ -14,14 +14,17 @@ public class RegionState {
     @PartitionKey
     private UUID id;
 
-    @PartitionKey(value = 1)
+    @PartitionKey(1)
     private String name;
 
-    @ClusteringColumn
+    @ClusteringColumn(1)
     private long time;
 
-    @ClusteringColumn(1)
+    @ClusteringColumn(2)
     private UUID bestSolution;
+
+    @ClusteringColumn
+    private String problemName;
 
     private double mean;
 
@@ -36,12 +39,19 @@ public class RegionState {
 
     }
 
-    public RegionState(String name, long time, UUID bestSolution, double mean, double variance, List<UUID> solutions,
+    public RegionState(String problemName,
+                       String name,
+                       long time,
+                       UUID bestSolution,
+                       double mean,
+                       double variance,
+                       List<UUID> solutions,
                        long numSolutions) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.time = time;
         this.bestSolution = bestSolution;
+        this.problemName = problemName;
         this.mean = mean;
         this.variance = variance;
         this.solutions = solutions;
@@ -110,6 +120,14 @@ public class RegionState {
 
     public void setNumSolutions(long numSolutions) {
         this.numSolutions = numSolutions;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

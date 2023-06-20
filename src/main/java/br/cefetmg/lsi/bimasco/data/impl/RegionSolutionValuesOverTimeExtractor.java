@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class RegionSolutionValuesOverTimeExtractor implements Extractor <Pair<Long,List<SolutionState>>> {
+public class RegionSolutionValuesOverTimeExtractor extends Extractor <Pair<Long,List<SolutionState>>> {
     private String regionName;
     private RegionStateDAO regionStateDAO;
     private SolutionStateDAO solutionStateDAO;
 
-    public RegionSolutionValuesOverTimeExtractor(String regionName, RegionStateDAO regionStateDAO, SolutionStateDAO solutionStateDAO) {
+    public RegionSolutionValuesOverTimeExtractor(String problem,
+                                                 String regionName,
+                                                 RegionStateDAO regionStateDAO,
+                                                 SolutionStateDAO solutionStateDAO) {
+        super(problem);
         this.regionName = regionName;
         this.regionStateDAO = regionStateDAO;
         this.solutionStateDAO = solutionStateDAO;
@@ -25,7 +29,7 @@ public class RegionSolutionValuesOverTimeExtractor implements Extractor <Pair<Lo
 
     @Override
     public List<Pair<Long,List<SolutionState>>> getData() {
-        List<RegionState> regionStates = regionStateDAO.findByName(regionName).all();
+        List<RegionState> regionStates = regionStateDAO.findByProblemAndName(problem, regionName).all();
 
         List<Pair<Long, List<SolutionState>>> solutionsOverTime = new ArrayList<>();
         for (RegionState regionState : regionStates) {

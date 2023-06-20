@@ -1,10 +1,9 @@
-package br.cefetmg.lsi.bimasco;
+package br.cefetmg.lsi.bimasco.actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import br.cefetmg.lsi.bimasco.actors.BenchmarkActor;
-import br.cefetmg.lsi.bimasco.actors.SimulationActor;
+import br.cefetmg.lsi.bimasco.data.ExtractorsConfig;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 
 import org.slf4j.Logger;
@@ -30,7 +29,7 @@ public class MainActor extends AbstractActor {
                 .build();
     }
 
-    public void setup(SimulationSettings settings) {
+    private void setup(SimulationSettings settings) {
         logger.info("Setting up the simulation manager");
         this.settings = settings;
         if (settings.isBenchmark()) {

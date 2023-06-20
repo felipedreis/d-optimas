@@ -7,18 +7,19 @@ import br.cefetmg.lsi.bimasco.persistence.dao.MessageStateDAO;
 import java.util.Comparator;
 import java.util.List;
 
-public class MergeSplitOverTimeExtractor implements Extractor<MessageState> {
+public class MergeSplitOverTimeExtractor extends Extractor<MessageState> {
 
     private MessageStateDAO messageStateDAO;
 
-    public MergeSplitOverTimeExtractor(MessageStateDAO messageStateDAO) {
+    public MergeSplitOverTimeExtractor(String problem, MessageStateDAO messageStateDAO) {
+        super(problem);
         this.messageStateDAO = messageStateDAO;
     }
 
     @Override
     public List<MessageState> getData() {
-        List<MessageState> mergesResult = messageStateDAO.findByType("MergeResult").all();
-        List<MessageState> splits =  messageStateDAO.findByType("RegionSplit").all();
+        List<MessageState> mergesResult = messageStateDAO.findByProblemAndType(problem,"MergeResult").all();
+        List<MessageState> splits =  messageStateDAO.findByProblemAndType(problem, "RegionSplit").all();
         splits.addAll(mergesResult);
         splits.sort(Comparator.comparing(MessageState::getTime));
         return splits;

@@ -127,6 +127,7 @@ use d_optimas;
 
 create table message_state (
                                id uuid,
+                               problem_name text,
                                time bigint,
                                timestamp bigint,
                                entity_id text,
@@ -137,6 +138,7 @@ create table message_state (
 
 create table global_state (
                               id uuid,
+                              problem_name text,
                               time bigint,
                               mean double,
                               variance double,
@@ -148,14 +150,15 @@ create table global_state (
 
 create table region_state (
                               id uuid,
-                              name text ,
+                              name text,
+                              problem_name text,
                               time bigint,
                               best_solution uuid,
                               mean double,
                               variance double,
                               solutions list<uuid>,
                               num_solutions bigint,
-                              primary key ((id, name), time, best_solution )
+                              primary key ((id, name), time, problem_name, best_solution )
 ) with clustering order by (time asc);
 
 create table solution_state (
@@ -184,11 +187,12 @@ create table agent_state (
 create table memory_state (
                               id uuid,
                               time bigint,
+                              problem_name text,
                               agent text,
                               regions list<int>,
                               probabilities list<double>,
                               best_solution_id uuid,
                               memory_status text,
                               chosen_region int,
-                              primary key ((id), agent, time )
+                              primary key ((id), problem_name, agent, time )
 ) with clustering order by (agent asc, time asc);

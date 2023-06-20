@@ -7,18 +7,19 @@ import br.cefetmg.lsi.bimasco.persistence.dao.SolutionStateDAO;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BestGlobalSolutionOverTimeExtractor implements Extractor<SolutionState> {
+public class BestGlobalSolutionOverTimeExtractor extends Extractor<SolutionState> {
 
     private SolutionStateDAO solutionStateDAO;
 
-    public BestGlobalSolutionOverTimeExtractor(SolutionStateDAO solutionStateDAO) {
+    public BestGlobalSolutionOverTimeExtractor(String problem, SolutionStateDAO solutionStateDAO) {
+        super(problem);
         this.solutionStateDAO = solutionStateDAO;
     }
 
     @Override
     public List<SolutionState> getData() {
 
-        List<SolutionState> solutionStates = solutionStateDAO.findAll().all();
+        List<SolutionState> solutionStates = solutionStateDAO.findByProblem(problem).all();
         Map<Long, Optional<SolutionState>> filtered = solutionStates.parallelStream()
                 .collect(Collectors.groupingBy(SolutionState::getTime,
                         Collectors.minBy(Comparator.comparing(SolutionState::getFunctionValue))));

@@ -5,6 +5,7 @@ import akka.actor.Cancellable;
 import akka.persistence.AbstractPersistentActor;
 import akka.persistence.SnapshotOffer;
 import br.cefetmg.lsi.bimasco.core.Element;
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.regions.Region;
 import br.cefetmg.lsi.bimasco.messages.InternalStimulus;
@@ -52,6 +53,8 @@ class RegionActorSnapshot implements Serializable {
 public class RegionActor extends AbstractPersistentActor implements Serializable, MessagePersister {
 
     private static final Logger logger = LoggerFactory.getLogger(RegionActor.class.getSimpleName());
+
+    private Problem problem;
 
     private Region region;
 
@@ -129,8 +132,9 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     }
 
     private void initialize(CreateRegion config) {
-        region = new Region(id, config.problem, config.settings);
+        problem = config.problem;
         time = config.time;
+        region = new Region(id, config.problem, config.settings);
         leader = sender();
         addSolutions(config.initialSolutions);
 
@@ -171,7 +175,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
 
     private void onUpdateGlobalSummary(UpdateGlobalSummary update) {
-        persistMessage(received(update, time, persistenceId()));
+        persistMessage(received(problem.toString(), update, time, persistenceId()));
         globalSummary = update.summary;
         time = update.time;
         logger.debug(format("Updated global summary %s", update));
@@ -179,26 +183,26 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
     private  void onSolutionRequest(SolutionRequest request) {
         logger.info("Region " + persistenceId() +" handling solution request from " + sender().path().name());
-        persistMessage(received(request, time, persistenceId()));
+        persistMessage(received(problem.toString(), request, time, persistenceId()));
 
         if (region.getSolutionList().size() > request.counter) {
             List<Solution> solutions = region.getRandomSolutions(request.counter);
             SolutionResponse response = new SolutionResponse(id, request.receiverId, solutions);
             sender().tell(response, self());
 
-            persistMessage(sent(response, time, persistenceId()));
+            persistMessage(sent(problem.toString(), response, time, persistenceId()));
         }
     }
 
     private  void onSolutionResponse(SolutionResponse response) {
         logger.info("Region " + persistenceId() + " handling solution response from " + sender().path().name());
-        persistMessage(received(response, time, persistenceId()));
+        persistMessage(received(problem.toString(), response, time, persistenceId()));
         addSolutions(response.solutions);
     }
 
     private void onMergeRequest(MergeRequest request) {
         logger.info("Region " + persistenceId() + " handling merge request from " + sender().path().name());
-        persistMessage(received(request, time, persistenceId()));
+        persistMessage(received(problem.toString(), request, time, persistenceId()));
 
         EuclideanDistance distanceCalculator = new EuclideanDistance();
 
@@ -210,12 +214,12 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
             MergeResponse response = new MergeResponse(id, request.senderId);
             sender().tell(response, self());
 
-            persistMessage(sent(response, time, persistenceId()));
+            persistMessage(sent(problem.toString(), response, time, persistenceId()));
         }
     }
 
     private void onMergeResponse(MergeResponse response) {
-        persistMessage(received(response, time, persistenceId()));
+        persistMessage(received(problem.toString(), response, time, persistenceId()));
 
         if (region != null) {
             logger.info("Region " + persistenceId() + " handling a merge response from " + sender().path().name());
@@ -225,8 +229,8 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
             sender().tell(mergeResult, self());
             leader.tell(release, self());
 
-            persistMessage(sent(mergeResult, time, persistenceId()));
-            persistMessage(sent(release, time, persistenceId()));
+            persistMessage(sent(problem.toString(), mergeResult, time, persistenceId()));
+            persistMessage(sent(problem.toString(), release, time, persistenceId()));
 
             stopRegion();
         }
@@ -241,7 +245,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
     private void onMergeResult(MergeResult result) {
         logger.info("Region " + persistenceId() + " merging solutions from " + sender().path().name());
-        persistMessage(received(result, time, persistenceId()));
+        persistMessage(received(problem.toString(), result, time, persistenceId()));
 
         addSolutions(result.solutions);
     }
@@ -258,7 +262,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
         UpdateRegionSummary updateSummary = new UpdateRegionSummary(id, region.getSummary());
         leader.tell(updateSummary, self());
-        persistMessage(sent(updateSummary, time, persistenceId()));
+        persistMessage(sent(problem.toString(), updateSummary, time, persistenceId()));
     }
 
     private void onInternalStimulus(InternalStimulus stimulus) {
@@ -283,7 +287,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 RegionSplit split = new RegionSplit(id, splitResult.get(0), splitResult.get(1));
                 leader.tell(split, self());
 
-                persistMessage(sent(split, time, persistenceId()));
+                persistMessage(sent(problem.toString(), split, time, persistenceId()));
                 saveSnapshot(snapshot());
 
                 logger.info("Region " + persistenceId() + " split. Staying with the lower solutions");
@@ -291,7 +295,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 MergeRequest mergeRequest = new MergeRequest(id, Messages.Everybody, region.getSummary(),
                         region.getSearchSpaceSummary());
                 leader.tell(mergeRequest, self());
-                persistMessage(sent(mergeRequest, time, persistenceId()));
+                persistMessage(sent(problem.toString(), mergeRequest, time, persistenceId()));
             }
         }
     }
@@ -304,8 +308,15 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     private RegionState regionState() {
         List<UUID> solutionsIds = region.getSolutionList().stream().map(Solution::getId)
                 .collect(Collectors.toList());
-        return new RegionState(persistenceId(), time, region.getBestSolution().getId(), region.getSummary().getMean(),
-                region.getSummary().getVariance(), solutionsIds, region.getSummary().getN());
+        return new RegionState(
+                problem.toString(),
+                persistenceId(),
+                time,
+                region.getBestSolution().getId(),
+                region.getSummary().getMean(),
+                region.getSummary().getVariance(),
+                solutionsIds,
+                region.getSummary().getN());
     }
 
     private SolutionState solutionState(Solution<?,?,?> s) {
@@ -314,8 +325,15 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 .map(Element::toDoubleValue)
                 .collect(Collectors.toList());
 
-        return new SolutionState(s.getId(), s.getAgent(),  persistenceId(), time, values,
-                s.getFunctionValue().doubleValue());
+        return new SolutionState(
+                s.getId(),
+                problem.toString(),
+                s.getAgent(),
+                persistenceId(),
+                time,
+                values,
+                s.getFunctionValue().doubleValue()
+        );
     }
 
     void persistRegion(RegionState s) {

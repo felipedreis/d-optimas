@@ -32,8 +32,11 @@ public class Messages {
     }
 
     public static class AgentRegister extends AbstractMessage {
-        public AgentRegister(int id) {
+        public final ActorRef sender;
+
+        public AgentRegister(int id, ActorRef sender) {
             super(id, Messages.Nobody);
+            this.sender = sender;
         }
     }
 

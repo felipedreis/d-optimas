@@ -14,8 +14,11 @@ public class GlobalState implements Serializable {
     @PartitionKey
     private UUID id;
 
-    @ClusteringColumn
+    @ClusteringColumn(1)
     private long time;
+
+    @ClusteringColumn
+    private String problemName;
 
     private double mean;
 
@@ -31,9 +34,16 @@ public class GlobalState implements Serializable {
 
     }
 
-    public GlobalState(long time, double mean, double variance, long solutions, int regions, List<Integer> regionIds) {
+    public GlobalState(String problemName,
+                       long time,
+                       double mean,
+                       double variance,
+                       long solutions,
+                       int regions,
+                       List<Integer> regionIds) {
         this.id = UUID.randomUUID();
         this.time = time;
+        this.problemName = problemName;
         this.mean = mean;
         this.variance = variance;
         this.solutions = solutions;
@@ -95,6 +105,14 @@ public class GlobalState implements Serializable {
 
     public void setRegionIds(List<Integer> regionIds) {
         this.regionIds = regionIds;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

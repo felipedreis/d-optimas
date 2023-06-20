@@ -16,6 +16,8 @@ public class DataExtractionBatch {
 
     private String path;
 
+    private String problem;
+
     public DataExtractionBatch(String path, List<Extractor<?>> extractors) {
         this.path = path;
         this.extractors = extractors;

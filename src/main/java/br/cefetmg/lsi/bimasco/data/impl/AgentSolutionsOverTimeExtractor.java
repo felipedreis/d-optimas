@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class AgentSolutionsOverTimeExtractor implements Extractor<SolutionState> {
+public class AgentSolutionsOverTimeExtractor extends Extractor<SolutionState> {
 
     private String agentName;
 
@@ -19,7 +19,11 @@ public class AgentSolutionsOverTimeExtractor implements Extractor<SolutionState>
 
     private SolutionStateDAO solutionStateDAO;
 
-    public AgentSolutionsOverTimeExtractor(String agentName, AgentStateDAO agentStateDAO, SolutionStateDAO solutionStateDAO) {
+    public AgentSolutionsOverTimeExtractor(String problem,
+                                           String agentName,
+                                           AgentStateDAO agentStateDAO,
+                                           SolutionStateDAO solutionStateDAO) {
+        super(problem);
         this.agentName = agentName;
         this.agentStateDAO = agentStateDAO;
         this.solutionStateDAO = solutionStateDAO;
@@ -28,7 +32,7 @@ public class AgentSolutionsOverTimeExtractor implements Extractor<SolutionState>
     @Override
     public List<SolutionState> getData() {
 
-        List<AgentState> agentStates = agentStateDAO.findByPersistentId(agentName).all();
+        List<AgentState> agentStates = agentStateDAO.findByProblemIdAndPersistentId(problem, agentName).all();
 
         List<UUID> ids = agentStates.stream().map(AgentState::getProducedSolution)
                 .collect(Collectors.toList());

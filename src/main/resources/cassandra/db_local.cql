@@ -122,27 +122,30 @@ use d_optimas;
 
 create table message_state (
                                id uuid,
+                               problem_name text,
                                time bigint,
                                timestamp bigint,
                                entity_id text,
                                message_type text,
                                status text,
-                               primary key ( id, entity_id,  status )
-);
+                               primary key (id, problem_name, entity_id,  status)
+) with clustering order by (problem_name asc);
 
 create table global_state (
                               id uuid,
+                              problem_name text,
                               time bigint,
                               mean double,
                               variance double,
                               solutions bigint,
                               regions int,
                               region_ids list<int>,
-                              primary key ( id, time )
-) with clustering order by (time asc);
+                              primary key ( id, problem_name, time )
+) with clustering order by (problem_name asc, time asc);
 
 create table region_state (
                               id uuid,
+                              problem_name text,
                               name text ,
                               time bigint,
                               best_solution uuid,
@@ -150,11 +153,12 @@ create table region_state (
                               variance double,
                               solutions list<uuid>,
                               num_solutions bigint,
-                              primary key ((id, name), time, best_solution )
-) with clustering order by (time asc);
+                              primary key ((id, name), problem_name, time, best_solution )
+) with clustering order by (problem_name asc, time asc);
 
 create table solution_state (
                                 id uuid,
+                                problem_name text,
                                 agent text,
                                 region text,
                                 time bigint,
@@ -165,6 +169,7 @@ create table solution_state (
 
 create table agent_state (
                                 id uuid,
+                                problem_name text,
                                 persistent_id text,
                                 algorithm_name text,
                                 time bigint,
@@ -172,12 +177,13 @@ create table agent_state (
                                 timestamp_end bigint,
                                 produced_solution uuid,
                                 function_evaluations bigint,
-                                primary key ((id), persistent_id, time)
+                                primary key ((id), problem_name, persistent_id, time)
 
-) with clustering order by (persistent_id asc, time asc);
+) with clustering order by (problem_name asc, persistent_id asc, time asc);
 
 create table memory_state (
                                 id uuid,
+                                problem_name text,
                                 time bigint,
                                 agent text,
                                 regions list<int>,
@@ -185,5 +191,5 @@ create table memory_state (
                                 best_solution_id uuid,
                                 memory_status text,
                                 chosen_region int,
-                                primary key ((id), agent, time )
-) with clustering order by (agent asc, time asc);
+                                primary key ((id), problem_name, agent, time )
+) with clustering order by (problem_name asc, agent asc, time asc);

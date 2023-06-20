@@ -17,11 +17,14 @@ public class MemoryState {
     @PartitionKey
     private UUID id;
 
-    @ClusteringColumn
+    @ClusteringColumn(2)
     private long time;
 
     @ClusteringColumn(1)
     private String agent;
+
+    @ClusteringColumn
+    private String problemName;
 
     private List<Integer> regions;
 
@@ -35,9 +38,14 @@ public class MemoryState {
 
     public MemoryState(){}
 
-    public MemoryState(String agent, List<Integer> regions, List<Double> probabilities, UUID bestSolutionId) {
+    public MemoryState(String problemName,
+                       String agent,
+                       List<Integer> regions,
+                       List<Double> probabilities,
+                       UUID bestSolutionId) {
         id = UUID.randomUUID();
         this.agent = agent;
+        this.problemName = problemName;
         this.regions = regions;
         this.probabilities = probabilities;
         this.bestSolutionId = bestSolutionId;
@@ -105,6 +113,14 @@ public class MemoryState {
 
     public void setChosenRegion(Integer chosenRegion) {
         this.chosenRegion = chosenRegion;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

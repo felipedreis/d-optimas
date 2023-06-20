@@ -8,20 +8,23 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AgentMemoryProbabilitiesOverTime implements Extractor<MemoryState> {
+public class AgentMemoryProbabilitiesOverTime extends Extractor<MemoryState> {
 
     private MemoryStateDAO memoryStateDAO;
 
     private String agentName;
 
-    public AgentMemoryProbabilitiesOverTime(MemoryStateDAO memoryStateDAO, String agentName) {
+    public AgentMemoryProbabilitiesOverTime(String problem,
+                                            MemoryStateDAO memoryStateDAO,
+                                            String agentName) {
+        super(problem);
         this.memoryStateDAO = memoryStateDAO;
         this.agentName = agentName;
     }
 
     @Override
     public List<MemoryState> getData() {
-        List<MemoryState> agentMemories = memoryStateDAO.findByAgent(agentName).all();
+        List<MemoryState> agentMemories = memoryStateDAO.findByProblemAndAgent(problem, agentName).all();
         agentMemories = agentMemories.stream().filter(s -> MemoryState.MEMORY_STATUS_USED.equals(s.getMemoryStatus()))
                 .sorted(Comparator.comparing(MemoryState::getTime))
                 .collect(Collectors.toList());

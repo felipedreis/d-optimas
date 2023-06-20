@@ -10,11 +10,12 @@ import java.util.UUID;
 public class AgentState {
     @PartitionKey
     private UUID id;
-
-    @ClusteringColumn
-    private String persistentId;
-    private String algorithmName;
     @ClusteringColumn(1)
+    private String persistentId;
+    @ClusteringColumn
+    private String problemName;
+    private String algorithmName;
+    @ClusteringColumn(2)
     private long time;
     private long timestampStart;
     private long timestampEnd;
@@ -24,9 +25,17 @@ public class AgentState {
 
     public AgentState(){}
 
-    public AgentState(String persistentId, String algorithmName, long time, long timestampStart, long timestampEnd, long functionEvaluations, UUID producedSolution) {
+    public AgentState(String problemName,
+                      String persistentId,
+                      String algorithmName,
+                      long time,
+                      long timestampStart,
+                      long timestampEnd,
+                      long functionEvaluations,
+                      UUID producedSolution) {
         id = UUID.randomUUID();
         this.persistentId = persistentId;
+        this.problemName = problemName;
         this.algorithmName = algorithmName;
         this.time = time;
         this.timestampStart = timestampStart;
@@ -97,6 +106,14 @@ public class AgentState {
 
     public void setFunctionEvaluations(long functionEvaluations) {
         this.functionEvaluations = functionEvaluations;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

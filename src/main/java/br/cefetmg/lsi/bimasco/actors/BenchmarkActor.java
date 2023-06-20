@@ -4,11 +4,17 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import br.cefetmg.lsi.bimasco.coco.*;
 import br.cefetmg.lsi.bimasco.core.problems.BenchmarkProblem;
+import br.cefetmg.lsi.bimasco.data.DataExtractionBatch;
+import br.cefetmg.lsi.bimasco.data.ExtractorsConfig;
+import br.cefetmg.lsi.bimasco.persistence.DOptimasMapper;
+import br.cefetmg.lsi.bimasco.persistence.DatabaseHelper;
 import coco.CocoJNI;
 import org.agrona.collections.ArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import java.io.IOException;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 
@@ -29,22 +35,34 @@ public class BenchmarkActor extends AbstractActor {
 
     private int evaluations;
 
-    private int evaluationsBudget = 10;
+    // 3x10^6 is the number used in C-DEEPSO evaluation on large benchmark problems
+    private long evaluationsBudget = 100_000;//3_000_000;
 
     private boolean runningSimulation;
+
+    private ExtractorsConfig extractorsConfig;
 
     public BenchmarkActor(ActorRef simulationActor, String name){
         this.simulationActor = simulationActor;
         this.name = name;
-        init();
     }
 
+    @Override
+    public void preStart() throws Exception {
+        super.preStart();
+        init();
+    }
     private void init() {
         try {
             suite = new Suite(name, name, "");
             observer = new Observer(name, "");
 
             coCOBenchmark = new CoCOBenchmark(suite, observer);
+
+            DOptimasMapper mapper = DatabaseHelper.getMapper();
+            extractorsConfig = new ExtractorsConfig(mapper.agentStateDAO(), mapper.regionStateDAO(), mapper.solutionStateDAO(),
+                    mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
+
         } catch (Exception ex) {
             logger.error("Failed to initialize benchmark", ex);
         }
@@ -79,14 +97,14 @@ public class BenchmarkActor extends AbstractActor {
     }
 
     private void handleEvaluate(Evaluate evaluate) {
-        logger.info("Handling evaluate of " + evaluate);
+        logger.debug("Handling evaluate of " + evaluate);
         if (!runningSimulation) {
             logger.warn("Can't evaluate function when simulation is not running");
             sender().tell(new EvaluateResult(), self());
         } else {
             try {
                 double[] y = CocoJNI.cocoEvaluateFunction(benchmarkProblem.getPointer(), evaluate.x);
-                logger.info("Evaluation result: f({}) = {}", evaluate, y);
+                logger.debug("Evaluation result: f({}) = {}", evaluate, y);
                 sender().tell(new EvaluateResult(y), self());
                 evaluations++;
                 checkStopCondition();
@@ -125,8 +143,21 @@ public class BenchmarkActor extends AbstractActor {
 
     private void handleSimulationEnd(SimulationStopped stopped) {
         logger.info("Simulation has stopped, handling the start of next problem");
+        extractData();
         nextProblem();
         startSimulation();
+    }
+
+    private void extractData() {
+        DataExtractionBatch extractionBatch = new DataExtractionBatch( "data/bbob/" + benchmarkProblem.getId(),
+                extractorsConfig.extractors());
+
+        try {
+            extractionBatch.prepareDataPath();
+            extractionBatch.run();
+        } catch (IOException ex) {
+            logger.error("Couldn't create extraction path for problem " + benchmarkProblem, ex);
+        }
     }
 
     private void stopBenchmark() {
@@ -136,4 +167,5 @@ public class BenchmarkActor extends AbstractActor {
             logger.error("Couldn't finalize the benchmark correctly", ex);
         }
     }
+
 }

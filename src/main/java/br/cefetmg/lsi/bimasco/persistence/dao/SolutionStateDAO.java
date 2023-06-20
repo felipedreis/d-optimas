@@ -27,6 +27,9 @@ public interface SolutionStateDAO {
     @Select
     PagingIterable<SolutionState> findAll();
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName")
+    PagingIterable<SolutionState> findByProblem(String problemName);
+
     @Delete
     void delete(SolutionState state);
 

@@ -15,6 +15,9 @@ public interface GlobalStateDAO  {
     @Select
     PagingIterable<GlobalState> findAll();
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName")
+    PagingIterable<GlobalState> findByProblem(String problemName);
+
     @Delete
     void delete(GlobalState globalState);
 

@@ -8,17 +8,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GlobalStatisticsOverTimeExtractor implements Extractor<GlobalState> {
+public class GlobalStatisticsOverTimeExtractor extends Extractor<GlobalState> {
 
     private GlobalStateDAO globalStateDAO;
-
-    public GlobalStatisticsOverTimeExtractor(GlobalStateDAO globalStateDAO) {
+    public GlobalStatisticsOverTimeExtractor(String problem, GlobalStateDAO globalStateDAO) {
+        super(problem);
         this.globalStateDAO = globalStateDAO;
     }
 
     @Override
     public List<GlobalState> getData() {
-        List<GlobalState> globalStates = globalStateDAO.findAll().all();
+        List<GlobalState> globalStates = globalStateDAO.findByProblem(problem).all();
         globalStates.sort(Comparator.comparing(GlobalState::getTime));
         return globalStates;
     }

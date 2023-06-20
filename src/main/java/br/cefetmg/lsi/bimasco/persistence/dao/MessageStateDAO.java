@@ -17,6 +17,9 @@ public interface MessageStateDAO {
     @Select
     PagingIterable<MessageState> findAll();
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName")
+    PagingIterable<MessageState> findByProblem(String problemName);
+
     @Select
     PagingIterable<MessageState> findById(UUID id);
 
@@ -25,6 +28,9 @@ public interface MessageStateDAO {
 
     @Select(allowFiltering = true, customWhereClause = "message_type = :messageType")
     PagingIterable<MessageState> findByType(String messageType);
+
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName and message_type = :messageType")
+    PagingIterable<MessageState> findByProblemAndType(String problemName, String messageType);
 
     @Delete
     void delete(MessageState messageState);

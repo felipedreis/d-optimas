@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.persistence.AbstractPersistentActor;
 import akka.persistence.SnapshotOffer;
+import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.agents.Agent;
 import br.cefetmg.lsi.bimasco.messages.InternalStimulus;
@@ -51,8 +52,6 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private static final Logger logger = LoggerFactory.getLogger(AgentActor.class);
 
-    //TODO: Put this on simulation settings later
-    private final String simulationId;
     private Agent agent;
     private SimulationSettings simulationSettings;
     private ActorRef agentsShard;
@@ -69,17 +68,17 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private long globalTime;
 
+    private long globalSolutions;
+
     private Cancellable internalTask;
 
     private boolean agentStarted;
 
     public AgentActor(){
-        simulationId = "";
     }
 
     public AgentActor(SimulationSettings simulationSettings) {
         super();
-        this.simulationId = "";
         this.simulationSettings = simulationSettings;
     }
 
@@ -106,7 +105,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
                     regionsShard = snapshot.regionsShard;
                     lifetime = agent.getAgentSettings().getLifetime();
 
-                    leader.tell(new AgentRegister(id), self());
+                    leader.tell(new AgentRegister(id, self()), self());
                 })
                 .build();
     }
@@ -129,6 +128,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         logger.info("Handling start simulation " + startSimulation);
         startSimulation.problem.ifPresent(agent::reset);
         agentStarted = true;
+        globalSolutions = 0;
         startInternalTask();
     }
 
@@ -159,7 +159,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     @Deprecated
     private void onSolutionRequest(SolutionRequest request){
-        persistMessage(received(request, globalTime, persistenceId()));
+        persistMessage(received(agent.getProblem().toString(), request, globalTime, persistenceId()));
 
         if (agent.getAgentSettings().getConstructorMetaHeuristic()  || simulationSettings.getHasCooperation()) {
             List<Solution> solutions = Collections.emptyList();
@@ -170,7 +170,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private void onSolutionResponse(SolutionResponse response)  {
         logger.info(persistenceId() + " processing SolutionResponse from " + sender().path().name());
-        persistMessage(received(response, globalTime, persistenceId()));
+        persistMessage(received(agent.getProblem().toString(), response, globalTime, persistenceId()));
         processSolutionList(response.senderId, response.solutions);
     }
 
@@ -187,7 +187,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private Object onCreateAgent(CreateAgent createAgent){
         logger.info("{} {}", sender(), createAgent);
         initialize(createAgent);
-        sender().tell(new AgentRegister(id), self());
+        sender().tell(new AgentRegister(id, self()), self());
         saveSnapshot(new AgentActorSnapshot(agent, agentsShard, regionsShard, leader));
         return null;
     }
@@ -208,6 +208,10 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         if (agent.getAgentSettings().getConstructorMetaHeuristic()) {
             processSolutionList(Messages.Nobody, Collections.emptyList());
         } else {
+
+            // If there's no enough solutions in the whole system to feed this agent, avoid to send useless requests
+            if (globalSolutions < agent.getSolutionsCount())
+                return;
 
             Optional<Integer> regionOptional = agent.chooseRegion();
 
@@ -255,7 +259,16 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     }
 
     private AgentState agentState(long begin, long end, long functionEvaluations, UUID solutionId) {
-        return new AgentState(persistenceId(), agent.getAgentSettings().getMetaHeuristicName(), globalTime, begin, end, functionEvaluations, solutionId);
+        return new AgentState(
+                agent.getProblem().toString(),
+                persistenceId(),
+                agent.getAgentSettings().getMetaHeuristicName(),
+                globalTime,
+                begin,
+                end,
+                functionEvaluations,
+                solutionId
+        );
     }
 
     private void persistAgentState(AgentState state){
@@ -269,11 +282,11 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private void onUpdateGlobalSummary(UpdateGlobalSummary update) {
         logger.info(format("Updating global status on %s", persistenceId()));
         globalTime = update.time;
+        globalSolutions = update.summary.getN();
 
         agent.updateMemory(update.regionIds);
 
         if (update.time > lifetime) {
-            //leader.tell(new AgentRelease(id), self());
             internalTask.cancel();
             logger.info(format("%s stopped due to lifetime", persistenceId()));
         }

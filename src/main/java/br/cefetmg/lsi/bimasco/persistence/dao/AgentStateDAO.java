@@ -16,8 +16,14 @@ public interface AgentStateDAO {
     @Select(allowFiltering = true, customWhereClause = "persistent_id = :agentId")
     PagingIterable<AgentState> findByPersistentId(String agentId);
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName and persistent_id = :agentId")
+    PagingIterable<AgentState> findByProblemIdAndPersistentId(String problemName, String persistentId);
+
     @Select
     PagingIterable<AgentState> findAll();
+
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName")
+    PagingIterable<AgentState> findByProblem(String problemName);
 
     @Delete
     void delete(AgentState agentState);

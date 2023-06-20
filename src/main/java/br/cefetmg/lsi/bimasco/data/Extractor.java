@@ -11,13 +11,27 @@ import java.util.List;
 
 import static java.lang.String.format;
 
-public interface Extractor<T> {
+public abstract class Extractor<T> {
 
-    List<T> getData();
-    String formatDataToCsv(T t);
-    String getFileName();
+    protected String problem;
 
-    default void extractData(String path) {
+    public Extractor(String problem) {
+        this.problem = problem;
+    }
+
+    public abstract List<T> getData();
+    public abstract String formatDataToCsv(T t);
+    public abstract String getFileName();
+
+    public String getProblem() {
+        return problem;
+    }
+
+    public void setProblem(String problem) {
+        this.problem = problem;
+    }
+
+    void extractData(String path) {
         final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         File file = new File(path + getFileName() + ".csv");

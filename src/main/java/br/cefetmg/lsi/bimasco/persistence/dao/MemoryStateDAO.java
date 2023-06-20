@@ -16,8 +16,14 @@ public interface MemoryStateDAO {
     @Select
     PagingIterable<MemoryState> findAll();
 
+    @Select(allowFiltering = true, customWhereClause = "problem_name = : problemName")
+    PagingIterable<MemoryState> findByProblem(String problemName);
+
     @Select(allowFiltering = true, customWhereClause = "agent = :agent")
     PagingIterable<MemoryState> findByAgent(String agent);
+
+    @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName and agent = :agent")
+    PagingIterable<MemoryState> findByProblemAndAgent(String problemName, String agent);
 
     @Delete
     void delete(MemoryState memoryState);

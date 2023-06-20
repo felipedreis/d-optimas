@@ -242,7 +242,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      * @param update
      */
     private void onUpdateRegionSummary(UpdateRegionSummary update) {
-        persistMessage(received(update, time, ENTITY_ID));
+        persistMessage(received(problem.toString(), update, time, ENTITY_ID));
         regionsSummary[update.senderId] = update.summary;
         calculateGlobalParameters();
     }
@@ -287,7 +287,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 UpdateGlobalSummary updateGlobalSummary = new UpdateGlobalSummary(i, globalStatistics, time, regionUsedIds);
                 logger.debug(format("Sending global update %s to %s", updateGlobalSummary, region));
                 region.tell(updateGlobalSummary, self());
-                persistMessage(sent(updateGlobalSummary, time, ENTITY_ID));
+                persistMessage(sent(problem.toString(), updateGlobalSummary, time, ENTITY_ID));
             }
         }
     }
@@ -337,7 +337,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     private void onRegionSplit(RegionSplit regionSplit) {
         logger.info(format("Region %s split", sender().path().name()));
 
-        persistMessage(received(regionSplit, time, ENTITY_ID));
+        persistMessage(received(problem.toString(), regionSplit, time, ENTITY_ID));
 
         if (!regionSplit.lower.isEmpty()) {
             Optional<Integer> optionalLowerId = nextRegionId();
@@ -436,8 +436,8 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      * @param register the message containing the agent key
      */
     private void onAgentRegister(AgentRegister register) {
-        logger.info("Registering " + sender().path().name() + " for broadcasting");
-        agents[register.senderId] = sender();
+        logger.info("Registering " + register.sender.path().name() + " for broadcasting");
+        agents[register.senderId] = register.sender;
 
         if (amILeader)
             forwardToAllNodes(register);
@@ -593,8 +593,15 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     }
 
     public GlobalState state(){
-        return new GlobalState(time, globalStatistics.getMean(), globalStatistics.getVariance(), globalStatistics.getN(),
-                regionUsedIds.size(), regionUsedIds);
+        return new GlobalState(
+                problem.toString(),
+                time,
+                globalStatistics.getMean(),
+                globalStatistics.getVariance(),
+                globalStatistics.getN(),
+                regionUsedIds.size(),
+                regionUsedIds
+        );
     }
 
     @Override

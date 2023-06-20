@@ -36,6 +36,8 @@ public class Agent implements Serializable {
 
     private AgentContext context;
 
+    private Problem problem;
+
     public Agent(SimulationSettings simulationSettings, AgentSettings agentSettings) {
 
         //TODO: think about initialize metaHeuristic on constructor
@@ -125,10 +127,11 @@ public class Agent implements Serializable {
 
         if (qLearningMemory.getBestFoundSolution() != null)
             bestMemorySolution = qLearningMemory.getBestFoundSolution().getId();
-        return new MemoryState(agentSettings.getName(), regions, probabilities, bestMemorySolution);
+        return new MemoryState(problem.toString(), agentSettings.getName(), regions, probabilities, bestMemorySolution);
     }
 
     public void reset(Problem problem) {
+        this.problem = problem;
         metaHeuristic.setProblem(problem);
         metaHeuristic.configureMetaHeuristic(agentSettings);
         qLearningMemory.resetMemory();
@@ -149,5 +152,13 @@ public class Agent implements Serializable {
 
     public void setMetaHeuristic(MetaHeuristic metaHeuristic) {
         this.metaHeuristic = metaHeuristic;
+    }
+
+    public Problem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(Problem problem) {
+        this.problem = problem;
     }
 }

@@ -8,11 +8,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FunctionEvaluationsOverTime implements Extractor<AgentState> {
+public class FunctionEvaluationsOverTime extends Extractor<AgentState> {
 
     private AgentStateDAO agentStateDAO;
 
-    public FunctionEvaluationsOverTime(AgentStateDAO agentStateDAO) {
+    public FunctionEvaluationsOverTime(String problem, AgentStateDAO agentStateDAO) {
+        super(problem);
         this.agentStateDAO = agentStateDAO;
     }
 

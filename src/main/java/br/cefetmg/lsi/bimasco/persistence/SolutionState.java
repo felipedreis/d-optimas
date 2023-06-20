@@ -13,6 +13,8 @@ public class SolutionState {
     @PartitionKey
     private UUID id;
 
+    private String problemName;
+
     @ClusteringColumn(value = 1)
     private String agent;
 
@@ -30,8 +32,15 @@ public class SolutionState {
 
     }
 
-    public SolutionState(UUID id, String agent, String region, long time, List<Double> values, double functionValue) {
+    public SolutionState(UUID id,
+                         String problemName,
+                         String agent,
+                         String region,
+                         long time,
+                         List<Double> values,
+                         double functionValue) {
         this.id = id;
+        this.problemName = problemName;
         this.agent = agent;
         this.region = region;
         this.time = time;
@@ -85,6 +94,14 @@ public class SolutionState {
 
     public void setFunctionValue(double functionValue) {
         this.functionValue = functionValue;
+    }
+
+    public String getProblemName() {
+        return problemName;
+    }
+
+    public void setProblemName(String problemName) {
+        this.problemName = problemName;
     }
 
     @Override

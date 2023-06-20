@@ -9,10 +9,13 @@
         <Root level="WARN">
             <AppenderRef ref="Console"/>
         </Root>
-        <logger name="br.cefetmg.lsi.bimasco" additivity="false" level="DEBUG">
+        <logger name="br.cefetmg.lsi.bimasco" additivity="false" level="INFO">
             <AppenderRef ref="Console"/>
         </logger>
         <logger name="br.cefetmg.lsi.bimasco.actors" additivity="false" level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="br.cefetmg.lsi.bimasco.actors.BenchmarkActor" additivity="false" level="INFO">
             <AppenderRef ref="Console"/>
         </logger>
         <logger name="br.cefetmg.lsi.bimasco.core.heuristics" additivity="false" level="INFO">
