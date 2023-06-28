@@ -263,6 +263,9 @@ public class Messages {
             this.nodes = nodes;
         }
     }
+
+    public static class GetState implements Serializable {}
+
     public static class Terminate implements Serializable {}
 }
 

@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 import static akka.cluster.ClusterEvent.*;
@@ -154,6 +155,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .match(UpdateRegionSummary.class, this::onUpdateRegionSummary)
                 .match(StartSimulation.class, this::onStartSimulation)
                 .match(StopSimulation.class, this::onStopSimulation)
+                .match(GetState.class, this::onGetState)
                 .match(Terminate.class, this::terminate)
                 .matchAny(any -> logger.warn("Not handling {}", any))
                 .build();
@@ -554,6 +556,23 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 return aVoid;
             });
         }
+    }
+
+    public void onGetState(GetState getState) {
+        SimulationState state = new SimulationState(
+                problem.toString(),
+                time,
+                simulationSettings,
+                globalStatistics,
+                Arrays.stream(agents).filter(Objects::nonNull).collect(Collectors.toList()),
+                Arrays.stream(regions).filter(Objects::nonNull).collect(Collectors.toList()),
+                IntStream.range(0, regionsSummary.length)
+                        .filter(idx -> regionsSummary[idx] != null)
+                        .boxed()
+                        .collect(Collectors.toMap(idx -> "region-" + idx, idx -> regionsSummary[(Integer) idx]))
+        );
+
+        sender().tell(state, self());
     }
 
     private Optional<Integer> nextRegionId() {

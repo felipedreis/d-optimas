@@ -13,6 +13,7 @@ services:
     image: felipedreis/d-optimas:latest
     ports:
       - 2551:2551
+      - 8080:8080
     environment:
       DOPTIMAS_PORT: 2551
       DOPTIMAS_HOST: localhost

@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.cefetmg.lsi.bimasco.api";
+option java_outer_classname = "DOptimasGRPC";
+option objc_class_prefix = "RTG";
+
+package simulation;
+
+service Simulation {
+  rpc listAgents(ListAgentRequest) returns (ListAgentResponse) {}
+
+  rpc describeAgent(DescribeAgentRequest) returns (DescribeAgentResponse) {}
+
+  rpc listRegions(ListRegionsRequest) returns (ListRegionsResponse) {}
+
+  rpc describeRegion(DescribeRegionRequest) returns (DescribeRegionResponse) {}
+}
+
+message Solution {
+
+}
+
+message Agent {
+  string name = 1;
+  string metaheuristic = 2;
+  string path = 3;
+}
+
+message Region {
+  string name = 1;
+  int32 time = 2;
+  string path = 3;
+  int64 numberOfSolutions = 4;
+  double average = 5;
+  double std = 6;
+  double variationRate = 7;
+  Solution bestSolution = 8;
+}
+
+message ListAgentRequest {
+}
+
+message ListAgentResponse {
+  repeated Agent agents = 1;
+}
+
+message ListRegionsRequest {
+
+}
+
+message ListRegionsResponse {
+  repeated Region regions = 1;
+}
+
+message DescribeAgentRequest {
+
+}
+
+message DescribeAgentResponse {
+
+}
+
+message DescribeRegionRequest {
+
+}
+
+message DescribeRegionResponse {
+
+}

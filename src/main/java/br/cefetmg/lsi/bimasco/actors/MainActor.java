@@ -3,11 +3,16 @@ package br.cefetmg.lsi.bimasco.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import br.cefetmg.lsi.bimasco.api.DoptimasAPI;
 import br.cefetmg.lsi.bimasco.data.ExtractorsConfig;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 
@@ -19,6 +24,8 @@ public class MainActor extends AbstractActor {
 
     private ActorRef simulationActor;
     private ActorRef benchmarkActor;
+
+    private Server grpcServer;
 
     @Override
     public Receive createReceive() {
@@ -39,6 +46,15 @@ public class MainActor extends AbstractActor {
         } else {
             simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");
         }
+
+        grpcServer = ServerBuilder.forPort(8080).addService(new DoptimasAPI(simulationActor)).build();
+
+        try {
+            grpcServer.start();
+        } catch (IOException ex) {
+            logger.error("Couldn't start grpc endpoint", ex);
+        }
+        logger.info("GRPC started");
     }
 
     private void onReady(SimulationReady ready)  {
