@@ -4,8 +4,6 @@ import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import br.cefetmg.lsi.bimasco.actors.Messages;
 import br.cefetmg.lsi.bimasco.actors.SimulationState;
-import br.cefetmg.lsi.bimasco.persistence.DOptimasMapperBuilder;
-import com.google.common.base.Functions;
 import io.grpc.stub.StreamObserver;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.slf4j.Logger;
@@ -15,7 +13,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -77,7 +74,7 @@ public class DoptimasAPI extends SimulationGrpc.SimulationImplBase {
         getSimulationState().thenAccept(state -> {
             Map<String, String> regionPaths = state.regions.stream()
                     .collect(Collectors.toMap(actorRef -> actorRef.path().name(), actorRef -> actorRef.path().toString()));
-            ListRegionsResponse.Builder builder = ListRegionsResponse.newBuilder();
+
             List<Region> regions = regionPaths.keySet().stream()
                     .map(regionName -> {
                         StatisticalSummary regionStats = state.regionStats.get(regionName);

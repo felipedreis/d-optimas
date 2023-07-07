@@ -120,6 +120,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
                 .match(UpdateGlobalSummary.class, this::onUpdateGlobalSummary)
                 .match(StartSimulation.class, this::onStartSimulation)
                 .match(StopSimulation.class, this::onStopSimulation)
+                .match(GetState.class, this::onGetState)
                 .matchAny((any) -> logger.info("Not handling " + any))
                 .build();
     }
@@ -230,6 +231,10 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
                 logger.info("Sending solution request to the leader");
             }
         }
+    }
+
+    public void onGetState(GetState state){
+
     }
 
     private void processSolutionList(int region, List<Solution> solutions) {

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "br.cefetmg.lsi.bimasco.api";
+option go_package = "doptimas/api";
 option java_outer_classname = "DOptimasGRPC";
 option objc_class_prefix = "RTG";
 
@@ -15,6 +16,10 @@ service Simulation {
   rpc listRegions(ListRegionsRequest) returns (ListRegionsResponse) {}
 
   rpc describeRegion(DescribeRegionRequest) returns (DescribeRegionResponse) {}
+}
+
+service Benchmark {
+//  rpc describeBenchmark(DescribeBenchmarkRequest) returns (DescribeBenchmarkResponse) {}
 }
 
 message Solution {
@@ -54,7 +59,7 @@ message ListRegionsResponse {
 }
 
 message DescribeAgentRequest {
-
+  string agentId = 1;
 }
 
 message DescribeAgentResponse {
@@ -62,7 +67,7 @@ message DescribeAgentResponse {
 }
 
 message DescribeRegionRequest {
-
+  string regionId = 1;
 }
 
 message DescribeRegionResponse {
