@@ -2,10 +2,14 @@ package br.cefetmg.lsi.bimasco.coco;
 
 import coco.CocoJNI;
 
-public class Suite {
+import java.io.Serializable;
+
+public class Suite implements Serializable {
 	
 	private long pointer; // Pointer to the coco_suite_t object
 	private String name;
+
+	private int numberOfProblems;
 
 	/**
 	 * Constructs the suite from the given suiteName, suiteInstance and suiteOptions.
@@ -20,8 +24,9 @@ public class Suite {
 
 		super();
 		try {
-			this.pointer = CocoJNI.cocoGetSuite(suiteName, suiteInstance, suiteOptions);
-			this.name = suiteName;
+			pointer = CocoJNI.cocoGetSuite(suiteName, suiteInstance, suiteOptions);
+			numberOfProblems = CocoJNI.cocoSuiteGetNumberOfProblems(pointer);
+			name = suiteName;
 		} catch (Exception e) {
 			throw new Exception("Suite constructor failed.\n" + e.toString());
 		}
@@ -45,6 +50,10 @@ public class Suite {
 	
 	public String getName() {
 		return this.name;
+	}
+
+	public int getNumberOfProblems() {
+		return numberOfProblems;
 	}
 
 	/* toString method */

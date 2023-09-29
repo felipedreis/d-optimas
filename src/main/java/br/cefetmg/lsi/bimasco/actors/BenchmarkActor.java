@@ -33,12 +33,14 @@ public class BenchmarkActor extends AbstractActor {
 
     private ActorRef simulationActor;
 
-    private int evaluations;
+    private long evaluations;
 
     // 3x10^6 is the number used in C-DEEPSO evaluation on large benchmark problems
     private long evaluationsBudget = 100_000;//3_000_000;
 
     private boolean runningSimulation;
+
+    private int problemCounter;
 
     private ExtractorsConfig extractorsConfig;
 
@@ -63,6 +65,7 @@ public class BenchmarkActor extends AbstractActor {
             extractorsConfig = new ExtractorsConfig(mapper.agentStateDAO(), mapper.regionStateDAO(), mapper.solutionStateDAO(),
                     mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
 
+            problemCounter = 0;
         } catch (Exception ex) {
             logger.error("Failed to initialize benchmark", ex);
         }
@@ -89,6 +92,7 @@ public class BenchmarkActor extends AbstractActor {
                 stopBenchmark();
                 context().parent().tell(new Terminate(), self());
             }
+            problemCounter++;
         } catch (Exception ex) {
             logger.error("Couldn't get next problem", ex);
             stopBenchmark();

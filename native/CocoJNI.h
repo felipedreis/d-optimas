@@ -57,6 +57,14 @@ JNIEXPORT jlong JNICALL Java_coco_CocoJNI_cocoGetSuite
 
 /*
  * Class:     coco_CocoJNI
+ * Method:    cocoSuiteGetNumberOfProblems
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_coco_CocoJNI_cocoSuiteGetNumberOfProblems
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     coco_CocoJNI
  * Method:    cocoFinalizeSuite
  * Signature: (J)V
  */

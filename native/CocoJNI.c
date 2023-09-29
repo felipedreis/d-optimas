@@ -165,6 +165,23 @@ JNIEXPORT jlong JNICALL Java_coco_CocoJNI_cocoGetSuite
   return (jlong) suite;
 }
 
+JNIEXPORT jint JNICALL Java_coco_CocoJNI_cocoSuiteGetNumberOfProblems
+(JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer) {
+
+  coco_suite_t *suite = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoFinalizeSuite\n");
+  }
+
+  suite = (coco_suite_t*) jsuite_pointer;
+  size_t number_of_problems = coco_suite_get_number_of_problems(suite);
+
+  return number_of_problems;
+}
+
 /*
  * Class:     CocoJNI
  * Method:    cocoFinalizeSuite

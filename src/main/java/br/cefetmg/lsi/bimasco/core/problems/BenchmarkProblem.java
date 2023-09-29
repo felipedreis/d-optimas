@@ -10,6 +10,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ import static br.cefetmg.lsi.bimasco.actors.Messages.*;
  * The problem contains some basic properties of the coco_problem_t structure that can be accessed
  * through its getter functions.
  */
-public class BenchmarkProblem extends Problem {
+public class BenchmarkProblem extends Problem implements Serializable {
 	private static final Logger logger = LoggerFactory.getLogger(BenchmarkProblem.class);
 	private long pointer; // Pointer to the coco_problem_t object
 

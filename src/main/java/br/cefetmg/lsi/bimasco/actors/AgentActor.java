@@ -234,7 +234,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     }
 
     public void onGetState(GetState state){
-
+        sender().tell(new AgentState(), self());
     }
 
     private void processSolutionList(int region, List<Solution> solutions) {

@@ -8,22 +8,43 @@ option objc_class_prefix = "RTG";
 
 package simulation;
 
-service Simulation {
+service AgentService {
   rpc listAgents(ListAgentRequest) returns (ListAgentResponse) {}
 
   rpc describeAgent(DescribeAgentRequest) returns (DescribeAgentResponse) {}
+}
 
+service RegionService {
   rpc listRegions(ListRegionsRequest) returns (ListRegionsResponse) {}
 
   rpc describeRegion(DescribeRegionRequest) returns (DescribeRegionResponse) {}
+
 }
 
-service Benchmark {
-//  rpc describeBenchmark(DescribeBenchmarkRequest) returns (DescribeBenchmarkResponse) {}
+service SimulationService {
+  rpc statSimulation(StatSimulationRequest) returns (StatSimulationResponse) {}
+
+  rpc startSimulation(StartSimulationRequest) returns (StatSimulationResponse) {}
+
+  rpc stopSimulation(StopSimulationRequest) returns (StatSimulationResponse) {}
+}
+
+service BenchmarkService {
+  rpc statBenchmark(StatBenchmarkRequest) returns (StatBenchmarkResponse) {}
+}
+
+enum SimulationStatus {
+  READY = 0;
+  STARTED = 1;
+  STOPPED = 2;
+  FINISHED = 3;
+  FAILED = 4;
 }
 
 message Solution {
-
+  string id = 1;
+  repeated double x = 2;
+  repeated double y = 3;
 }
 
 message Agent {
@@ -43,16 +64,13 @@ message Region {
   Solution bestSolution = 8;
 }
 
-message ListAgentRequest {
-}
+message ListAgentRequest {}
 
 message ListAgentResponse {
   repeated Agent agents = 1;
 }
 
-message ListRegionsRequest {
-
-}
+message ListRegionsRequest {}
 
 message ListRegionsResponse {
   repeated Region regions = 1;
@@ -63,7 +81,16 @@ message DescribeAgentRequest {
 }
 
 message DescribeAgentResponse {
-
+  string agentId = 1;
+  int64 lifetime = 2;
+  int64 startTime = 3;
+  int64 currentTime = 4;
+  int64 completeExecutions = 5;
+  int64 requiredSolutions = 6;
+  string heuristic = 7;
+  double memoryTax = 8;
+  Solution bestSolution = 9;
+  map<string, double> memory = 10;
 }
 
 message DescribeRegionRequest {
@@ -71,5 +98,36 @@ message DescribeRegionRequest {
 }
 
 message DescribeRegionResponse {
+  string regionId = 1;
+  int64 startedTime = 2;
+  int64 currentTime = 3;
+  bool started = 4;
+  int64 numberOfSolutions = 5;
+  repeated double objectiveFunctionAverage = 6;
+  repeated double objectiveFunctionStd = 7;
+  Solution bestSolution = 8;
+}
 
+message StatBenchmarkRequest {}
+
+message StatBenchmarkResponse {
+  string suite = 1;
+  string problemId = 2;
+  int64 totalProblems = 3;
+  int64 evaluatedProblems = 4;
+  int64 evaluationBudget = 5;
+  int64 evaluations = 6;
+}
+
+message StatSimulationRequest {}
+
+message StatSimulationResponse {
+  SimulationStatus status = 1;
+  string message = 2;
+}
+
+message StopSimulationRequest {}
+
+message StartSimulationRequest {
+  string configurationFileContent = 1;
 }

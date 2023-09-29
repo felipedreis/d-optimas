@@ -2,7 +2,9 @@ package br.cefetmg.lsi.bimasco.coco;
 
 import coco.CocoJNI;
 
-public class Observer {
+import java.io.Serializable;
+
+public class Observer implements Serializable {
 	
 	private long pointer; // Pointer to the coco_observer_t object
 	private String name;

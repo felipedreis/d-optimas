@@ -16,25 +16,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class DoptimasAPI extends SimulationGrpc.SimulationImplBase {
+public class AgentService extends AgentServiceGrpc.AgentServiceImplBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(DoptimasAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgentService.class);
 
     private ActorRef simulationActor;
 
-    public DoptimasAPI(ActorRef simulationActor) {
+    public AgentService(ActorRef simulationActor) {
         this.simulationActor = simulationActor;
     }
 
     private CompletableFuture<SimulationState> getSimulationState() {
-        CompletableFuture<Object> t = Patterns.ask(simulationActor, new Messages.GetState(), Duration.ofSeconds(1))
-                .toCompletableFuture();
-
-        return t.thenApply(o -> {
-            SimulationState state = (SimulationState) o;
-            logger.debug("simulationState {}", state);
-            return state;
-        });
+        return ApiUtils.getSimulationStateCompletableFuture(simulationActor);
     }
 
     @Override
@@ -69,34 +62,7 @@ public class DoptimasAPI extends SimulationGrpc.SimulationImplBase {
     }
 
     @Override
-    public void listRegions(ListRegionsRequest request, StreamObserver<ListRegionsResponse> responseObserver) {
-        logger.info("DOptimas API listRegions request {}", request);
-        getSimulationState().thenAccept(state -> {
-            Map<String, String> regionPaths = state.regions.stream()
-                    .collect(Collectors.toMap(actorRef -> actorRef.path().name(), actorRef -> actorRef.path().toString()));
-
-            List<Region> regions = regionPaths.keySet().stream()
-                    .map(regionName -> {
-                        StatisticalSummary regionStats = state.regionStats.get(regionName);
-                        return Region.newBuilder()
-                                .setName(regionName)
-                                .setPath(regionPaths.get(regionName))
-                                .setNumberOfSolutions(regionStats.getN())
-                                .build();
-                    }).collect(Collectors.toList());
-
-            responseObserver.onNext(ListRegionsResponse.newBuilder().addAllRegions(regions).build());
-            responseObserver.onCompleted();
-        }).join();
-    }
-
-    @Override
     public void describeAgent(DescribeAgentRequest request, StreamObserver<DescribeAgentResponse> responseObserver) {
         super.describeAgent(request, responseObserver);
-    }
-
-    @Override
-    public void describeRegion(DescribeRegionRequest request, StreamObserver<DescribeRegionResponse> responseObserver) {
-        super.describeRegion(request, responseObserver);
     }
 }
