@@ -9,17 +9,17 @@ import java.util.List;
 public class RealPerformsMotion implements PerformsMotion<FunctionSolutionElement, FunctionSolution> {
     
 
-    public FunctionSolution movement(FunctionSolution solucao, List<Integer> posicao,
-                                     List<FunctionSolutionElement> parametro){
+    public FunctionSolution movement(FunctionSolution solution, List<Integer> position,
+                                     List<FunctionSolutionElement> parameters){
 
-        FunctionSolution result = (FunctionSolution) solucao.clone();
+        FunctionSolution result = (FunctionSolution) solution.clone();
 
-        int position = posicao.get(0);
-        FunctionSolutionElement value = parametro.get(0);
+        int positionIndex = position.get(0);
+        FunctionSolutionElement value = parameters.get(0);
 
         if(result.getSolutionsVector() != null
-                && position < result.getSolutionsVector().size()) {
-            result.setElement(position, value);
+                && positionIndex < result.getSolutionsVector().size()) {
+            result.setElement(positionIndex, value);
         }
 
         return result;

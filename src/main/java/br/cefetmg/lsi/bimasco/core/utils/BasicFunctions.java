@@ -5,389 +5,388 @@ import java.util.List;
 import java.util.Random;
 
 public class BasicFunctions {
-// CriaÃ§Ã£o de um vetor de posiÃ§Ãµes igual Ã  zero de tamanho <tamanho>
-    public static ArrayList<Object> vetorNuloObjeto(Integer tamanho){
-        ArrayList<Object> listaNulo = new ArrayList<Object>();
+    // Creates a zero vector of size <size>
+    public static ArrayList<Object> nullObjectVector(Integer size){
+        ArrayList<Object> nullList = new ArrayList<Object>();
 
-        for(int i=0; i<tamanho; i++){
-            listaNulo.add(0);
+        for(int i=0; i<size; i++){
+            nullList.add(0);
         }
 
-        return listaNulo;
+        return nullList;
     }
 
-    public static ArrayList<Integer> vetorNuloInteiro(Integer tamanho){
-        ArrayList<Integer> listaNulo = new ArrayList<Integer>();
+    public static ArrayList<Integer> nullIntegerVector(Integer size){
+        ArrayList<Integer> nullList = new ArrayList<Integer>();
 
-        for(int i=0; i<tamanho; i++){
-            listaNulo.add(0);
+        for(int i=0; i<size; i++){
+            nullList.add(0);
         }
 
-        return listaNulo;
+        return nullList;
     }
 
-// CriaÃ§Ã£o de um vetor de posiÃ§Ãµes igual Ã  <numero> de tamanho <tamanho>
-    public static ArrayList<Object> vetorNumeroObjeto(Integer tamanho, Integer numero){
-        ArrayList<Object> listaNulo = new ArrayList<Object>();
+    // Creates a vector of size <size> with all elements equal to <number>
+    public static ArrayList<Object> objectNumberVector(Integer size, Integer number){
+        ArrayList<Object> nullList = new ArrayList<Object>();
 
-        for(int i=0; i<tamanho; i++){
-            listaNulo.add(numero);
+        for(int i=0; i<size; i++){
+            nullList.add(number);
         }
 
-        return listaNulo;
+        return nullList;
     }
 
-    public static ArrayList<Integer> vetorNumeroInteiro(Integer tamanho, Integer numero){
-        ArrayList<Integer> listaNulo = new ArrayList<Integer>();
+    public static ArrayList<Integer> integerNumberVector(Integer size, Integer number){
+        ArrayList<Integer> nullList = new ArrayList<Integer>();
 
-        for(int i=0; i<tamanho; i++){
-            listaNulo.add(numero);
+        for(int i=0; i<size; i++){
+            nullList.add(number);
         }
 
-        return listaNulo;
+        return nullList;
     }
 
-// CriaÃ§Ã£o de um vetor de posiÃ§Ãµes crescentes de tamanho <tamanho>
-    public static ArrayList<ArrayList<Object>> vetorPosicaoOrdenadoObjeto(Integer tamanho){
-        ArrayList<Object> listaAux;
-        ArrayList<ArrayList<Object>> listaOrdenada = new ArrayList<ArrayList<Object>>();
+    // Creates an ordered vector of size <size>
+    public static ArrayList<ArrayList<Object>> orderedObjectPositionVector(Integer size){
+        ArrayList<Object> auxiliaryList;
+        ArrayList<ArrayList<Object>> orderedList = new ArrayList<ArrayList<Object>>();
 
-        for(int i=0; i<tamanho; i++){
-            listaAux = new ArrayList<Object>();
-            listaAux.add(i);
-            listaOrdenada.add(listaAux);
+        for(int i=0; i<size; i++){
+            auxiliaryList = new ArrayList<Object>();
+            auxiliaryList.add(i);
+            orderedList.add(auxiliaryList);
         }
 
-        return listaOrdenada;
+        return orderedList;
     }
 
-    public static ArrayList<Integer> vetorPosicaoOrdenadoInteiro(Integer tamanho){
-        ArrayList<Integer> listaOrdenada = new ArrayList<Integer>();
+    public static ArrayList<Integer> orderedIntegerPositionVector(Integer size){
+        ArrayList<Integer> orderedList = new ArrayList<Integer>();
 
-        for(int i=0; i<tamanho; i++){
-            listaOrdenada.add(i);
+        for(int i=0; i<size; i++){
+            orderedList.add(i);
         }
 
-        return listaOrdenada;
+        return orderedList;
     }
 
-// CriaÃ§Ã£o de um vetor de posiÃ§Ãµes de <0> Ã  <tamanho> desordenado
-    public static ArrayList<ArrayList<Object>> vetorPosicaoDesordenadoObjeto(Integer tamanho){
-        ArrayList<Object> listaAux = new ArrayList<Object>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<ArrayList<Object>> listaDesordenada = new ArrayList<ArrayList<Object>>();
+    // Creates an unordered vector of positions from 0 to <size>
+    public static ArrayList<ArrayList<Object>> unorderedObjectPositionVector(Integer size){
+        ArrayList<Object> auxiliaryList = new ArrayList<Object>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Object>> unorderedList = new ArrayList<ArrayList<Object>>();
         Random rand;
         int index;
 
-        for (int i=0; i<tamanho; i++){
-            listaPosicao.add(i);
+        for (int i=0; i<size; i++){
+            positionList.add(i);
         }
 
-        for (int i=0; i<tamanho; i++){
+        for (int i=0; i<size; i++){
             rand = new Random();
-            index = rand.nextInt(tamanho-i);
+            index = rand.nextInt(size-i);
 
-            listaAux = new ArrayList<Object>();
-            listaAux.add(listaPosicao.get(index));
-            listaPosicao.remove(index);
-            listaDesordenada.add(listaAux);
+            auxiliaryList = new ArrayList<Object>();
+            auxiliaryList.add(positionList.get(index));
+            positionList.remove(index);
+            unorderedList.add(auxiliaryList);
         }
 
-        return listaDesordenada;
+        return unorderedList;
     }
 
-    public static ArrayList<Integer> vetorPosicaoDesordenadoInteiro(Integer tamanho){
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaDesordenada = new ArrayList<Integer>();
+    public static ArrayList<Integer> unorderedIntegerPositionVector(Integer size){
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> unorderedList = new ArrayList<Integer>();
         Random rand;
         int index;
 
-        for (int i=0; i<tamanho; i++){
-            listaPosicao.add(i);
+        for (int i=0; i<size; i++){
+            positionList.add(i);
         }
 
-        for (int i=0; i<tamanho; i++){
+        for (int i=0; i<size; i++){
             rand = new Random();
-            index = rand.nextInt(tamanho-i);
+            index = rand.nextInt(size-i);
 
-            listaDesordenada.add(listaPosicao.get(index));
-            listaPosicao.remove(index);
+            unorderedList.add(positionList.get(index));
+            positionList.remove(index);
         }
 
-        return listaDesordenada;
+        return unorderedList;
     }
 
-// Desordena um vetor do tipo ArrayList<ArrayList<Object>>
-   public static ArrayList<ArrayList<Object>> baguncaVetor(ArrayList<ArrayList<Object>> vetor){
-        ArrayList<ArrayList<Object>> vetorBaguncado = new ArrayList<ArrayList<Object>>();
-        ArrayList<Integer> listaBaguncada = new ArrayList<Integer>();
+    // Shuffles a vector of type ArrayList<ArrayList<Object>>
+   public static ArrayList<ArrayList<Object>> shuffleVector(ArrayList<ArrayList<Object>> vector){
+        ArrayList<ArrayList<Object>> shuffledVector = new ArrayList<ArrayList<Object>>();
+        ArrayList<Integer> shuffledList = new ArrayList<Integer>();
 
-        listaBaguncada = BasicFunctions.vetorPosicaoDesordenadoInteiro(vetor.size());
+        shuffledList = BasicFunctions.unorderedIntegerPositionVector(vector.size());
 
-        for(int i=0; i<vetor.size(); i++){
-            vetorBaguncado.add(vetor.get(listaBaguncada.get(i)));
+        for(int i=0; i<vector.size(); i++){
+            shuffledVector.add(vector.get(shuffledList.get(i)));
         }
 
-        return vetorBaguncado;
+        return shuffledVector;
     }
 
-   public static ArrayList<Object> baguncaElementosVetor(ArrayList<Object> vetor){
-        ArrayList<Object> vetorBaguncado = new ArrayList<Object>();
-        ArrayList<Integer> listaBaguncada = new ArrayList<Integer>();
+   public static ArrayList<Object> shuffleVectorElements(ArrayList<Object> vector){
+        ArrayList<Object> shuffledVector = new ArrayList<Object>();
+        ArrayList<Integer> shuffledList = new ArrayList<Integer>();
 
-        listaBaguncada = BasicFunctions.vetorPosicaoDesordenadoInteiro(vetor.size());
+        shuffledList = BasicFunctions.unorderedIntegerPositionVector(vector.size());
 
-        for(int i=0; i<vetor.size(); i++){
-            vetorBaguncado.add(vetor.get(listaBaguncada.get(i)));
+        for(int i=0; i<vector.size(); i++){
+            shuffledVector.add(vector.get(shuffledList.get(i)));
         }
 
-        return vetorBaguncado;
+        return shuffledVector;
     }
 
-   // Desordena um vetor do tipo ArrayList<ArrayList<Integer>>
-   public static ArrayList<ArrayList<Object>> baguncaVetorInteiro(ArrayList<ArrayList<Integer>> vetor){
-        ArrayList<ArrayList<Object>> vetorBaguncado = new ArrayList<ArrayList<Object>>();
-        ArrayList<Integer> listaBaguncada = new ArrayList<Integer>();
-        ArrayList<Object> elemento;
+   // Shuffles a vector of type ArrayList<ArrayList<Integer>>
+   public static ArrayList<ArrayList<Object>> shuffleIntegerVector(ArrayList<ArrayList<Integer>> vector){
+        ArrayList<ArrayList<Object>> shuffledVector = new ArrayList<ArrayList<Object>>();
+        ArrayList<Integer> shuffledList = new ArrayList<Integer>();
+        ArrayList<Object> element;
         
-        listaBaguncada = BasicFunctions.vetorPosicaoDesordenadoInteiro(vetor.size());
+        shuffledList = BasicFunctions.unorderedIntegerPositionVector(vector.size());
 
-        for(int i=0; i<vetor.size(); i++){
-            elemento = new ArrayList<Object>();
+        for(int i=0; i<vector.size(); i++){
+            element = new ArrayList<Object>();
 
-            for(int j=0; j<vetor.get(listaBaguncada.get(i)).size(); j++){
-                elemento.add(vetor.get(listaBaguncada.get(i)).get(j));
+            for(int j=0; j<vector.get(shuffledList.get(i)).size(); j++){
+                element.add(vector.get(shuffledList.get(i)).get(j));
             }
             
-            vetorBaguncado.add(elemento);
+            shuffledVector.add(element);
         }
 
-        return vetorBaguncado;
+        return shuffledVector;
     }
 
-   public static List<Integer> baguncaElementosVetorInteiro(List<Integer> vetor){
-        ArrayList<Integer> vetorBaguncado = new ArrayList<Integer>();
-        ArrayList<Integer> listaBaguncada = new ArrayList<Integer>();
+   public static List<Integer> shuffleIntegerVectorElements(List<Integer> vector){
+        ArrayList<Integer> shuffledVector = new ArrayList<Integer>();
+        ArrayList<Integer> shuffledList = new ArrayList<Integer>();
         
-        listaBaguncada = BasicFunctions.vetorPosicaoDesordenadoInteiro(vetor.size());
+        shuffledList = BasicFunctions.unorderedIntegerPositionVector(vector.size());
 
-        for(int i=0; i<vetor.size(); i++){
-            vetorBaguncado.add(vetor.get(listaBaguncada.get(i)));
+        for(int i=0; i<vector.size(); i++){
+            shuffledVector.add(vector.get(shuffledList.get(i)));
         }
 
-        return vetorBaguncado;
+        return shuffledVector;
     }
 
-   public static ArrayList<ArrayList<Integer>> intraVetorPosicaoInteiro(ArrayList<Integer> tamanho){
-// Vetores em que a ordem nÃ£o tem importÃ¢ncia, portanto um objeto serÃ¡ descrito na forma: <vetor1,posicao1,vetor2>
-        ArrayList<Integer> listaAux = new ArrayList<Integer>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaVetor = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
+   public static ArrayList<ArrayList<Integer>> intraVectorIntegerPosition(ArrayList<Integer> size){
+        // Vectors where the order does not matter, therefore an object will be described as: <vector1, position1, vector2>
+        ArrayList<Integer> auxiliaryList = new ArrayList<Integer>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> vectorList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
 
-        posicao.add(0);
-        for(int i=0; i<tamanho.size(); i++){
-            listaVetor.addAll(BasicFunctions.vetorNumeroInteiro(tamanho.get(i),i));
-            listaPosicao.addAll(BasicFunctions.vetorPosicaoOrdenadoInteiro(tamanho.get(i)));
-            posicao.add(posicao.get(i)+tamanho.get(i));
+        position.add(0);
+        for(int i=0; i<size.size(); i++){
+            vectorList.addAll(BasicFunctions.integerNumberVector(size.get(i),i));
+            positionList.addAll(BasicFunctions.orderedIntegerPositionVector(size.get(i)));
+            position.add(position.get(i)+size.get(i));
         }
 
-        for(int i=0; i<listaAux.size()-1; i++){
-            for(int j=posicao.get(i+1); j<listaAux.size()-1; j++){
-                listaAux = new ArrayList<Integer>();
+        for(int i=0; i<auxiliaryList.size()-1; i++){
+            for(int j=position.get(i+1); j<auxiliaryList.size()-1; j++){
+                auxiliaryList = new ArrayList<Integer>();
 
-                listaAux.add(listaVetor.get(i));
-                listaAux.add(listaPosicao.get(i));
-                listaAux.add(listaVetor.get(j));
+                auxiliaryList.add(vectorList.get(i));
+                auxiliaryList.add(positionList.get(i));
+                auxiliaryList.add(vectorList.get(j));
 
-                listaPosicoes.add(listaAux);
+                positionsList.add(auxiliaryList);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-   public static ArrayList<ArrayList<Integer>> intraVetorPosicaoOrdemInteiro(ArrayList<Integer> tamanho){
-// Vetores em que a ordem tem importÃ¢ncia, portanto um objeto serÃ¡ descrito na forma: <vetor1,posicao1,vetor2,posicao2>
-        ArrayList<Integer> listaAux = new ArrayList<Integer>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaVetor = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
+   public static ArrayList<ArrayList<Integer>> intraVectorIntegerPositionOrder(ArrayList<Integer> size){
+        // Vectors where the order matters, therefore an object will be described as: <vector1, position1, vector2, position2>
+        ArrayList<Integer> auxiliaryList = new ArrayList<Integer>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> vectorList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
 
-        for(int i=0; i<tamanho.size(); i++){
-            listaVetor.addAll(BasicFunctions.vetorNumeroInteiro(tamanho.get(i),i));
-            listaPosicao.addAll(BasicFunctions.vetorPosicaoOrdenadoInteiro(tamanho.get(i)));
+        for(int i=0; i<size.size(); i++){
+            vectorList.addAll(BasicFunctions.integerNumberVector(size.get(i),i));
+            positionList.addAll(BasicFunctions.orderedIntegerPositionVector(size.get(i)));
         }
 
-        for(int i=0; i<listaAux.size()-1; i++){
-            for(int j=i+1; j<listaAux.size(); j++){
-                listaAux = new ArrayList<Integer>();
+        for(int i=0; i<auxiliaryList.size()-1; i++){
+            for(int j=i+1; j<auxiliaryList.size(); j++){
+                auxiliaryList = new ArrayList<Integer>();
 
-                listaAux.add(listaVetor.get(i));
-                listaAux.add(listaPosicao.get(i));
-                listaAux.add(listaVetor.get(j));
-                listaAux.add(listaPosicao.get(j));
+                auxiliaryList.add(vectorList.get(i));
+                auxiliaryList.add(positionList.get(i));
+                auxiliaryList.add(vectorList.get(j));
+                auxiliaryList.add(positionList.get(j));
 
-                listaPosicoes.add(listaAux);
+                positionsList.add(auxiliaryList);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Object>> intraVetorPosicao(ArrayList<Integer> tamanho){
-// Vetores em que a ordem nÃ£o tem importÃ¢ncia, portanto um objeto serÃ¡ descrito na forma: <vetor1,posicao1,vetor2>
-        ArrayList<Object> listaAux = new ArrayList<Object>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaVetor = new ArrayList<Integer>();
-        ArrayList<ArrayList<Object>> listaPosicoes = new ArrayList<ArrayList<Object>>();
+    public static ArrayList<ArrayList<Object>> intraVectorPosition(ArrayList<Integer> size){
+        // Vectors where the order does not matter, therefore an object will be described as: <vector1, position1, vector2>
+        ArrayList<Object> auxiliaryList = new ArrayList<Object>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> vectorList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Object>> positionsList = new ArrayList<ArrayList<Object>>();
         int pos = 0;
 
-        posicao.add(0);
-        for(int i=0; i<tamanho.size(); i++){
-            listaPosicao.addAll(BasicFunctions.vetorPosicaoOrdenadoInteiro(tamanho.get(i)));
-            listaVetor.addAll(BasicFunctions.vetorNumeroInteiro(tamanho.get(i),i));
-            posicao.add(posicao.get(i)+tamanho.get(i));
+        position.add(0);
+        for(int i=0; i<size.size(); i++){
+            positionList.addAll(BasicFunctions.orderedIntegerPositionVector(size.get(i)));
+            vectorList.addAll(BasicFunctions.integerNumberVector(size.get(i),i));
+            position.add(position.get(i)+size.get(i));
         }
 
-        for(int i=0; i<posicao.get(tamanho.size()-1); i++){
-            pos = posicao.get(listaVetor.get(i)+1);
+        for(int i=0; i<position.get(size.size()-1); i++){
+            pos = position.get(vectorList.get(i)+1);
 
-            for(int j=pos; j<listaVetor.size(); j++){
-                listaAux = new ArrayList<Object>();
+            for(int j=pos; j<vectorList.size(); j++){
+                auxiliaryList = new ArrayList<Object>();
 
-                listaAux.add(listaVetor.get(i));
-                listaAux.add(listaPosicao.get(i));
-                listaAux.add(listaVetor.get(j));
+                auxiliaryList.add(vectorList.get(i));
+                auxiliaryList.add(positionList.get(i));
+                auxiliaryList.add(vectorList.get(j));
 
-                listaPosicoes.add(listaAux);
+                positionsList.add(auxiliaryList);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-   public static ArrayList<ArrayList<Object>> intraVetorPosicaoOrdem(ArrayList<Integer> tamanho){
-// Vetores em que a ordem tem importÃ¢ncia, portanto um objeto serÃ¡ descrito na forma: <vetor1,posicao1,vetor2,posicao2>
-        ArrayList<Object> listaAux = new ArrayList<Object>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaVetor = new ArrayList<Integer>();
-        ArrayList<ArrayList<Object>> listaPosicoes = new ArrayList<ArrayList<Object>>();
+   public static ArrayList<ArrayList<Object>> intraVectorPositionOrder(ArrayList<Integer> size){
+        // Vectors where the order matters, therefore an object will be described as: <vector1, position1, vector2, position2>
+        ArrayList<Object> auxiliaryList = new ArrayList<Object>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> vectorList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Object>> positionsList = new ArrayList<ArrayList<Object>>();
 
-        for(int i=0; i<tamanho.size(); i++){
-            listaVetor.addAll(BasicFunctions.vetorNumeroInteiro(tamanho.get(i),i));
-            listaPosicao.addAll(BasicFunctions.vetorPosicaoOrdenadoInteiro(tamanho.get(i)));
+        for(int i=0; i<size.size(); i++){
+            vectorList.addAll(BasicFunctions.integerNumberVector(size.get(i),i));
+            positionList.addAll(BasicFunctions.orderedIntegerPositionVector(size.get(i)));
         }
 
-        for(int i=0; i<listaAux.size()-1; i++){
-            for(int j=i+1; j<listaAux.size(); j++){
-                listaAux = new ArrayList<Object>();
+        for(int i=0; i<auxiliaryList.size()-1; i++){
+            for(int j=i+1; j<auxiliaryList.size(); j++){
+                auxiliaryList = new ArrayList<Object>();
                 
-                listaAux.add(listaVetor.get(i));
-                listaAux.add(listaPosicao.get(i));
-                listaAux.add(listaVetor.get(j));
-                listaAux.add(listaPosicao.get(j));
+                auxiliaryList.add(vectorList.get(i));
+                auxiliaryList.add(positionList.get(i));
+                auxiliaryList.add(vectorList.get(j));
+                auxiliaryList.add(positionList.get(j));
 
-                listaPosicoes.add(listaAux);
+                positionsList.add(auxiliaryList);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Object>> escolherSubconjuntoObjeto(Integer tConjunto, Integer tSubconjunto){
-        ArrayList<Object> listaAux = new ArrayList<Object>();
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<ArrayList<Object>> listaSubconjunto = new ArrayList<ArrayList<Object>>();
+    public static ArrayList<ArrayList<Object>> chooseObjectSubset(Integer setSize, Integer subsetSize){
+        ArrayList<Object> auxiliaryList = new ArrayList<Object>();
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<ArrayList<Object>> subsetList = new ArrayList<ArrayList<Object>>();
         Random rand;
         int index;
 
-        for (int i=0; i<tConjunto; i++){
-            listaPosicao.add(i);
+        for (int i=0; i<setSize; i++){
+            positionList.add(i);
         }
 
-        for (int i=0; i<tSubconjunto; i++){
+        for (int i=0; i<subsetSize; i++){
             rand = new Random();
-            index = rand.nextInt(tConjunto-i);
+            index = rand.nextInt(setSize-i);
 
-            listaAux = new ArrayList<Object>();
-            listaAux.add(listaPosicao.get(index));
-            listaPosicao.remove(index);
-            listaSubconjunto.add(listaAux);
+            auxiliaryList = new ArrayList<Object>();
+            auxiliaryList.add(positionList.get(index));
+            positionList.remove(index);
+            subsetList.add(auxiliaryList);
         }
 
-        return listaSubconjunto;
+        return subsetList;
     }
 
-    public static ArrayList<Integer> escolherSubconjuntoInteiro(Integer tConjunto, Integer tSubconjunto){
-        ArrayList<Integer> listaPosicao = new ArrayList<Integer>();
-        ArrayList<Integer> listaSubconjunto = new ArrayList<Integer>();
+    public static ArrayList<Integer> chooseIntegerSubset(Integer setSize, Integer subsetSize){
+        ArrayList<Integer> positionList = new ArrayList<Integer>();
+        ArrayList<Integer> subsetList = new ArrayList<Integer>();
         Random rand;
         int index;
 
-        for (int i=0; i<tConjunto; i++){
-            listaPosicao.add(i);
+        for (int i=0; i<setSize; i++){
+            positionList.add(i);
         }
 
-        for (int i=0; i<tSubconjunto; i++){
+        for (int i=0; i<subsetSize; i++){
             rand = new Random();
-            index = rand.nextInt(tConjunto-i);
+            index = rand.nextInt(setSize-i);
 
-            listaSubconjunto.add(listaPosicao.get(index));
-            listaPosicao.remove(index);
+            subsetList.add(positionList.get(index));
+            positionList.remove(index);
         }
 
-        return listaSubconjunto;
+        return subsetList;
     }
 
-    public static ArrayList<ArrayList<Object>> escolherSubconjuntoVetor(ArrayList<ArrayList<Object>> vetor, Integer tamanho){
-        ArrayList<ArrayList<Object>> listaSubconjunto = new ArrayList<ArrayList<Object>>();
-        ArrayList<ArrayList<Object>> vetorAux = new ArrayList<ArrayList<Object>>();
+    public static ArrayList<ArrayList<Object>> chooseVectorSubset(ArrayList<ArrayList<Object>> vector, Integer size){
+        ArrayList<ArrayList<Object>> subsetList = new ArrayList<ArrayList<Object>>();
+        ArrayList<ArrayList<Object>> auxiliaryVector = new ArrayList<ArrayList<Object>>();
         Random rand;
         int index;
 
-        vetorAux = vetor;
-        for (int i=0; i<tamanho; i++){
+        auxiliaryVector = vector;
+        for (int i=0; i<size; i++){
             rand = new Random();
-            index = rand.nextInt(vetor.size());
+            index = rand.nextInt(vector.size());
 
-            listaSubconjunto.add(vetorAux.get(index));
-            vetorAux.remove(index);
+            subsetList.add(auxiliaryVector.get(index));
+            auxiliaryVector.remove(index);
         }
 
-        return listaSubconjunto;
+        return subsetList;
     }
 
-    public static ArrayList<Object> escolherElementosSubconjuntoVetor(ArrayList<Object> vetor, Integer tamanho){
-        ArrayList<Object> listaSubconjunto = new ArrayList<Object>();
+    public static ArrayList<Object> chooseVectorSubsetElements(ArrayList<Object> vector, Integer size){
+        ArrayList<Object> subsetList = new ArrayList<Object>();
         Random rand;
         int index;
         
-        for (int i=0; i<tamanho; i++){
+        for (int i=0; i<size; i++){
             rand = new Random();
-            index = rand.nextInt(vetor.size());
+            index = rand.nextInt(vector.size());
 
-            listaSubconjunto.add(vetor.get(index));
-            vetor.remove(index);
+            subsetList.add(vector.get(index));
+            vector.remove(index);
         }
 
-        return listaSubconjunto;
+        return subsetList;
     }
 
-// Lista das posiÃ§Ãµes criadas para vetores do tipo BinÃ¡rio, porÃ©m podem ser 
-// utilizados por outros tipos de vetores.
-    public static ArrayList<ArrayList<Integer>> divideVetorBinario(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> vetor = new ArrayList<ArrayList<Integer>>();
+    // used by other types of vectors.
+    public static ArrayList<ArrayList<Integer>> splitBinaryVector(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> vector = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> vet0 = new ArrayList<Integer>();
         ArrayList<Integer> pos0 = new ArrayList<Integer>();
         ArrayList<Integer> vet1 = new ArrayList<Integer>();
         ArrayList<Integer> pos1 = new ArrayList<Integer>();
 
-        for(int i=0; i<vetorSolucao.size(); i++){
-            for(int j=0; j<vetorSolucao.get(i).size(); j++){
-                if( (Integer)vetorSolucao.get(i).get(j) == 0 ){
+        for(int i=0; i<solutionVector.size(); i++){
+            for(int j=0; j<solutionVector.get(i).size(); j++){
+                if( (Integer)solutionVector.get(i).get(j) == 0 ){
                     vet0.add(i);
                     pos0.add(j);
                 } else{
@@ -397,588 +396,588 @@ public class BasicFunctions {
             }
         }
 
-        vetor.add(vet0);
-        vetor.add(pos0);
-        vetor.add(vet1);
-        vetor.add(pos1);
+        vector.add(vet0);
+        vector.add(pos0);
+        vector.add(vet1);
+        vector.add(pos1);
 
-        return vetor;
+        return vector;
     }
 
-    public static ArrayList<ArrayList<Integer>> binario1p(ArrayList<ArrayList<Object>> vetor){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicoes;
+    public static ArrayList<ArrayList<Integer>> binaryOnePosition(ArrayList<ArrayList<Object>> vector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionsVector;
         
-        for(int i=0; i<vetor.size(); i++){
-            for(int j=0; j<vetor.get(i).size(); j++){
-                vetPosicoes = new ArrayList<Integer>();
-                vetPosicoes.add(i);
-                vetPosicoes.add(j);
+        for(int i=0; i<vector.size(); i++){
+            for(int j=0; j<vector.get(i).size(); j++){
+                positionsVector = new ArrayList<Integer>();
+                positionsVector.add(i);
+                positionsVector.add(j);
                 
-                listaPosicoes.add(vetPosicoes);
+                positionsList.add(positionsVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> binario2pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> vetorAux = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<Integer>> binaryTwoPositionsDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> auxiliaryVector = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> vet0 = new ArrayList<Integer>();
         ArrayList<Integer> pos0 = new ArrayList<Integer>();
         ArrayList<Integer> vet1 = new ArrayList<Integer>();
         ArrayList<Integer> pos1 = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
 
-        vetorAux = BasicFunctions.divideVetorBinario(vetorSolucao);
-        vet0 = vetorAux.get(0);
-        pos0 = vetorAux.get(1);
-        vet1 = vetorAux.get(2);
-        pos1 = vetorAux.get(3);
+        auxiliaryVector = BasicFunctions.splitBinaryVector(solutionVector);
+        vet0 = auxiliaryVector.get(0);
+        pos0 = auxiliaryVector.get(1);
+        vet1 = auxiliaryVector.get(2);
+        pos1 = auxiliaryVector.get(3);
 
         for(int i=0; i<vet0.size(); i++){
             for(int j=0; j<vet1.size(); j++){
                 if( vet0.get(i) != vet1.get(j) ){
-                    vetPosicao = new ArrayList<Integer>();
-                    vetPosicao.add(vet0.get(i));
-                    vetPosicao.add(pos0.get(i));
-                    vetPosicao.add(vet1.get(j));
-                    vetPosicao.add(pos1.get(j));
+                    positionVector = new ArrayList<Integer>();
+                    positionVector.add(vet0.get(i));
+                    positionVector.add(pos0.get(i));
+                    positionVector.add(vet1.get(j));
+                    positionVector.add(pos1.get(j));
 
-                    listaPosicoes.add(vetPosicao);
+                    positionsList.add(positionVector);
                 }
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
     
-    public static ArrayList<ArrayList<Integer>> binario2pMt(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> vetorAux = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<Integer>> binaryTwoPositionsAll(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> auxiliaryVector = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> vet0 = new ArrayList<Integer>();
         ArrayList<Integer> pos0 = new ArrayList<Integer>();
         ArrayList<Integer> vet1 = new ArrayList<Integer>();
         ArrayList<Integer> pos1 = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
 
-        vetorAux = BasicFunctions.divideVetorBinario(vetorSolucao);
-        vet0 = vetorAux.get(0);
-        pos0 = vetorAux.get(1);
-        vet1 = vetorAux.get(2);
-        pos1 = vetorAux.get(3);
+        auxiliaryVector = BasicFunctions.splitBinaryVector(solutionVector);
+        vet0 = auxiliaryVector.get(0);
+        pos0 = auxiliaryVector.get(1);
+        vet1 = auxiliaryVector.get(2);
+        pos1 = auxiliaryVector.get(3);
 
         for(int i=0; i<vet0.size(); i++){
             for(int j=0; j<vet1.size(); j++){
-                vetPosicao = new ArrayList<Integer>();
-                vetPosicao.add(vet0.get(i));
-                vetPosicao.add(pos0.get(i));
-                vetPosicao.add(vet1.get(j));
-                vetPosicao.add(pos1.get(j));
+                positionVector = new ArrayList<Integer>();
+                positionVector.add(vet0.get(i));
+                positionVector.add(pos0.get(i));
+                positionVector.add(vet1.get(j));
+                positionVector.add(pos1.get(j));
 
-                listaPosicoes.add(vetPosicao);
+                positionsList.add(positionVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> binario2pMv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> vetorAux = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<ArrayList<Integer>> binaryTwoPositionsSameVector(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> auxiliaryVector = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> vet0 = new ArrayList<Integer>();
         ArrayList<Integer> pos0 = new ArrayList<Integer>();
         ArrayList<Integer> vet1 = new ArrayList<Integer>();
         ArrayList<Integer> pos1 = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
 
-        vetorAux = BasicFunctions.divideVetorBinario(vetorSolucao);
-        vet0 = vetorAux.get(0);
-        pos0 = vetorAux.get(1);
-        vet1 = vetorAux.get(2);
-        pos1 = vetorAux.get(3);
+        auxiliaryVector = BasicFunctions.splitBinaryVector(solutionVector);
+        vet0 = auxiliaryVector.get(0);
+        pos0 = auxiliaryVector.get(1);
+        vet1 = auxiliaryVector.get(2);
+        pos1 = auxiliaryVector.get(3);
 
         for(int i=0; i<vet0.size(); i++){
             for(int j=0; j<vet1.size(); j++){
                 if( vet0.get(i) == vet1.get(j) ){
-                    vetPosicao = new ArrayList<Integer>();
-                    vetPosicao.add(vet0.get(i));
-                    vetPosicao.add(pos0.get(i));
-                    vetPosicao.add(vet1.get(j));
-                    vetPosicao.add(pos1.get(j));
+                    positionVector = new ArrayList<Integer>();
+                    positionVector.add(vet0.get(i));
+                    positionVector.add(pos0.get(i));
+                    positionVector.add(vet1.get(j));
+                    positionVector.add(pos1.get(j));
 
-                    listaPosicoes.add(vetPosicao);
+                    positionsList.add(positionVector);
                 }
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }   
     
-    public static ArrayList<ArrayList<Integer>> randBinario1p(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao = new ArrayList<Integer>();
+    public static ArrayList<ArrayList<Integer>> randomBinaryOnePosition(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector = new ArrayList<Integer>();
         Random rand = new Random();
 
-        int vetor = rand.nextInt(vetorSolucao.size());
-        int posicao = rand.nextInt(vetorSolucao.size());
+        int vector = rand.nextInt(solutionVector.size());
+        int position = rand.nextInt(solutionVector.size());
 
-        vetPosicao.add(vetor);
-        vetPosicao.add(posicao);
+        positionVector.add(vector);
+        positionVector.add(position);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> randBinario2pMt(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomBinaryTwoPositionsAll(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = rand.nextInt(vetorSolucao.size());
-        int posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = rand.nextInt(solutionVector.size());
+        int position2 = rand.nextInt(solutionVector.get(vector2).size());
 
-        while( vetorSolucao.get(vetor1).get(posicao1) == vetorSolucao.get(vetor2).get(posicao2) ){
-            vetor2 = rand.nextInt(vetorSolucao.size());
-            posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        while( solutionVector.get(vector1).get(position1) == solutionVector.get(vector2).get(position2) ){
+            vector2 = rand.nextInt(solutionVector.size());
+            position2 = rand.nextInt(solutionVector.get(vector2).size());
         }
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> randBinario2pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomBinaryTwoPositionsDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = (vetor1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
-        int posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = (vector1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
+        int position2 = rand.nextInt(solutionVector.get(vector2).size());
 
-        while( vetorSolucao.get(vetor1).get(posicao1) == vetorSolucao.get(vetor2).get(posicao2) ){
-            posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        while( solutionVector.get(vector1).get(position1) == solutionVector.get(vector2).get(position2) ){
+            position2 = rand.nextInt(solutionVector.get(vector2).size());
         }
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> randBinario2pMv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomBinaryTwoPositionsSameVector(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
-        int vetor1;
-        int posicao1;
-        int posicao2;
+        int vector1;
+        int position1;
+        int position2;
 
-        vetor1 = rand.nextInt(vetorSolucao.size());
-        posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        posicao2 = rand.nextInt(vetorSolucao.get(vetor1).size());
+        vector1 = rand.nextInt(solutionVector.size());
+        position1 = rand.nextInt(solutionVector.get(vector1).size());
+        position2 = rand.nextInt(solutionVector.get(vector1).size());
 
-        while( vetorSolucao.get(vetor1).get(posicao1) == vetorSolucao.get(vetor1).get(posicao2) ){
-            posicao2 = rand.nextInt(vetorSolucao.get(vetor1).size());
+        while( solutionVector.get(vector1).get(position1) == solutionVector.get(vector1).get(position2) ){
+            position2 = rand.nextInt(solutionVector.get(vector1).size());
         }
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector1);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }    
 
-// Lista das posiÃ§Ãµes criadas para vetores do tipo Inteiro, porÃ©m podem ser 
-// utilizados por outros tipos de vetores.    
-    public static ArrayList<ArrayList<Integer>> inteiro2pMt(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetor = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> vetPosicao;
+    // List of positions created for vectors of type Integer, but can be
+    // used by other types of vectors.
+    public static ArrayList<ArrayList<Integer>> integerTwoPositionsAll(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> vector = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> positionVector;
 
-        int numElementos = 0;
+        int numElements = 0;
 
-        for(int i=0; i<vetorSolucao.size(); i++){
-            for(int j=0; j<vetorSolucao.get(i).size(); j++){
-                vetor.add(i);
-                posicao.add(j);
-                numElementos++;
+        for(int i=0; i<solutionVector.size(); i++){
+            for(int j=0; j<solutionVector.get(i).size(); j++){
+                vector.add(i);
+                position.add(j);
+                numElements++;
             }
         }
 
-        for(int i=0; i<numElementos-1; i++){
-            for(int j=i+1; j<numElementos; j++){
-                vetPosicao = new ArrayList<Integer>();
-                vetPosicao.add(vetor.get(i));
-                vetPosicao.add(posicao.get(i));
-                vetPosicao.add(vetor.get(j));
-                vetPosicao.add(posicao.get(j));
+        for(int i=0; i<numElements-1; i++){
+            for(int j=i+1; j<numElements; j++){
+                positionVector = new ArrayList<Integer>();
+                positionVector.add(vector.get(i));
+                positionVector.add(position.get(i));
+                positionVector.add(vector.get(j));
+                positionVector.add(position.get(j));
 
-                listaPosicoes.add(vetPosicao);
+                positionsList.add(positionVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> inteiro2pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetor = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> vetorAux;
-        ArrayList<Integer> posicaoAux;
-        ArrayList<Integer> divisao = new ArrayList<Integer>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> integerTwoPositionsDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> vector = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> auxiliaryVector;
+        ArrayList<Integer> auxiliaryPosition;
+        ArrayList<Integer> division = new ArrayList<Integer>();
+        ArrayList<Integer> positionVector;
 
-        int numElementos = 0;
-        divisao.add(numElementos);
+        int numElements = 0;
+        division.add(numElements);
 
-        for(int i=0; i<vetorSolucao.size(); i++){
-            for(int j=0; j<vetorSolucao.get(i).size(); j++){
-                vetor.add(i);
-                posicao.add(j);
-                numElementos++;
+        for(int i=0; i<solutionVector.size(); i++){
+            for(int j=0; j<solutionVector.get(i).size(); j++){
+                vector.add(i);
+                position.add(j);
+                numElements++;
             }
 
-            divisao.add(numElementos);
+            division.add(numElements);
         }
 
-        for(int i=0; i<numElementos; i++){
-            vetorAux = new ArrayList<Integer>();
-            posicaoAux = new ArrayList<Integer>();
+        for(int i=0; i<numElements; i++){
+            auxiliaryVector = new ArrayList<Integer>();
+            auxiliaryPosition = new ArrayList<Integer>();
 
-            vetorAux.addAll(vetor.subList(0,divisao.get(vetor.get(i))));
-            vetorAux.addAll(vetor.subList(divisao.get(vetor.get(i)+1),numElementos));
-            posicaoAux.addAll(posicao.subList(0,divisao.get(posicao.get(i))));
-            posicaoAux.addAll(posicao.subList(divisao.get(posicao.get(i)+1),numElementos));
+            auxiliaryVector.addAll(vector.subList(0,division.get(vector.get(i))));
+            auxiliaryVector.addAll(vector.subList(division.get(vector.get(i)+1),numElements));
+            auxiliaryPosition.addAll(position.subList(0,division.get(position.get(i))));
+            auxiliaryPosition.addAll(position.subList(division.get(position.get(i)+1),numElements));
 
-            for(int j=0; j<vetorAux.size(); j++){
-                vetPosicao = new ArrayList<Integer>();
-                vetPosicao.add(vetor.get(i));
-                vetPosicao.add(posicao.get(i));
-                vetPosicao.add(vetorAux.get(j));
-                vetPosicao.add(posicaoAux.get(j));
+            for(int j=0; j<auxiliaryVector.size(); j++){
+                positionVector = new ArrayList<Integer>();
+                positionVector.add(vector.get(i));
+                positionVector.add(position.get(i));
+                positionVector.add(auxiliaryVector.get(j));
+                positionVector.add(auxiliaryPosition.get(j));
 
-                listaPosicoes.add(vetPosicao);
+                positionsList.add(positionVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> inteiro2pMv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetor = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> vetorAux;
-        ArrayList<Integer> posicaoAux;
-        ArrayList<Integer> divisao = new ArrayList<Integer>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> integerTwoPositionsSameVector(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> vector = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> auxiliaryVector;
+        ArrayList<Integer> auxiliaryPosition;
+        ArrayList<Integer> division = new ArrayList<Integer>();
+        ArrayList<Integer> positionVector;
 
-        int numElementos = 0;
-        divisao.add(numElementos);
+        int numElements = 0;
+        division.add(numElements);
 
-        for(int i=0; i<vetorSolucao.size(); i++){
-            for(int j=0; j<vetorSolucao.get(i).size(); j++){
-                vetor.add(i);
-                posicao.add(j);
-                numElementos++;
+        for(int i=0; i<solutionVector.size(); i++){
+            for(int j=0; j<solutionVector.get(i).size(); j++){
+                vector.add(i);
+                position.add(j);
+                numElements++;
             }
 
-            divisao.add(numElementos);
+            division.add(numElements);
         }
 
-        for(int i=0; i<vetor.size(); i++){
-            vetorAux = new ArrayList<Integer>();
-            posicaoAux = new ArrayList<Integer>();
+        for(int i=0; i<vector.size(); i++){
+            auxiliaryVector = new ArrayList<Integer>();
+            auxiliaryPosition = new ArrayList<Integer>();
 
-            vetorAux.addAll(vetor.subList(divisao.get(vetor.get(i)),divisao.get(vetor.get(i)+1)));
-            posicaoAux.addAll(posicao.subList(divisao.get(vetor.get(i)),divisao.get(vetor.get(i)+1)));
+            auxiliaryVector.addAll(vector.subList(division.get(vector.get(i)),division.get(vector.get(i)+1)));
+            auxiliaryPosition.addAll(position.subList(division.get(vector.get(i)),division.get(vector.get(i)+1)));
 
-            for(int j=posicao.get(i)+1; j<vetorAux.size(); j++){
-                vetPosicao = new ArrayList<Integer>();
-                vetPosicao.add(vetor.get(i));
-                vetPosicao.add(posicao.get(i));
-                vetPosicao.add(vetorAux.get(j));
-                vetPosicao.add(posicaoAux.get(j));
+            for(int j=position.get(i)+1; j<auxiliaryVector.size(); j++){
+                positionVector = new ArrayList<Integer>();
+                positionVector.add(vector.get(i));
+                positionVector.add(position.get(i));
+                positionVector.add(auxiliaryVector.get(j));
+                positionVector.add(auxiliaryPosition.get(j));
 
-                listaPosicoes.add(vetPosicao);
+                positionsList.add(positionVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> inteiro1pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetor = new ArrayList<Integer>();
-        ArrayList<Integer> posicao = new ArrayList<Integer>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> integerOnePositionDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> vector = new ArrayList<Integer>();
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        ArrayList<Integer> positionVector;
 
-        int numElementos = 0;
+        int numElements = 0;
 
-        for(int i=0; i<vetorSolucao.size(); i++){
-            for(int j=0; j<vetorSolucao.get(i).size(); j++){
-                vetor.add(i);
-                posicao.add(j);
-                numElementos++;
+        for(int i=0; i<solutionVector.size(); i++){
+            for(int j=0; j<solutionVector.get(i).size(); j++){
+                vector.add(i);
+                position.add(j);
+                numElements++;
             }
         }
 
         int pos;
-        for(int i=0; i<numElementos; i++){
-            for(int j=0; j<vetorSolucao.size()-1; j++){
-                pos = (vetor.get(i)+j+1)%vetorSolucao.size();
-                vetPosicao = new ArrayList<Integer>();
-                vetPosicao.add(vetor.get(i));
-                vetPosicao.add(posicao.get(i));
-                vetPosicao.add(pos);
+        for(int i=0; i<numElements; i++){
+            for(int j=0; j<solutionVector.size()-1; j++){
+                pos = (vector.get(i)+j+1)%solutionVector.size();
+                positionVector = new ArrayList<Integer>();
+                positionVector.add(vector.get(i));
+                positionVector.add(position.get(i));
+                positionVector.add(pos);
 
-                listaPosicoes.add(vetPosicao);
+                positionsList.add(positionVector);
             }
         }
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> randInteiroInteger2pMt(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomIntegerTwoPositionsAll(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = rand.nextInt(vetorSolucao.size());
-        int posicao2;
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = rand.nextInt(solutionVector.size());
+        int position2;
 
-        if( vetor1 == vetor2 ){
-            posicao2 = (posicao1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
+        if( vector1 == vector2 ){
+            position2 = (position1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
         } else{
-            posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+            position2 = rand.nextInt(solutionVector.get(vector2).size());
         }
         
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<Object> randInteiro2pMt(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<Object> vetPosicao;
+    public static ArrayList<Object> randomIntegerTwoPositionsAllObject(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<Object> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = rand.nextInt(vetorSolucao.size());
-        int posicao2;
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = rand.nextInt(solutionVector.size());
+        int position2;
 
-        if( vetor1 == vetor2 ){
-            posicao2 = (posicao1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
+        if( vector1 == vector2 ){
+            position2 = (position1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
         } else{
-            posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+            position2 = rand.nextInt(solutionVector.get(vector2).size());
         }
         
-        vetPosicao = new ArrayList<Object>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Object>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        return vetPosicao;
+        return positionVector;
     }
 
-    public static ArrayList<ArrayList<Integer>> randInteiroInteger2pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomIntegerTwoPositionsDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = (vetor1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
-        int posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = (vector1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
+        int position2 = rand.nextInt(solutionVector.get(vector2).size());
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<Object> randInteiro2pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<Object> listaPosicoes = new ArrayList<Object>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<Object> randomIntegerTwoPositionsDiverseObject(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<Object> positionsList = new ArrayList<Object>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = (vetor1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
-        int posicao2 = rand.nextInt(vetorSolucao.get(vetor2).size());
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = (vector1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
+        int position2 = rand.nextInt(solutionVector.get(vector2).size());
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<ArrayList<Integer>> randInteiroInteger2pMv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<ArrayList<Integer>> listaPosicoes = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<ArrayList<Integer>> randomIntegerTwoPositionsSameVector(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<ArrayList<Integer>> positionsList = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int posicao2 = (posicao1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int position2 = (position1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector1);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<Object> randInteiro2pMv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<Object> listaPosicoes = new ArrayList<Object>();
-        ArrayList<Integer> vetPosicao;
+    public static ArrayList<Object> randomIntegerTwoPositionsSameVectorObject(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<Object> positionsList = new ArrayList<Object>();
+        ArrayList<Integer> positionVector;
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int posicao2 = (posicao1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int position2 = (position1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector1);
+        positionVector.add(position2);
 
-        listaPosicoes.add(vetPosicao);
+        positionsList.add(positionVector);
 
-        return listaPosicoes;
+        return positionsList;
     }
 
-    public static ArrayList<Integer> randInteiro1pDv(ArrayList<ArrayList<Object>> vetorSolucao){
-        ArrayList<Integer> vetPosicao = new ArrayList<Integer>();
+    public static ArrayList<Integer> randomIntegerOnePositionDiverse(ArrayList<ArrayList<Object>> solutionVector){
+        ArrayList<Integer> positionVector = new ArrayList<Integer>();
         Random rand = new Random();
 
-        int vetor1 = rand.nextInt(vetorSolucao.size());
-        int posicao1 = rand.nextInt(vetorSolucao.get(vetor1).size());
-        int vetor2 = (vetor1+rand.nextInt(vetorSolucao.size()-1)+1)%vetorSolucao.size();
+        int vector1 = rand.nextInt(solutionVector.size());
+        int position1 = rand.nextInt(solutionVector.get(vector1).size());
+        int vector2 = (vector1+rand.nextInt(solutionVector.size()-1)+1)%solutionVector.size();
 
-        vetPosicao = new ArrayList<Integer>();
-        vetPosicao.add(vetor1);
-        vetPosicao.add(posicao1);
-        vetPosicao.add(vetor2);
+        positionVector = new ArrayList<Integer>();
+        positionVector.add(vector1);
+        positionVector.add(position1);
+        positionVector.add(vector2);
 
-        return vetPosicao;
+        return positionVector;
     }
 
-    public static ArrayList<ArrayList<String>> dadosEntrada(String nomeProblema){
-        ArrayList<String> dados;
+    public static ArrayList<ArrayList<String>> getInputData(String problemName){
+        ArrayList<String> data;
         ArrayList<ArrayList<String>> dd = new ArrayList<ArrayList<String>>();
 
-        if( nomeProblema.equals("PartNum") ){
-            dados = new ArrayList<String>();
-            dados.add("MelhorVizinho"); //BuscaLocal
-            dd.add(dados);
+        if( problemName.equals("PartNum") ){
+            data = new ArrayList<String>();
+            data.add("BestNeighbor"); //LocalSearch
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //ListaVizinhos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //NeighborsList
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //ModificaSolucao
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //ModifySolution
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Posicao"); //Lista Candidatos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("Position"); //Candidates List
+            dd.add(data);
 
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //Pertubacao1 - ILS
-            dados.add("Inteiro2pDv"); //Pertubacao2 - ILS
-            dd.add(dados);
-        } else if( nomeProblema.equals("Mochila") ){
-            dados = new ArrayList<String>();
-            dados.add("MelhorVizinho"); //BuscaLocal
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //Perturbation1 - ILS
+            data.add("IntegerTwoPositionsDiverse"); //Perturbation2 - ILS
+            dd.add(data);
+        } else if( problemName.equals("Knapsack") ){
+            data = new ArrayList<String>();
+            data.add("BestNeighbor"); //LocalSearch
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Binario1p"); //ListaVizinhos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("BinaryOnePosition"); //NeighborsList
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Binario1p"); //ModificaSolucao
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("BinaryOnePosition"); //ModifySolution
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("vetorPosicao"); //Lista Candidatos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("positionVector"); //Candidates List
+            dd.add(data);
 
-            dados = new ArrayList<String>();
-            dados.add("Binario1p"); //Pertubacao1 - ILS
-            dados.add("Binario2pMt"); //Pertubacao2 - ILS
-            dd.add(dados);
-        } else if( nomeProblema.equals("PDM") ){
-            dados = new ArrayList<String>();
-            dados.add("Randomica"); //BuscaLocal
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("BinaryOnePosition"); //Perturbation1 - ILS
+            data.add("BinaryTwoPositionsAll"); //Perturbation2 - ILS
+            dd.add(data);
+        } else if( problemName.equals("PDM") ){
+            data = new ArrayList<String>();
+            data.add("Random"); //LocalSearch
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //ListaVizinhos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //NeighborsList
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //ModificaSolucao
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //ModifySolution
+            dd.add(data);
             
-            dados = new ArrayList<String>();
-            dados.add("vetorPosicao"); //Lista Candidatos
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("positionVector"); //Candidates List
+            dd.add(data);
 
-            dados = new ArrayList<String>();
-            dados.add("Inteiro2pDv"); //Pertubacao1 - ILS
-            dados.add("Inteiro2pDv"); //Pertubacao2 - ILS
-            dd.add(dados);
+            data = new ArrayList<String>();
+            data.add("IntegerTwoPositionsDiverse"); //Perturbation1 - ILS
+            data.add("IntegerTwoPositionsDiverse"); //Perturbation2 - ILS
+            dd.add(data);
         } else{
 
         }
@@ -986,4 +985,3 @@ public class BasicFunctions {
         return dd;
     }
 }
-

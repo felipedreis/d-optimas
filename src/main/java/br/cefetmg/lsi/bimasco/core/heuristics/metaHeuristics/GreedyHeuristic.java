@@ -16,15 +16,15 @@ import java.util.Random;
 //TODO: Rename elements
 public class GreedyHeuristic extends MetaHeuristic {
 
-    public static int c_TimeDivisor = 1000;
-    // Inclusao: Verificar como isso pode modificar a questão da alterações do parametros do agente
-    //private ICondicaoParada condicaoParada;
-    private List<Solution> melhorSolucao;
-    private Solution solucaoCorrente;
-    private Integer maxIteracoes;
-    private String nomeLCandidatos;
+    public static int TIME_DIVISOR = 1000;
+    // Inclusion: Verify how this can modify the issue of changes to agent parameters
+    //private IStopCondition stopCondition;
+    private List<Solution> bestSolutions;
+    private Solution currentSolution;
+    private Integer maxIterations;
+    private String candidatesListName;
     private SolutionAnalyser solutionAnalyser;
-    private Object limite;
+    private Object targetFitness;
 
     public GreedyHeuristic(Problem problem) {
         super(problem);
@@ -34,23 +34,23 @@ public class GreedyHeuristic extends MetaHeuristic {
     public void configureMetaHeuristic(AgentSettings agentSettings) {
         this.metaHeuristicParameters = agentSettings.getMetaHeuristicParameters();
 
-        this.maxIteracoes = (Integer) metaHeuristicParameters
+        this.maxIterations = (Integer) metaHeuristicParameters
                 .getOrDefault(DefaultMetaHeuristicParametersKeySupported.MAX_NUMBER_OF_ITERATIONS_KEY, 0);
 
-        this.nomeLCandidatos = (String) metaHeuristicParameters
+        this.candidatesListName = (String) metaHeuristicParameters
                 .get(DefaultMetaHeuristicParametersKeySupported.CANDIDATES_LIST_NAME_KEY);
 
 
-        this.limite = this.problem.getLimit();
+        this.targetFitness = this.problem.getLimit();
 
 
         this.solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
         if (problem.getProblemSettings().getName() != null) {
-            this.solucaoCorrente = Solution.buildSolution(problem);
+            this.currentSolution = Solution.buildSolution(problem);
         }
 
-        this.melhorSolucao = new ArrayList<>();
-        this.melhorSolucao.add(0, this.solucaoCorrente);
+        this.bestSolutions = new ArrayList<>();
+        this.bestSolutions.add(0, this.currentSolution);
     }
 
     @SuppressWarnings("empty-statement")
@@ -62,134 +62,134 @@ public class GreedyHeuristic extends MetaHeuristic {
 
         initialTime = System.currentTimeMillis();
 
-        System.out.println("\nSOLUÇÃO INICIAL DO GreedyHeuristic! ");
-        System.out.println("\nMÉTODO GreedyHeuristic! ");
+        System.out.println("\nINITIAL SOLUTION OF GreedyHeuristic! ");
+        System.out.println("\nGreedyHeuristic METHOD! ");
 
-        metodo_Gulosa(context);
+        greedyMethod(context);
 
         finalTime = System.currentTimeMillis();
-        end = ((finalTime - initialTime) / c_TimeDivisor);
+        end = ((finalTime - initialTime) / TIME_DIVISOR);
         System.err.println("\nEnded - GreedyHeuristic = Time spent: " + end + "");
 
         System.gc();
 
-        return (this.melhorSolucao);
+        return (this.bestSolutions);
     }
 
-    public void metodo_Gulosa(Context context) {
-        List<List<Object>> lCandidatos = new ArrayList<>();
-        CandidatesList listaCandidatos = null;
-        Solution solucaoAux = null;
-        Solution solucaoElemento = null;
+    public void greedyMethod(Context context) {
+        List<List<Object>> candidatesList = new ArrayList<>();
+        CandidatesList candidatesListHelper = null;
+        Solution auxiliarySolution = null;
+        Solution elementSolution = null;
 
         Random rand = new Random();
         int divisor = 0;
-        int percentagem = 0;
-        int nElementos = 0;
-        int indexMC;
+        int percentage = 0;
+        int nElements = 0;
+        int bestCandidateIndex;
         Object sA = null;
-        Object melhor = null;
-        Object mS = this.solucaoCorrente.getFunctionValue();
+        Object best = null;
+        Object mS = this.currentSolution.getFunctionValue();
         Object sE = null;
 
-        nElementos = problem.getDimension();
-        percentagem = (int) (0.1 * nElementos);
+        nElements = problem.getDimension();
+        percentage = (int) (0.1 * nElements);
 
-        this.limite = this.problem.getLimit();
+        this.targetFitness = this.problem.getLimit();
 
 
-        if (percentagem <= 0) {
-            percentagem = 1;
+        if (percentage <= 0) {
+            percentage = 1;
         }
 
-        for (int i = 0; i < this.maxIteracoes; i++) {
-            listaCandidatos = CandidatesListHelper.buildCandidatesList(this.nomeLCandidatos, this.problem);
-            //lCandidatos = listaCandidatos.getCandidates();
+        for (int i = 0; i < this.maxIterations; i++) {
+            candidatesListHelper = CandidatesListHelper.buildCandidatesList(this.candidatesListName, this.problem);
+            //candidatesList = candidatesListHelper.getCandidates();
 
-            solucaoAux = Solution.buildSolution(problem);
-            solucaoElemento = Solution.buildSolution(problem);
+            auxiliarySolution = Solution.buildSolution(problem);
+            elementSolution = Solution.buildSolution(problem);
 
-            for (int j = 0; j < percentagem; j++) {
-                indexMC = rand.nextInt(lCandidatos.size());
-                //solucaoAux.addElement(lCandidatos.get(indexMC));
-                if (!solucaoAux.isViable(context)) {
-                    List<Object> candidate = lCandidatos.get(indexMC);
+            for (int j = 0; j < percentage; j++) {
+                bestCandidateIndex = rand.nextInt(candidatesList.size());
+                //auxiliarySolution.addElement(candidatesList.get(bestCandidateIndex));
+                if (!auxiliarySolution.isViable(context)) {
+                    List<Object> candidate = candidatesList.get(bestCandidateIndex);
 
-                    solucaoAux.removeElement((int) candidate.get(0));
+                    auxiliarySolution.removeElement((int) candidate.get(0));
                 }
 
-                //lCandidatos = listaCandidatos.removeCandidates(indexMC);
+                //candidatesList = candidatesListHelper.removeCandidates(bestCandidateIndex);
             }
 
-            sA = solucaoAux.getFunctionValue();
+            sA = auxiliarySolution.getFunctionValue();
 
-            while (lCandidatos.size() != 0) {
-                indexMC = -1;
-                melhor = this.limite;
+            while (candidatesList.size() != 0) {
+                bestCandidateIndex = -1;
+                best = this.targetFitness;
 
-                for (int j = 0; j < lCandidatos.size(); j++) {
-                    //solucaoElemento.copyValues(solucaoAux);
-                    //solucaoElemento.addElementToSolution(lCandidatos.get(j));
-                    sE = solucaoElemento.getFunctionValue();
+                for (int j = 0; j < candidatesList.size(); j++) {
+                    //elementSolution.copyValues(auxiliarySolution);
+                    //elementSolution.addElementToSolution(candidatesList.get(j));
+                    sE = elementSolution.getFunctionValue();
 
-                    //if (sE.equals(this.solutionAnalyser.getBest(melhor, sE))) {
-                    //    if (solucaoElemento.isViable(context)) {
-                    //        melhor = sE;
-                    //        indexMC = j;
+                    //if (sE.equals(this.solutionAnalyser.getBest(best, sE))) {
+                    //    if (elementSolution.isViable(context)) {
+                    //        best = sE;
+                    //        bestCandidateIndex = j;
                     //    }
                     //}
                 }
 
-                if (indexMC == -1) {
-                    lCandidatos.clear();
+                if (bestCandidateIndex == -1) {
+                    candidatesList.clear();
                 } else {
-                    //solucaoAux.addElementToSolution(lCandidatos.get(indexMC));
-                    //lCandidatos = listaCandidatos.removeCandidates(indexMC);
-                    sA = solucaoAux.getFunctionValue();
+                    //auxiliarySolution.addElementToSolution(candidatesList.get(bestCandidateIndex));
+                    //candidatesList = candidatesListHelper.removeCandidates(bestCandidateIndex);
+                    sA = auxiliarySolution.getFunctionValue();
                 }
             }
 
 
             //if (sA.equals(this.solutionAnalyser.getBest(sA, mS))) {
-            //    solucaoCorrente = solucaoAux;
+            //    currentSolution = auxiliarySolution;
             //    mS = sA;
             //}
 
             if (divisor == 0)
-                divisor = ((int) (this.maxIteracoes / 10));
+                divisor = ((int) (this.maxIterations / 10));
             if (i % (divisor < 2 ? 2 : divisor) == 0)
                 System.gc();
         }
 
-        melhorSolucao.clear();
-        melhorSolucao.add(solucaoCorrente);
+        bestSolutions.clear();
+        bestSolutions.add(currentSolution);
 
     }
 
-    public Integer melhorElemento(Solution SCorrente, List<List<Object>> LCandidatos) {
-        Solution SAuxiliar = null;
+    public Integer bestElement(Solution currentSolution, List<List<Object>> candidatesList) {
+        Solution auxiliarySolution = null;
 
-        SAuxiliar = Solution.buildSolution(problem);
+        auxiliarySolution = Solution.buildSolution(problem);
 
-        int indexMS = 0;
+        int bestSolutionIndex = 0;
 
-        SAuxiliar = (Solution) SCorrente.clone();
-        //SAuxiliar.addElementToSolution(LCandidatos.get(indexMS));
-        Object valorMS = SAuxiliar.getFunctionValue();
-        Object valorSA = null;
+        auxiliarySolution = (Solution) currentSolution.clone();
+        //auxiliarySolution.addElementToSolution(candidatesList.get(bestSolutionIndex));
+        Object bestValue = auxiliarySolution.getFunctionValue();
+        Object currentIterationValue = null;
 
-        for (int i = 1; i < LCandidatos.size(); i++) {
-            SAuxiliar = (Solution) SCorrente.clone();
-            //SAuxiliar.addElementToSolution(LCandidatos.get(i));
-            valorSA = SAuxiliar.getFunctionValue();
+        for (int i = 1; i < candidatesList.size(); i++) {
+            auxiliarySolution = (Solution) currentSolution.clone();
+            //auxiliarySolution.addElementToSolution(candidatesList.get(i));
+            currentIterationValue = auxiliarySolution.getFunctionValue();
 
-            //if (valorSA.equals(this.solutionAnalyser.getBest(valorSA, valorMS))) {
-            //    valorMS = valorSA;
-            //    indexMS = i;
+            //if (currentIterationValue.equals(this.solutionAnalyser.getBest(currentIterationValue, bestValue))) {
+            //    bestValue = currentIterationValue;
+            //    bestSolutionIndex = i;
             //}
         }
 
-        return indexMS;
+        return bestSolutionIndex;
     }
 
     @Override
@@ -197,11 +197,11 @@ public class GreedyHeuristic extends MetaHeuristic {
         return null;
     }
 
-    public Integer getMaxIteracoes() {
-        return maxIteracoes;
+    public Integer getMaxIterations() {
+        return maxIterations;
     }
 
-    public void setMaxIteracoes(Integer maxIteracoes) {
-        this.maxIteracoes = maxIteracoes;
+    public void setMaxIterations(Integer maxIterations) {
+        this.maxIterations = maxIterations;
     }
 }

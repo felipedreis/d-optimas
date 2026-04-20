@@ -16,7 +16,7 @@ public class NumbersPartitioningProblem extends Problem {
     private Integer numeroElementos;
     private ArrayList<Integer> pesoElementos;
     private ArrayList<Object> parametro;
-    private Integer limiteSuperior;
+    private Integer upperLimit;
 
     public NumbersPartitioningProblem(){
         super();
@@ -32,15 +32,15 @@ public class NumbersPartitioningProblem extends Problem {
         this.numeroParticoes = (int) problemData.get(4).get(0);
 
         this.pesoElementos = new ArrayList<Integer>();
-        this.limiteSuperior = 0;
+        this.upperLimit = 0;
 
-        int somaLimite = 0;
+        int limitSum = 0;
 
         for(int i=6; i<problemData.size(); i++){
             this.pesoElementos.add((int) problemData.get(i).get(0));
-            somaLimite = somaLimite + ( (int) problemData.get(i).get(0));
+            limitSum = limitSum + ( (int) problemData.get(i).get(0));
         }
-        this.limiteSuperior = somaLimite;
+        this.upperLimit = limitSum;
         this.parametro = new ArrayList<Object>();
         this.parametro.add(numeroParticoes);
     }
@@ -62,22 +62,22 @@ public class NumbersPartitioningProblem extends Problem {
 
     @Override
     public Object getFitnessFunction(List<Object> element) {
-        int posicao = (Integer) element.get(0);
+        int position = (Integer) element.get(0);
 
-        return pesoElementos.get(posicao);
+        return pesoElementos.get(position);
     }
 
     @Override
     public Object getLimit() {
-        return limiteSuperior;
+        return upperLimit;
     }
 
     @Override
     public ArrayList<Object> getParameters() {
         return parametro;
     }
-    
-    public Integer pesoElemento(Integer posicao){
-        return pesoElementos.get(posicao);
+
+    public Integer pesoElemento(Integer position){
+        return pesoElementos.get(position);
     }
 }

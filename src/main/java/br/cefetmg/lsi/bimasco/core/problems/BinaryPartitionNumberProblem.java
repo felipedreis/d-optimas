@@ -10,7 +10,7 @@ public class BinaryPartitionNumberProblem extends Problem {
     protected Integer partitions;
     protected List<Integer> weights;
     private List<Object> parametro;
-    private Integer heigherLimit;
+    private Integer upperLimit;
     
     public BinaryPartitionNumberProblem(){
         super();
@@ -25,15 +25,15 @@ public class BinaryPartitionNumberProblem extends Problem {
         partitions = (int) dadosProblema.get(4).get(0);
 
         weights = new ArrayList<>();
-        heigherLimit = 0;
+        upperLimit = 0;
 
-        int somaLimite = 0;
+        int limitSum = 0;
 
         for(int i=6; i<dadosProblema.size(); i++){
             weights.add((int) dadosProblema.get(i).get(0));
-            somaLimite = somaLimite + ((int)dadosProblema.get(i).get(0));
+            limitSum = limitSum + ((int)dadosProblema.get(i).get(0));
         }
-        heigherLimit = somaLimite;
+        upperLimit = limitSum;
         parametro = new ArrayList<>();
         parametro.add(partitions);
     }
@@ -58,14 +58,14 @@ public class BinaryPartitionNumberProblem extends Problem {
 
     @Override
     public Object getFitnessFunction(List<Object> element) {
-        int posicao = (Integer) element.get(0);
+        int position = (Integer) element.get(0);
 
-        return weights.get(posicao);
+        return weights.get(position);
     }
 
     @Override
     public Object getLimit() {
-        return heigherLimit;
+        return upperLimit;
     }
 
     @Override
@@ -77,8 +77,8 @@ public class BinaryPartitionNumberProblem extends Problem {
         return partitions;
     }
     
-    public Integer pesoElemento(Integer posicao){
-        return weights.get(posicao);
+    public Integer pesoElemento(Integer position){
+        return weights.get(position);
     }
 
     public void setPartitions(Integer partitions) {
@@ -97,11 +97,11 @@ public class BinaryPartitionNumberProblem extends Problem {
         this.parametro = parametro;
     }
 
-    public Integer getHeigherLimit() {
-        return heigherLimit;
+    public Integer getUpperLimit() {
+        return upperLimit;
     }
 
-    public void setHeigherLimit(Integer heigherLimit) {
-        this.heigherLimit = heigherLimit;
+    public void setUpperLimit(Integer upperLimit) {
+        this.upperLimit = upperLimit;
     }
 }

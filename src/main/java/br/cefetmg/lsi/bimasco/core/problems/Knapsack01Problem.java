@@ -72,9 +72,9 @@ public class Knapsack01Problem extends Problem {
 
     @Override
     public Object getFitnessFunction(List<Object> element) {
-        int posicao = (Integer) element.get(0);
+        int position = (Integer) element.get(0);
 
-        return gain[posicao];
+        return gain[position];
     }
 
     @Override

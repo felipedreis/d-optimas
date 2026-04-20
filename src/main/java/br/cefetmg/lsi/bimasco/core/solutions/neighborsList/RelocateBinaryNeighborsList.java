@@ -15,28 +15,28 @@ public class RelocateBinaryNeighborsList implements NeighborsList {
 
     @Override
     public ArrayList<ArrayList<Object>> getNeighborsList(Solution solution, String neighborhood){
-        ArrayList<ArrayList<Object>> vetorAux = new ArrayList<ArrayList<Object>>();
-        ArrayList<Object> posicao;       
-        int cont = 0;
+        ArrayList<ArrayList<Object>> auxiliaryVector = new ArrayList<ArrayList<Object>>();
+        ArrayList<Object> position;       
+        int counter = 0;
         int index;
         Random rand = new Random();
         /*
         for(int i=0; i< solution.getSolutionsVector().size(); i++){
             for(int j=0; j< solution.getSolutionsVector().get(i).size(); j++){
-                posicao = new ArrayList<Object>();
+                position = new ArrayList<Object>();
 
-                posicao.add(i);
-                posicao.add(j);
-                vetorAux.add(posicao);
-                cont++;
+                position.add(i);
+                position.add(j);
+                auxiliaryVector.add(position);
+                counter++;
             }
         }        
         
-        for(int i=0; i<vetorAux.size(); i++){
-            index = rand.nextInt(cont-i);
-            this.neighborsList.add(vetorAux.get(index));
+        for(int i=0; i<auxiliaryVector.size(); i++){
+            index = rand.nextInt(counter-i);
+            this.neighborsList.add(auxiliaryVector.get(index));
             
-            vetorAux.remove(index);
+            auxiliaryVector.remove(index);
         }
         */
 

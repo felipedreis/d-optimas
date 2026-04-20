@@ -13,9 +13,9 @@ public interface PerformsMotion <Domain extends Element, S extends Solution<Doma
 
     Logger logger = LoggerFactory.getLogger(PerformsMotion.class);
 
-    default S movement(S solution, List<Integer> posicao, List<Domain> parametro) {
+    default S movement(S solution, List<Integer> position, List<Domain> parameters) {
         logger.debug(String.format("Calling IntegerRelocateSO Motion on solution %s with positions %s and parameters %s",
-                solution, posicao, parametro));
+                solution, position, parameters));
         return solution;
     }
 }

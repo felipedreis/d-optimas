@@ -14,52 +14,52 @@ public class ChangeBinaryNeighborsList implements NeighborsList {
     private ArrayList<ArrayList<Object>> neighborsList = new ArrayList<ArrayList<Object>>();
 
     @Override
-    public ArrayList<ArrayList<Object>> getNeighborsList(Solution solution, String neighborhood){
-        ArrayList<ArrayList<Object>> vetorAux = new ArrayList<ArrayList<Object>>();
-        ArrayList<Object> vetor0 = new ArrayList<Object>();
-        ArrayList<Object> vetor1 = new ArrayList<Object>();
-        ArrayList<Object> posicao0 = new ArrayList<Object>();
-        ArrayList<Object> posicao1 = new ArrayList<Object>();
-        ArrayList<Object> posicao;
-        /*
-        for(int i=0; i< solution.getSolutionsVector().size(); i++){
-            for(int j=0; j< solution.getSolutionsVector().get(i).size(); j++){
-                if( solution.getSolutionsVector().get(i).get(j).equals(0) ){
-                    vetor0.add(i);
-                    posicao0.add(j);
-                } else{
-                    vetor1.add(i);
-                    posicao1.add(j);
+    public ArrayList<ArrayList<Object>> getNeighborsList(Solution solution, String neighborhood) {
+        ArrayList<ArrayList<Object>> auxiliaryVector = new ArrayList<ArrayList<Object>>();
+        ArrayList<Object> vector0 = new ArrayList<Object>();
+        ArrayList<Object> vector1 = new ArrayList<Object>();
+        ArrayList<Object> position0 = new ArrayList<Object>();
+        ArrayList<Object> position1 = new ArrayList<Object>();
+        ArrayList<Object> position;
+
+        for (int i = 0; i < solution.getSolutionsVector().size(); i++) {
+            for (int j = 0; j < ((ArrayList) solution.getSolutionsVector().get(i)).size(); j++) {
+                if ((Integer) ((ArrayList) solution.getSolutionsVector().get(i)).get(j) == 0) {
+                    vector0.add(i);
+                    position0.add(j);
+                } else {
+                    vector1.add(i);
+                    position1.add(j);
                 }
+
             }
         }
 
-        int cont = 0;
-        int index;
+        for (int i = 0; i < vector0.size(); i++) {
+            for (int j = 0; j < vector1.size(); j++) {
+                position = new ArrayList<Object>();
+
+                position.add(vector0.get(i));
+                position.add(position0.get(i));
+                position.add(vector1.get(j));
+                position.add(position1.get(j));
+
+                auxiliaryVector.add(position);
+            }
+        }
+
         Random rand = new Random();
-        
-        for(int i=0; i<vetor0.size(); i++){
-            for(int j=0; j<vetor1.size(); j++){
-                posicao = new ArrayList<Object>();
+        int index = 0;
+        for (int i = 0; i < auxiliaryVector.size(); i++) {
+            index = rand.nextInt(auxiliaryVector.size());
 
-                posicao.add(vetor0.get(i));
-                posicao.add(posicao0.get(i));
-                posicao.add(vetor1.get(j));
-                posicao.add(posicao1.get(j));
+            this.neighborsList.add(auxiliaryVector.get(index));
 
-                vetorAux.add(posicao);
-                cont++;
-            }
+            auxiliaryVector.remove(index);
         }
-        
-        for(int i=0; i<vetorAux.size(); i++){
-            index = rand.nextInt(cont-i);
-            this.neighborsList.add(vetorAux.get(index));
-            
-            vetorAux.remove(index);
-        }
-        */
+
         return this.neighborsList;
+    }
     }
 
     @Override

@@ -63,8 +63,8 @@ public class GATest {
     }
 
     @Test
-    public void testGetNumPais() {
-        assertEquals(2, ga.getNumPais());
+    public void testGetNumParents() {
+        assertEquals(2, ga.getNumParents());
     }
 
     @Test

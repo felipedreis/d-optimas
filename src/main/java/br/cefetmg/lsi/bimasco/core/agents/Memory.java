@@ -55,16 +55,16 @@ public class Memory implements Serializable {
                         makeBetter = true;
                     }
                 } else {
-                    String novaSolucao = solution.getFunctionValue().toString();
-                    String melhorSolucao = this.bestSolution.getFunctionValue().toString();
-                    //System.out.println("Nova solucao gerada: " + novaSolucao);
-                    //System.out.println("Melhor solucao: " + bestSolution);
-                    if ((Double.parseDouble(novaSolucao) <
-                            Double.parseDouble(melhorSolucao))
+                    String newSolutionValue = solution.getFunctionValue().toString();
+                    String bestSolutionValue = this.bestSolution.getFunctionValue().toString();
+                    //System.out.println("New solution generated: " + newSolutionValue);
+                    //System.out.println("Best solution: " + bestSolution);
+                    if ((Double.parseDouble(newSolutionValue) <
+                            Double.parseDouble(bestSolutionValue))
                             && this.simulationHasCooperation){
                         //this.reinforce(emitter);
                         makeBetter = true;
-                        //System.out.println("	" + agentName + " melhorou sua solucao a partir do agente de id " + AgentDB.getById(emitter).getName());
+                        //System.out.println("	" + agentName + " improved its solution from agent id " + AgentDB.getById(emitter).getName());
                     }
                 }
             }
@@ -79,23 +79,23 @@ public class Memory implements Serializable {
 
     public void printSolutions(String agentName)  {
         // TODO Auto-generated method stub
-        /*System.out.println("Memoria do Agente: " + agentName);
-		for(Solucao solucao : getSolutions()){
-			System.out.println("		Solucao " + getSolutions().indexOf(solucao) + ": " + solucao.getValorFuncao());
+        /*System.out.println("Agent Memory: " + agentName);
+		for(Solution solution : getSolutions()){
+			System.out.println("		Solution " + getSolutions().indexOf(solution) + ": " + solution.getFunctionValue());
 		}*/
     }
 
     public void printProbabilities(String agentName, UUID idAgent) {
         // TODO Auto-generated method stub
         if (probabilities.size() > 0) {
-            //System.out.println("	Agente: " + agentName + " e suas probabilidades de escolha");
+            //System.out.println("	Agent: " + agentName + " and its choice probabilities");
             for (int i = 0; i < probabilities.size(); i++) {
                 Probability pro = probabilities.get(i);
-                String agente = pro.getIdAgent().toString();
-                String probabilidade = pro.getProbability().toString();
-                //System.out.println("		Agente: " + agente);
-                //System.out.println("		Probabilidade: " + probabilidade);
-                //AgentChooseProbabilityDB.insertValues(idAgent, pro.getIdAgent(), ArtificialWorld.getSimulation().getId(), pro.getProbability(), System.currentTimeMillis() - ArtificialWorld.getTempoInicioExecucao());
+                String agent = pro.getIdAgent().toString();
+                String probability = pro.getProbability().toString();
+                //System.out.println("		Agent: " + agent);
+                //System.out.println("		Probability: " + probability);
+                //AgentChooseProbabilityDB.insertValues(idAgent, pro.getIdAgent(), ArtificialWorld.getSimulation().getId(), pro.getProbability(), System.currentTimeMillis() - ArtificialWorld.getStartTimeExecution());
             }
         }
     }
@@ -103,22 +103,22 @@ public class Memory implements Serializable {
     private void reinforce(Integer emitter) {
         Double oldProb = 0.0;
         Double newProb = 0.0;
-        Integer agenteSize = probabilities.size();
+        Integer agentSize = probabilities.size();
         for (Probability prob : probabilities) {
             if (prob.getIdAgent().equals(emitter)) {
                 oldProb = prob.getProbability();
-                newProb = prob.getProbability() + (1 - prob.getProbability()) / (agenteSize);
+                newProb = prob.getProbability() + (1 - prob.getProbability()) / (agentSize);
                 prob.setProbability(newProb);
             }
         }
         for (Probability prob : probabilities) {
-            if ((prob.getProbability() <= (newProb - oldProb) / (agenteSize)) && (!prob.getIdAgent().equals(emitter))) {
-                agenteSize--;
+            if ((prob.getProbability() <= (newProb - oldProb) / (agentSize)) && (!prob.getIdAgent().equals(emitter))) {
+                agentSize--;
             }
         }
         for (Probability prob : probabilities) {
-            if ((!prob.getIdAgent().equals(emitter)) && (prob.getProbability() > (newProb - oldProb) / (agenteSize - 1)) && agenteSize != 0) {
-                prob.setProbability(prob.getProbability() - (newProb - oldProb) / (agenteSize - 1));
+            if ((!prob.getIdAgent().equals(emitter)) && (prob.getProbability() > (newProb - oldProb) / (agentSize - 1)) && agentSize != 0) {
+                prob.setProbability(prob.getProbability() - (newProb - oldProb) / (agentSize - 1));
             }
         }
     }
@@ -141,15 +141,15 @@ public class Memory implements Serializable {
         }
     }
 
-    public void addSolutions(List<Solution> solucoes, UUID emitter) {
+    public void addSolutions(List<Solution> solutions, UUID emitter) {
 
-        //if (solucoes.size() > 1) {
-        //    System.out.println("	ALGORITMO GENETICO	");
-        //    System.out.println("	Size maior que zero...");
-        //    System.out.println("	TAM: " + solucoes.size());
+        //if (solutions.size() > 1) {
+        //    System.out.println("	GENETIC ALGORITHM	");
+        //    System.out.println("	Size greater than zero...");
+        //    System.out.println("	SIZE: " + solutions.size());
         //}
 
-        for (Solution solution : solucoes) {
+        for (Solution solution : solutions) {
             String time = BimascoDate.formattedTime();
             if (emitter != null)
                 solution.setInitialSolutionCreator(emitter);
@@ -192,16 +192,16 @@ public class Memory implements Serializable {
         Solution aux;
         for (int i = 0; i < getSolutions().size(); i++) {
             for (int j = 0; j < getSolutions().size() - 1; j++) {
-                Double valor1 = Double.parseDouble(getSolutions().get(j).getFunctionValue().toString());
-                Double valor2 = Double.parseDouble(getSolutions().get(j + 1).getFunctionValue().toString());
+                Double value1 = Double.parseDouble(getSolutions().get(j).getFunctionValue().toString());
+                Double value2 = Double.parseDouble(getSolutions().get(j + 1).getFunctionValue().toString());
                 if (!this.problemSettings.getMax()) {
-                    if (valor1 > valor2) {
+                    if (value1 > value2) {
                         aux = solutionsList.get(j);
                         solutionsList.set(j, solutionsList.get(j + 1));
                         solutionsList.set(j + 1, aux);
                     }
                 } else {
-                    if (valor1 < valor2) {
+                    if (value1 < value2) {
                         aux = solutionsList.get(j);
                         solutionsList.set(j, solutionsList.get(j + 1));
                         solutionsList.set(j + 1, aux);
@@ -240,7 +240,7 @@ public class Memory implements Serializable {
         this.timesWithoutChangeTarget = timesWithoutChangeTarget;
     }
 
-    public ArrayList<Solution> getSolucoes(Integer numberOfSolutions) {
+    public ArrayList<Solution> getSolutionsByCount(Integer numberOfSolutions) {
         ArrayList<Solution> solutions = new ArrayList<Solution>();
         if (getSolutions().size() > 0) {
             Random rand = new Random();
@@ -269,7 +269,7 @@ public class Memory implements Serializable {
     }
 
     public void addAgents(Map<UUID, Agent> agents, UUID idAgent) {
-        //this.agenteSize = agents.size();
+        //this.agentSize = agents.size();
 
         ArrayList<Probability> probabilitiesList = (ArrayList<Probability>) this.probabilities.clone();
         for (Agent agent : agents.values()) {
@@ -281,10 +281,10 @@ public class Memory implements Serializable {
             if (alreadyExist == false) {
                 //TODO: Put a solution cooperation variable on problemSettings
                 if(this.simulationHasCooperation){
-                    adicionaProbabilities(agent.getAgentSettings().getId());
+                    addProbabilities(agent.getAgentSettings().getId());
                 } else {
                     if (agent.getAgentSettings().getConstructorMetaHeuristic()) {
-                        adicionaProbabilities(agent.getAgentSettings().getId());
+                        addProbabilities(agent.getAgentSettings().getId());
                     }
                 }
             }
@@ -296,39 +296,39 @@ public class Memory implements Serializable {
 					alreadyExist = true;
 			}
 			if(alreadyExist == false && prob.getIdAgent() != 0)
-				removeProbabilities(prob.getIdAgent());
+				removeProbability(prob.getIdAgent());
 		}*/
-        //System.out.println("Probabilidades: " + probabilities.size()
-        //		+ " - Agente : " + idAgent);
+        //System.out.println("Probabilities: " + probabilities.size()
+        //		+ " - Agent : " + idAgent);
 		/*for(Agent newAgent : agents){
 			boolean alreadyExist = false;
-			for(Agent agent : this.agentes){
+			for(Agent agent : this.agents){
 				if(newAgent.getId().equals(agent.getId())){
-					int id = this.agentes.indexOf(agent);
-					this.agentes.set(id, newAgent);
+					int id = this.agents.indexOf(agent);
+					this.agents.set(id, newAgent);
 					alreadyExist = true;
 				}
 			}
 			if(!alreadyExist){
-				this.agentes.add(newAgent);
-				adicionaProbabilities(newAgent.getId());
+				this.agents.add(newAgent);
+				addProbabilities(newAgent.getId());
 			}
 		}
-		int tam = this.agentes.size();
-		ArrayList<Agent> remover = new ArrayList<Agent>();
-		for(int i=0; i < tam; i++){
-			Agent agent = this.agentes.get(i);
+		int size = this.agents.size();
+		ArrayList<Agent> remove = new ArrayList<Agent>();
+		for(int i=0; i < size; i++){
+			Agent agent = this.agents.get(i);
 			if(!agents.contains(agent)){
-				remover.add(agent);
+				remove.add(agent);
 			}
 		}
-		for(Agent agent : remover){
-			this.agentes.remove(agent);
-			removeProbabilities(agent.getId());
+		for(Agent agent : remove){
+			this.agents.remove(agent);
+			removeProbability(agent.getId());
 		}*/
     }
 
-    public void adicionaProbabilities(UUID emitter) {
+    public void addProbabilities(UUID emitter) {
         Integer size = probabilities.size();
         Probability probability = new Probability(emitter, (1.0 / (size + 1)));
         Double variation = probability.getProbability() / (size);
@@ -347,7 +347,7 @@ public class Memory implements Serializable {
         probabilities.add(probability);
     }
 
-    public void removeProbabilities(Integer emitter) {
+    public void removeProbability(UUID emitter) {
         Integer size = this.probabilities.size() - 1;
         Double variation = 0.0;
         Probability remove = null;

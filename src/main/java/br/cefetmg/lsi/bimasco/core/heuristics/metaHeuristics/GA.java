@@ -28,30 +28,30 @@ public class GA extends MetaHeuristic {
     public static int C_TIME_DIVISOR = 1000;
 
     private List<Solution> population;
-    private List<Solution> proxPopulacao;
+    private List<Solution> nextPopulationPool;
     private Solution bestIterationSolution;
-    private String escolhaPais;
+    private String parentsChoice;
     private String crossover;
-    private String mutacao;
-    private String escolhaProxPopulacao;
-    private String escolheSolucaoInicial;
+    private String mutationChoice;
+    private String nextPopulationChoice;
+    private String initialSolutionChoice;
     private SolutionAnalyser solutionAnalyser;
     private Integer maxIterations;
     private Integer populationSize;
-    private Integer numPais;
+    private Integer numParents;
     private Double mutationTax;
     private Double crossoverTax;
 
     private String stopConditionName;
-    private double tempoInicial;
-    private double tempoFinal;
-    private double tempo;
-    private Object limite;
+    private double initialTimeMs;
+    private double finalTimeMs;
+    private double totalTime;
+    private Object targetFitness;
     private StopCondition stopCondition;
-    private ModifiesSolutionCollections solucaoInicial;
+    private ModifiesSolutionCollections initialSolutionModifier;
     private ModifiesSolutionCollections selection;
     private ModifiesSolutionCollections reproduction;
-    private ModifiesSolutionCollections nextPopulation;
+    private ModifiesSolutionCollections nextPopulationSelector;
     private SolutionModifier mutation;
 
 
@@ -61,11 +61,11 @@ public class GA extends MetaHeuristic {
 
     @Override
     public void configureMetaHeuristic(AgentSettings agentSettings) {
-        // Tais informaçoes sao passadas interativamente atraves da interface grafica (BIMASCO)
-        Solution solucaoAux;
+        // This information is passed interactively through the graphical interface (BIMASCO)
+        Solution auxiliarySolution;
 
         population = new ArrayList<>();
-        proxPopulacao = new ArrayList<>();
+        nextPopulationPool = new ArrayList<>();
 
         metaHeuristicParameters = agentSettings.getMetaHeuristicParameters();
 
@@ -75,7 +75,7 @@ public class GA extends MetaHeuristic {
         populationSize = (Integer) metaHeuristicParameters
                 .getOrDefault(DefaultMetaHeuristicParametersKeySupported.POPULATION_SIZE_KEY, null);
 
-        numPais = (Integer) metaHeuristicParameters
+        numParents = (Integer) metaHeuristicParameters
                 .getOrDefault(DefaultMetaHeuristicParametersKeySupported.PARENTS_SIZE_KEY, null);
 
         stopConditionName = (String) metaHeuristicParameters
@@ -89,26 +89,26 @@ public class GA extends MetaHeuristic {
                 .getOrDefault(DefaultMetaHeuristicParametersKeySupported.MUTATION_TAX_KEY, null);
 
 
-        escolhaPais = agentSettings.getSolutionManipulation()
+        parentsChoice = agentSettings.getSolutionManipulation()
                 .getOrDefault(SolutionManipulationKeys.PARENTS_CHOICE_KEY, new SolutionManipulation("", true)).getType();
 
         crossover = agentSettings.getSolutionManipulation()
                 .getOrDefault(SolutionManipulationKeys.CROSSOVER_CHOICE_KEY, new SolutionManipulation("", true)).getType();
-        mutacao = agentSettings.getSolutionManipulation().
+        mutationChoice = agentSettings.getSolutionManipulation().
                 getOrDefault(SolutionManipulationKeys.MUTATION_CHOICE_KEY, new SolutionManipulation("", true)).getType();
 
         if (agentSettings.getSolutionManipulation().containsKey(SolutionManipulationKeys.NEXT_POPULATION_CHOICE_KEY)) {
-            escolhaProxPopulacao = agentSettings.getSolutionManipulation()
+            nextPopulationChoice = agentSettings.getSolutionManipulation()
                     .get(SolutionManipulationKeys.NEXT_POPULATION_CHOICE_KEY).getType();
         } else {
-            escolhaProxPopulacao = agentSettings.getSolutionManipulation()
+            nextPopulationChoice = agentSettings.getSolutionManipulation()
                     .getOrDefault(SolutionManipulationKeys.CHOOSE_INITIAL_SOLUTION_KEY, new SolutionManipulation("", false)).getType();
         }
 
-        escolheSolucaoInicial = agentSettings.getSolutionManipulation()
+        initialSolutionChoice = agentSettings.getSolutionManipulation()
                 .get(SolutionManipulationKeys.CHOOSE_INITIAL_SOLUTION_KEY).getType();
 
-        limite = problem.getLimit();
+        targetFitness = problem.getLimit();
 
         solutionAnalyser = SolutionAnalyser.buildSolutionAnalyser(problem);
 
@@ -116,16 +116,16 @@ public class GA extends MetaHeuristic {
 
         stopCondition = StopConditionHelper.buildStopCondition(stopConditionName, problem);
 
-        solucaoInicial = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolheSolucaoInicial, problem);
-        selection = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolhaPais, problem);
-        mutation = SolutionModifierHelper.buildModifiesSolution(mutacao, problem, metaHeuristicParameters);
+        initialSolutionModifier = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(initialSolutionChoice, problem);
+        selection = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(parentsChoice, problem);
+        mutation = SolutionModifierHelper.buildModifiesSolution(mutationChoice, problem, metaHeuristicParameters);
         reproduction =
                 ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(crossover, problem);
-        nextPopulation = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(escolhaProxPopulacao, problem);
+        nextPopulationSelector = ModifiesSolutionCollectionsHelper.buildModifiesSolutionCollection(nextPopulationChoice, problem);
 
-        tempo = 0;
-        tempoFinal = 0;
-        tempoInicial = 0;
+        totalTime = 0;
+        finalTimeMs = 0;
+        initialTimeMs = 0;
     }
 
     @Override
@@ -179,43 +179,43 @@ public class GA extends MetaHeuristic {
 
     private void geneticAlgorithm(Context context) {
 
-        Object f0 = limite;
+        Object f0 = targetFitness;
 
-        List<Solution> pais;
+        List<Solution> parents;
         List<Solution> offsprings;
         Random rand = new Random();
 
         int offspringCounter;
-        double permCrossover;
-        double permMutacao;
-        int iteracoes = 0;
-        int iteracoesSM = 0;
+        double crossoverChance;
+        double mutationChance;
+        int iterations = 0;
+        int iterationsWithoutImprovement = 0;
 
 
         getStopWatch().reset();
         getStopWatch().start();
 
-        while (!stopCondition.isSatisfied(f0, stopWatch.getTime(), iteracoes, iteracoesSM, metaHeuristicParameters)) {
-            logger.debug(format("Iteration %d", iteracoes));
-            proxPopulacao = new ArrayList<>();
+        while (!stopCondition.isSatisfied(f0, stopWatch.getTime(), iterations, iterationsWithoutImprovement, metaHeuristicParameters)) {
+            logger.debug(format("Iteration %d", iterations));
+            nextPopulationPool = new ArrayList<>();
             offspringCounter = 0;
 
             while (offspringCounter < populationSize) {
-                pais = SolutionsCollectionUtils.copyValues(parentsChoice(), problem);
-                permCrossover = rand.nextDouble();
+                parents = SolutionsCollectionUtils.copyValues(parentsChoice(), problem);
+                crossoverChance = rand.nextDouble();
 
-                logger.debug(format("Fathers chosen %s", pais));
+                logger.debug(format("Fathers chosen %s", parents));
 
-                if (permCrossover < crossoverTax) {
-                    offsprings = SolutionsCollectionUtils.copyValues(crossover(pais), problem);
+                if (crossoverChance < crossoverTax) {
+                    offsprings = SolutionsCollectionUtils.copyValues(crossover(parents), problem);
                     logger.debug(format("Offsprings %s", offsprings));
 
                     for (Solution offspring : offsprings) {
-                        permMutacao = rand.nextDouble();
+                        mutationChance = rand.nextDouble();
 
                         Solution mutated;
 
-                        if (permMutacao < mutationTax) {
+                        if (mutationChance < mutationTax) {
                             mutated = mutation(offspring);
                         } else {
                             mutated = offspring;
@@ -225,24 +225,24 @@ public class GA extends MetaHeuristic {
                         logger.debug(format("Mutated offspring: %s", mutated));
 
                         if (mutated.isViable(context)) {
-                            proxPopulacao.add(mutated);
+                            nextPopulationPool.add(mutated);
                             offspringCounter++;
                         }
                     }
                 }
             }
-            Optional<Solution> bestSolutionOptional = solutionAnalyser.findBestSolution(proxPopulacao);
+            Optional<Solution> bestSolutionOptional = solutionAnalyser.findBestSolution(nextPopulationPool);
 
             if (bestSolutionOptional.isPresent()) {
                 bestIterationSolution = bestSolutionOptional.get();
-                iteracoesSM = -1;
+                iterationsWithoutImprovement = -1;
             }
 
             population.clear();
-            population = SolutionsCollectionUtils.copyValues(nextPopulation(proxPopulacao), problem);
+            population = SolutionsCollectionUtils.copyValues(nextPopulation(nextPopulationPool), problem);
             logger.debug(format("Next population: %s", population));
-            iteracoes++;
-            iteracoesSM++;
+            iterations++;
+            iterationsWithoutImprovement++;
 
 
         }
@@ -253,7 +253,7 @@ public class GA extends MetaHeuristic {
     }
 
     private List<Solution> parentsChoice() {
-        return SolutionsCollectionUtils.copyValues(selection.modify(population, metaHeuristicParameters, numPais), problem);
+        return SolutionsCollectionUtils.copyValues(selection.modify(population, metaHeuristicParameters, numParents), problem);
     }
 
     private Solution mutation(Solution solution) {
@@ -268,7 +268,7 @@ public class GA extends MetaHeuristic {
 
     private List<Solution> nextPopulation(List<Solution> population) {
         logger.debug("generating next population");
-        return SolutionsCollectionUtils.copyValues(nextPopulation.modify(population, metaHeuristicParameters, populationSize), problem);
+        return SolutionsCollectionUtils.copyValues(nextPopulationSelector.modify(population, metaHeuristicParameters, populationSize), problem);
     }
 
     public SolutionAnalyser getSolutionAnalyser() {
@@ -295,16 +295,16 @@ public class GA extends MetaHeuristic {
         this.maxIterations = parseInt;
     }
 
-    public Integer getNumPais() {
-        return numPais;
+    public Integer getNumParents() {
+        return numParents;
     }
 
-    public void setNumPais(Integer numPais) {
-        this.numPais = numPais;
+    public void setNumParents(Integer numParents) {
+        this.numParents = numParents;
     }
 
-    public void setMaxIteracoes(Integer maxIteracoes) {
-        this.maxIterations = maxIteracoes;
+    public void setMaxIterations(Integer maxIterations) {
+        this.maxIterations = maxIterations;
     }
 
     public Double getMutationTax() {
@@ -323,35 +323,35 @@ public class GA extends MetaHeuristic {
         this.crossoverTax = crossoverTax;
     }
 
-    public String getEscolharPais() {
-        return this.escolhaPais;
+    public String getParentsChoice() {
+        return this.parentsChoice;
     }
 
-    public void setEscolherPais(String nomeEscolhaPais) {
-        this.escolhaPais = nomeEscolhaPais;
+    public void setParentsChoice(String parentsChoice) {
+        this.parentsChoice = parentsChoice;
     }
 
-    public String getMutacao() {
-        return this.mutacao;
+    public String getMutationChoice() {
+        return this.mutationChoice;
     }
 
-    public void setMutacao(String nomeMutacao) {
-        this.mutacao = nomeMutacao;
+    public void setMutationChoice(String mutationChoice) {
+        this.mutationChoice = mutationChoice;
     }
 
     public String getCrossover() {
         return this.crossover;
     }
 
-    public void setCrossover(String nomeCrossover) {
-        this.crossover = nomeCrossover;
+    public void setCrossover(String crossover) {
+        this.crossover = crossover;
     }
 
-    public String getProximaPopulacao() {
-        return this.escolhaProxPopulacao;
+    public String getNextPopulationChoice() {
+        return this.nextPopulationChoice;
     }
 
-    public void setProximaPopulacao(String nomeProximaPopulacao) {
-        this.escolhaProxPopulacao = nomeProximaPopulacao;
+    public void setNextPopulationChoice(String nextPopulationChoice) {
+        this.nextPopulationChoice = nextPopulationChoice;
     }
 }

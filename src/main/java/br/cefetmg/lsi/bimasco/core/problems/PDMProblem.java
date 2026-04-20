@@ -22,12 +22,12 @@ import java.util.StringTokenizer;
 @Deprecated
 public class PDMProblem extends Problem {
     
-    private Integer[][] matrizDiversidade;
-    private Integer numeroElementos;
-    private Integer numeroElementosSolucao;
-    private ArrayList<Double> aptidao;
-    private ArrayList<Object> parametro;
-    private Integer limiteInferior;
+    private Integer[][] diversityMatrix;
+    private Integer numElements;
+    private Integer numSolutionElements;
+    private ArrayList<Double> fitness;
+    private ArrayList<Object> parameters;
+    private Integer lowerLimit;
     
     public PDMProblem(){
         super();
@@ -35,65 +35,65 @@ public class PDMProblem extends Problem {
 
     @Override
     public void initialize() {
-        //System.err.println("ProblemaPDM");
-        ArrayList<ArrayList<String>> dadosProblema = new ArrayList<ArrayList<String>>();
-        dadosProblema = this.lerArquivo(this.getProblemSettings());
+        //System.err.println("PDMProblem");
+        ArrayList<ArrayList<String>> problemData = new ArrayList<ArrayList<String>>();
+        problemData = this.readFile(this.getProblemSettings());
 
-        numeroElementosSolucao = Integer.parseInt(dadosProblema.get(0).get(1));
-        numeroElementos = Integer.parseInt(dadosProblema.get(0).get(0));
-        matrizDiversidade = new Integer[numeroElementos][numeroElementos];
+        numSolutionElements = Integer.parseInt(problemData.get(0).get(1));
+        numElements = Integer.parseInt(problemData.get(0).get(0));
+        diversityMatrix = new Integer[numElements][numElements];
 
         int diver = 0;
-        int contador = 1;
-        for(int i=0; i<numeroElementos-1; i++){
-            for(int j=i+1; j<numeroElementos; j++){
-                diver = Integer.parseInt(dadosProblema.get(contador).get(2));
-                contador++;
-                matrizDiversidade[i][j] = diver;
+        int counter = 1;
+        for(int i=0; i<numElements-1; i++){
+            for(int j=i+1; j<numElements; j++){
+                diver = Integer.parseInt(problemData.get(counter).get(2));
+                counter++;
+                diversityMatrix[i][j] = diver;
             }
         }
 
-        aptidao = new ArrayList<Double>();
-        aptidao.add(0.0);
+        fitness = new ArrayList<Double>();
+        fitness.add(0.0);
 
-        ArrayList<Double> vetorValor = new ArrayList<Double>();
-        double valor;
+        ArrayList<Double> valueVector = new ArrayList<Double>();
+        double value;
 
-        for(int i=0; i<numeroElementos; i++){
-            vetorValor.add(0.0);
+        for(int i=0; i<numElements; i++){
+            valueVector.add(0.0);
 
-            for(int j=i+1; j<i+numeroElementos-1; j++){
-                contador = 0;
-                valor = diversidadeIJ(i,j%numeroElementos);
-                while( valor > vetorValor.get(contador) && contador < vetorValor.size()-1 ){
-                    contador++;
+            for(int j=i+1; j<i+numElements-1; j++){
+                counter = 0;
+                value = diversityIJ(i,j%numElements);
+                while( value > valueVector.get(counter) && counter < valueVector.size()-1 ){
+                    counter++;
                 }
 
-                vetorValor.add(contador,valor);
+                valueVector.add(counter,value);
             }
 
-            valor = 0;
-            for(int j=0; j<numeroElementosSolucao; j++){
-                valor += vetorValor.get(j);
+            value = 0;
+            for(int j=0; j<numSolutionElements; j++){
+                value += valueVector.get(j);
             }
 
-            aptidao.add(valor);
+            fitness.add(value);
         }
 
-        parametro = new ArrayList<Object>();
-        parametro.add(numeroElementosSolucao);
+        parameters = new ArrayList<Object>();
+        parameters.add(numSolutionElements);
 
-        limiteInferior = 0;
+        lowerLimit = 0;
     }
 
     @Override
     public Integer getDimension() {
-        return numeroElementos;
+        return numElements;
     }
 
     @Override
     public Integer getSolutionElementsCount() {
-        return numeroElementosSolucao;
+        return numSolutionElements;
     }
 
     @Override
@@ -103,75 +103,70 @@ public class PDMProblem extends Problem {
 
     @Override
     public Object getFitnessFunction(List<Object> element) {
-        int posicao = (Integer) element.get(0);
+        int position = (Integer) element.get(0);
 
-        return aptidao.get(posicao);
+        return fitness.get(position);
     }
 
     @Override
     public Object getLimit() {
-        return limiteInferior;
+        return lowerLimit;
     }
 
     @Override
     public ArrayList<Object> getParameters() {
-        return parametro;
+        return parameters;
     }
         
-    public Integer diversidadeIJ(int elementoI, int elementoJ){
-        int diversidadeIJ = 0;
+    public Integer diversityIJ(int elementI, int elementJ){
+        int diversityIJ = 0;
 
-        if( elementoI < elementoJ ){
-            diversidadeIJ = matrizDiversidade[elementoI][elementoJ];
+        if( elementI < elementJ ){
+            diversityIJ = diversityMatrix[elementI][elementJ];
         } else{
-            diversidadeIJ = matrizDiversidade[elementoJ][elementoI];
+            diversityIJ = diversityMatrix[elementJ][elementI];
         }
 
-        return diversidadeIJ;
+        return diversityIJ;
     }
 
-    public ArrayList<ArrayList<String>> lerArquivo(ProblemSettings problemSettings){
-        ArrayList<ArrayList<String>> dadosProblema = new ArrayList<ArrayList<String>>();
-        ArrayList<String> dadosEntrada;
-        String linha = null;
-        //String caminhoInstancia = "Instancias/" + Problema.getNome() + "/" + nomeInstancia;
+    public ArrayList<ArrayList<String>> readFile(ProblemSettings problemSettings){
+        ArrayList<ArrayList<String>> problemData = new ArrayList<ArrayList<String>>();
+        ArrayList<String> inputData;
+        String line = null;
         
         try {
             StringTokenizer st = null;
-            //linha = leitor.readLine();
-            while ((linha) != null 
-            		&& !(linha.contains("EOF"))){
-                st = new StringTokenizer(linha, "\t");
-                String dados = null;
-                dadosEntrada = new ArrayList<String>();
+            while ((line) != null 
+            		&& !(line.contains("EOF"))){
+                st = new StringTokenizer(line, "\t");
+                String data = null;
+                inputData = new ArrayList<String>();
                 
                 while (st.hasMoreTokens()) {
-                    dados = st.nextToken();
-                    dadosEntrada.add(dados);
+                    data = st.nextToken();
+                    inputData.add(data);
                 }
                 
-                dadosProblema.add(dadosEntrada);
-                //linha = leitor.readLine();
+                problemData.add(inputData);
             }
-            
-            //leitor.close();
 
       } catch (Exception e) {
          e.printStackTrace();
       }
         
-      return dadosProblema;
+      return problemData;
    }
 
-    public void gravarArquivo(String arquivo, ArrayList<ArrayList<String>> saida){
+    public void writeFile(String fileName, ArrayList<ArrayList<String>> output){
         BufferedWriter bufferedWriter = null;
         
         try {
-            bufferedWriter = new BufferedWriter( new FileWriter( arquivo ) );
+            bufferedWriter = new BufferedWriter( new FileWriter( fileName ) );
 
-            for(int i=0; i<saida.size(); i++ ){
-                for(int j=0; j<saida.get(i).size(); j++){
-                    bufferedWriter.write( saida.get(i).get(j) );
+            for(int i=0; i<output.size(); i++ ){
+                for(int j=0; j<output.get(i).size(); j++){
+                    bufferedWriter.write( output.get(i).get(j) );
                     bufferedWriter.newLine();
                 }
             }

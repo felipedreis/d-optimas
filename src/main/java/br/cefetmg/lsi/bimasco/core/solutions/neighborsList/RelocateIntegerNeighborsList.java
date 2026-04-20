@@ -14,44 +14,44 @@ public class RelocateIntegerNeighborsList implements NeighborsList {
 
     @Override
     public ArrayList<ArrayList<Object>> getNeighborsList(Solution solution, String neighborhood) {
-        ArrayList<ArrayList<Object>> posicao = new ArrayList<ArrayList<Object>>();
-        ArrayList<Object> posicaoAux = new ArrayList<Object>();
-        ArrayList<Object> vetorAux = new ArrayList<Object>();
-        ArrayList<Object> aux = new ArrayList<Object>();
+        ArrayList<ArrayList<Object>> position = new ArrayList<ArrayList<Object>>();
+        ArrayList<Object> positionAux = new ArrayList<Object>();
+        ArrayList<Object> auxiliaryVector = new ArrayList<Object>();
+        ArrayList<Object> auxiliary = new ArrayList<Object>();
         Random rand = new Random();
         int index = 0;
         /*
         for(int i=0; i< solution.getSolutionsVector().size(); i++){
             for(int j=0; j< solution.getSolutionsVector().get(i).size(); j++){
-                vetorAux.add(i);
-                posicaoAux.add(j);
-                aux.add(0);
+                auxiliaryVector.add(i);
+                positionAux.add(j);
+                auxiliary.add(0);
             }
             
-            vetorAux.add(i);
-            posicaoAux.add(solution.getSolutionsVector().get(i).size());
-            aux.add(1);
+            auxiliaryVector.add(i);
+            positionAux.add(solution.getSolutionsVector().get(i).size());
+            auxiliary.add(1);
         }          
          
-        for(int i=0; i<posicao.size()-1; i++){
-            if( aux.get(i).equals(1)){           
-                for(int j=i+1; j<posicao.size(); j++){
-                    aux = new ArrayList<Object>();
-                    aux.add(vetorAux.get(i));
-                    aux.add(posicaoAux.get(i));
-                    aux.add(vetorAux.get(j));
-                    aux.add(posicaoAux.get(j));
+        for(int i=0; i<position.size()-1; i++){
+            if( auxiliary.get(i).equals(1)){           
+                for(int j=i+1; j<position.size(); j++){
+                    auxiliary = new ArrayList<Object>();
+                    auxiliary.add(auxiliaryVector.get(i));
+                    auxiliary.add(positionAux.get(i));
+                    auxiliary.add(auxiliaryVector.get(j));
+                    auxiliary.add(positionAux.get(j));
 
-                    posicao.add(aux);
+                    position.add(auxiliary);
                 }
             }
         }
         
-        for(int i=0; i<posicao.size(); i++){
-            index = rand.nextInt(posicao.size());
+        for(int i=0; i<position.size(); i++){
+            index = rand.nextInt(position.size());
 
-            this.neighborsList.add(posicao.get(index));
-            posicao.remove(index);
+            this.neighborsList.add(position.get(index));
+            position.remove(index);
         }
 
 
@@ -61,9 +61,9 @@ public class RelocateIntegerNeighborsList implements NeighborsList {
 
     @Override
     public ArrayList<ArrayList<Object>> removeNeighbors(Object position){
-        Object elemento = this.neighborsList.get((Integer) position);
+        Object element = this.neighborsList.get((Integer) position);
 
-        this.neighborsList.remove(elemento);
+        this.neighborsList.remove(element);
         return this.neighborsList;
     }
 }

@@ -10,11 +10,11 @@ public class BinaryPartitionChangePerformsMotion
         implements PerformsMotion<BinaryPartitionNumberElementSolution, BinaryPartitionNumberSolution> {
 
     @Override
-    public BinaryPartitionNumberSolution movement(BinaryPartitionNumberSolution solucao, List<Integer> posicao,
-                                                   List<BinaryPartitionNumberElementSolution> parametro){
-        int index = posicao.get(0);
-        BinaryPartitionNumberElementSolution value = solucao.getSolutionsVector().get(index);
-        BinaryPartitionNumberSolution moved = (BinaryPartitionNumberSolution) solucao.clone();
+    public BinaryPartitionNumberSolution movement(BinaryPartitionNumberSolution solution, List<Integer> position,
+                                                   List<BinaryPartitionNumberElementSolution> parameters){
+        int index = position.get(0);
+        BinaryPartitionNumberElementSolution value = solution.getSolutionsVector().get(index);
+        BinaryPartitionNumberSolution moved = (BinaryPartitionNumberSolution) solution.clone();
 
         if (value.isPresent()) {
             moved.setElement(index, new BinaryPartitionNumberElementSolution(false));

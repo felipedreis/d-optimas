@@ -97,20 +97,20 @@ public class BenchmarkSolution extends Solution<FunctionSolutionElement, Euclide
     }
 
     @Override
-    public Double getDeviation(Double valor, Double variation, Integer variable) {
-        double desvio = variation;
-        BenchmarkProblem problema = getProblem();
+    public Double getDeviation(Double value, Double variation, Integer variable) {
+        double deviation = variation;
+        BenchmarkProblem problem = getProblem();
 
-        Double limiteInf = problema.getSmallestValueOfInterest(variable);
-        Double limiteSup = problema.getLargestValueOfInterest(variable);
+        Double lowerLimit = problem.getSmallestValueOfInterest(variable);
+        Double upperLimit = problem.getLargestValueOfInterest(variable);
         Random rand = new Random();
-        if ((variation + valor) > limiteSup) {
-            desvio = Math.pow(-1, rand.nextInt(2)) * (limiteSup - valor) * rand.nextDouble();
+        if ((variation + value) > upperLimit) {
+            deviation = Math.pow(-1, rand.nextInt(2)) * (upperLimit - value) * rand.nextDouble();
         }
-        if ((variation + valor) < limiteInf) {
-            desvio = Math.pow(-1, rand.nextInt(2)) * (valor - limiteInf) * rand.nextDouble();
+        if ((variation + value) < lowerLimit) {
+            deviation = Math.pow(-1, rand.nextInt(2)) * (value - lowerLimit) * rand.nextDouble();
         }
-        return desvio;
+        return deviation;
     }
 
     @Override

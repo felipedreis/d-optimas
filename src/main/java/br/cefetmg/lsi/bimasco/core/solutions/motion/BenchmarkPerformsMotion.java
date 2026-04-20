@@ -9,17 +9,17 @@ import java.util.List;
 public class BenchmarkPerformsMotion implements PerformsMotion<FunctionSolutionElement, BenchmarkSolution> {
 
 
-    public BenchmarkSolution movement(BenchmarkSolution solucao, List<Integer> posicao,
-                                     List<FunctionSolutionElement> parametro){
+    public BenchmarkSolution movement(BenchmarkSolution solution, List<Integer> position,
+                                     List<FunctionSolutionElement> parameters){
 
-        BenchmarkSolution result = (BenchmarkSolution) solucao.clone();
+        BenchmarkSolution result = (BenchmarkSolution) solution.clone();
 
-        int position = posicao.get(0);
-        FunctionSolutionElement value = parametro.get(0);
+        int positionIndex = position.get(0);
+        FunctionSolutionElement value = parameters.get(0);
 
         if(result.getSolutionsVector() != null
-                && position < result.getSolutionsVector().size()) {
-            result.setElement(position, value);
+                && positionIndex < result.getSolutionsVector().size()) {
+            result.setElement(positionIndex, value);
         }
 
         return result;

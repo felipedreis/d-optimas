@@ -88,20 +88,20 @@ public class FunctionSolution extends Solution<FunctionSolutionElement, Double, 
     }
 
     @Override
-    public Double getDeviation(Double valor, Double variation, Integer variable) {
-        double desvio = variation;
-        FunctionProblem problema = getProblem();
+    public Double getDeviation(Double value, Double variation, Integer variable) {
+        double deviation = variation;
+        FunctionProblem problem = getProblem();
 
-        Double limiteInf = problema.domain(variable, 0);
-        Double limiteSup = problema.domain(variable, 1);
+        Double lowerLimit = problem.domain(variable, 0);
+        Double upperLimit = problem.domain(variable, 1);
         Random rand = new Random();
-        if ((variation + valor) > limiteSup) {
-            desvio = Math.pow(-1, rand.nextInt(2)) * (limiteSup - valor) * rand.nextDouble();
+        if ((variation + value) > upperLimit) {
+            deviation = Math.pow(-1, rand.nextInt(2)) * (upperLimit - value) * rand.nextDouble();
         }
-        if ((variation + valor) < limiteInf) {
-            desvio = Math.pow(-1, rand.nextInt(2)) * (valor - limiteInf) * rand.nextDouble();
+        if ((variation + value) < lowerLimit) {
+            deviation = Math.pow(-1, rand.nextInt(2)) * (value - lowerLimit) * rand.nextDouble();
         }
-        return desvio;
+        return deviation;
     }
 
     @Override

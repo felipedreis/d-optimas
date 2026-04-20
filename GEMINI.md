@@ -2,6 +2,7 @@
 
 ## Active Plans
 - [P001-fix-ga-bugs.md](plans/P001-fix-ga-bugs.md) - Fix GA Bugs (Completed)
+- [P002-translate-to-english.md](plans/P002-translate-to-english.md) - Translate Codebase to English (Paused)
 
 ## Project Overview
 **d-optimas** is a distributed optimization framework based on the Actor model. It allows for the execution of various metaheuristics (such as Genetic Algorithms, Particle Swarm Optimization, Differential Evolution, GRASP, and Iterative Local Search) on a wide range of optimization problems.
