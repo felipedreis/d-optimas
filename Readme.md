@@ -14,7 +14,7 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before start work.
 Requirements (to build from source)
 -------
 
-0. Java SDK 8u65 or above
+0. Java SDK 21 or above
 0. PostgreSQL 9.4.5 or above
 0. Maven dependency tool
 0. Set a system variable _JAVA_OPTIONS with value '-Xmx512M'
@@ -274,7 +274,8 @@ A deep dive into the metaheuristics implementation revealed several issues that 
 - **Scope Issue:** `methodSA` updates a local `bestSolution` but it's not clearly returning it to the caller in a thread-safe or consistent way if `runMetaHeuristic` is expected to return the final best. (FIXED)
 
 ### System-level Issues (Discovered during DE Fix Verification)
-- **Actor Communication NPE:** `AgentActor.onUpdateGlobalSummary` can crash if `update.summary` is null, which happens if a region registers before its statistics are fully initialized.
-- **Simulation Shutdown Race:** `SimulationActor.stopAgentsAndRegions` fails with a `ClassCastException` because it expects `RegionRelease` but sometimes receives `SimulationStopped` from `RegionActor`.
-- **Data Extraction Mismatch:** `AgentSolutionsOverTimeExtractor` fails because the CQL query in `AgentStateDAO` uses `:agentId` while the parameter and field are named `persistentId`.
+- **Actor Communication NPE:** `AgentActor.onUpdateGlobalSummary` can crash if `update.summary` is null, which happens if a region registers before its statistics are fully initialized. (FIXED)
+- **Simulation Shutdown Race:** `SimulationActor.stopAgentsAndRegions` fails with a `ClassCastException` because it expects `RegionRelease` but sometimes receives `SimulationStopped` from `RegionActor`. (FIXED)
+- **Data Extraction Mismatch:** `AgentSolutionsOverTimeExtractor` fails because the CQL query in `AgentStateDAO` uses `:agentId` while the parameter and field are named `persistentId`. (FIXED)
+- **Missing Problem ID in Extraction:** `Main` fails to set `problemId` in `ExtractorsConfig` before running extraction, leading to `InvalidQueryException`. (FIXED)
 - **Java 21 Compatibility:** Akka Distributed Data (LMDB) and reflection require specific `--add-opens` and `--add-exports` JVM flags to work on Java 17+.

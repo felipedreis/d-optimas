@@ -13,8 +13,8 @@ public interface AgentStateDAO {
     @Insert
     void save(AgentState state);
 
-    @Select(allowFiltering = true, customWhereClause = "persistent_id = :agentId")
-    PagingIterable<AgentState> findByPersistentId(String agentId);
+    @Select(allowFiltering = true, customWhereClause = "persistent_id = :persistentId")
+    PagingIterable<AgentState> findByPersistentId(String persistentId);
 
     @Select(allowFiltering = true, customWhereClause = "problem_name = :problemName and persistent_id = :persistentId")
     PagingIterable<AgentState> findByProblemIdAndPersistentId(String problemName, String persistentId);

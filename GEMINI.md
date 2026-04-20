@@ -8,7 +8,7 @@
 **d-optimas** is a distributed optimization framework based on the Actor model. It allows for the execution of various metaheuristics (such as Genetic Algorithms, Particle Swarm Optimization, Differential Evolution, GRASP, and Iterative Local Search) on a wide range of optimization problems.
 
 ### Core Technologies
-- **Language:** Java 11 (JDK 11)
+- **Language:** Java 21 (JDK 21)
 - **Concurrency & Distribution:** [Akka](https://akka.io/) (Cluster, Persistence, Remote, Sharding)
 - **Database:** [Apache Cassandra](https://cassandra.apache.org/) (used for journaling and state persistence)
 - **Serialization & RPC:** [gRPC](https://grpc.io/) and [Protocol Buffers](https://developers.google.com/protocol-buffers)
@@ -27,7 +27,7 @@
 ## Building and Running
 
 ### Prerequisites
-- JDK 11
+- JDK 21
 - Maven 3.x
 - Cassandra (typically run via Docker)
 - Native COCO libraries (located in `native/`)

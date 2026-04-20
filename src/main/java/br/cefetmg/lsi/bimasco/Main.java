@@ -89,6 +89,7 @@ public class Main {
                 logger.info("Building extract beans");
                 ExtractorsConfig extractorsConfig = new ExtractorsConfig(mapper.agentStateDAO(), mapper.regionStateDAO(),
                         mapper.solutionStateDAO(), mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
+                extractorsConfig.setProblemId(settings.getName());
 
                 logger.info("Creating data extraction batch");
                 DataExtractionBatch extractionBatch = new DataExtractionBatch(settings.getExtractPath() + "/",

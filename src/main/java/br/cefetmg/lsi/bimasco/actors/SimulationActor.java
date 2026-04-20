@@ -158,6 +158,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .match(StopSimulation.class, this::onStopSimulation)
                 .match(GetState.class, this::onGetState)
                 .match(Terminate.class, this::terminate)
+                .match(SimulationStopped.class, any -> logger.info("Received simulation stopped"))
                 .matchAny(any -> logger.warn("Not handling {}", any))
                 .build();
     }
@@ -190,7 +191,11 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .map(region -> Patterns.ask(region, stopSimulation, Duration.ofSeconds(1)))
                 .map(CompletionStage::toCompletableFuture)
                 .map(CompletableFuture::join)
-                .forEach(release -> onRegionRelease((RegionRelease) release));
+                .forEach(release -> {
+                    if (release instanceof RegionRelease) {
+                        onRegionRelease((RegionRelease) release);
+                    }
+                });
         logger.info("All agents and regions stopped");
     }
 

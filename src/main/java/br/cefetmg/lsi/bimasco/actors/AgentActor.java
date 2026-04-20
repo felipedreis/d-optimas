@@ -287,7 +287,10 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private void onUpdateGlobalSummary(UpdateGlobalSummary update) {
         logger.info(format("Updating global status on %s", persistenceId()));
         globalTime = update.time;
-        globalSolutions = update.summary.getN();
+
+        if (update.summary != null) {
+            globalSolutions = update.summary.getN();
+        }
 
         agent.updateMemory(update.regionIds);
 

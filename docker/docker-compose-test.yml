@@ -9,15 +9,17 @@ services:
     container_name: d-optimas-test
     build:
       context: ..
-      dockerfile: docker/Dockerfile.test
+      dockerfile: docker/Dockerfile.java21
     environment:
       DOPTIMAS_PORT: 2551
       DOPTIMAS_HOST: d-optimas-test
       DOPTIMAS_EXP_FILE: test_de.conf
       CASSANDRA_HOST: cassandra
       REPEAT: 1
+      JAVA_TOOL_OPTIONS: "-Dakka.cluster.seed-nodes.0=akka://d-optimas@d-optimas-test:2551"
     depends_on:
-      - cassandra
+      cassandra:
+        condition: service_healthy
     volumes:
       - ../results:/data
     networks:
@@ -28,9 +30,16 @@ services:
     image: cassandra:3.11
     environment:
       - CASSANDRA_CLUSTER_NAME=d-optimas-db
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
     ports:
       - 9042:9042
     volumes:
       - ../src/main/resources/cassandra/db.cql:/docker-entrypoint-initdb.d/init.cql
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - d-optimas-net
