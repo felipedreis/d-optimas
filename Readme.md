@@ -246,3 +246,29 @@ possível que utilizemos apenas mensagem com ActorSelection
 
 
 See [Contributing](CONTRIBUTING.md)
+
+Identified Bugs and Implementation Deviations
+---------------------------------------------
+
+A deep dive into the metaheuristics implementation revealed several issues that should be addressed:
+
+### Genetic Algorithm (GA)
+- **Redundant Population Copy:** The `proxPopulacao` is initialized with a copy of the current population, but then new offspring are added to it, potentially leading to an ever-growing or incorrectly sized population if not carefully managed by `nextPopulation` selection.
+- **Inconsistent Variable Usage:** `getNumPais` returns `maxIterations` instead of `numPais`.
+
+### Differential Evolution (DE)
+- **Crossover Logic:** The standard DE crossover (binomial or exponential) seems to be missing from the main loop. Currently, it calls `deSum` for every individual, which might be delegating crossover to the `deSum` operator, but this deviates from the standard structural implementation where crossover is explicitly handled.
+- **Viability Check:** If an offspring is not viable, it is discarded and the parent is kept. While safe, standard DE usually ensures viability through boundary handling or re-sampling.
+
+### Particle Swarm Optimization (PSO)
+- **Initialization Risk:** `globalBest` is used in `updateParticleBest` and `findGlobalBest` before being guaranteed an initial value, which could lead to `NullPointerException`.
+- **Velocity Update:** The concatenation logic `SolutionsCollectionUtils.concat(velocity, particles, particleBest)` combined with `velocityModifiers.modify` is non-standard and might lead to incorrect velocity calculations depending on the underlying modifier implementation.
+
+### Iterated Local Search (ILS)
+- **Hardcoded Perturbation:** The `nivel` (perturbation level) starts at 2 and has hardcoded logic (`nivelAux < 6`), which should ideally be parameterized.
+- **Redundant Assignment:** `bestSolution = currentSolution; bestSolution = localSearchSolution;` in the success block is redundant.
+
+### Simulated Annealing (SA)
+- **Acceptance Probability:** The `calculateDeltaValue` formula `Math.exp(-(valB - valA) / T)` might be incorrectly signs-flipped depending on whether it's a minimization or maximization problem.
+- **Time Variable:** The `time` variable used in the `stopCondition` is never updated inside the loop, potentially leading to infinite loops if a time-based stop condition is used.
+- **Scope Issue:** `methodSA` updates a local `bestSolution` but it's not clearly returning it to the caller in a thread-safe or consistent way if `runMetaHeuristic` is expected to return the final best.
