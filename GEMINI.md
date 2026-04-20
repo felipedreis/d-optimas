@@ -1,5 +1,8 @@
 # d-optimas (Bimasco) Project Context
 
+## Active Plans
+- [P001-fix-ga-bugs.md](plans/P001-fix-ga-bugs.md) - Fix GA Bugs (Completed)
+
 ## Project Overview
 **d-optimas** is a distributed optimization framework based on the Actor model. It allows for the execution of various metaheuristics (such as Genetic Algorithms, Particle Swarm Optimization, Differential Evolution, GRASP, and Iterative Local Search) on a wide range of optimization problems.
 
@@ -62,6 +65,15 @@ docker-compose up
 ```
 
 ---
+## Workflow
+
+Before starting any implementation, create a plan document in the `plans/` directory. Use the naming convention `P###-<name>.md` (e.g., `P001-fix-ga-bugs.md`). The plan should describe:
+- What the feature/fix does
+- Tasks to complete
+- Dependencies and prerequisites
+- Design decisions, architectural considerations, and trade-offs
+
+Use diagrams (UML, flowcharts) where appropriate. Update the plan during implementation to reflect completed steps and any changes. Avoid significant plan changes without proper consideration.
 
 ## Development Conventions
 

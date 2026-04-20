@@ -198,7 +198,6 @@ public class GA extends MetaHeuristic {
         while (!stopCondition.isSatisfied(f0, stopWatch.getTime(), iteracoes, iteracoesSM, metaHeuristicParameters)) {
             logger.debug(format("Iteration %d", iteracoes));
             proxPopulacao = new ArrayList<>();
-            proxPopulacao = SolutionsCollectionUtils.copyValues(population, problem);
             offspringCounter = 0;
 
             while (offspringCounter < populationSize) {
@@ -297,7 +296,7 @@ public class GA extends MetaHeuristic {
     }
 
     public Integer getNumPais() {
-        return maxIterations;
+        return numPais;
     }
 
     public void setNumPais(Integer numPais) {
