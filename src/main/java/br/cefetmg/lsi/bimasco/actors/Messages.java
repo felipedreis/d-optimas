@@ -235,7 +235,7 @@ public class Messages {
         public final Optional<Problem> problem;
 
         public StartSimulation(Problem problem) {
-            this.problem = Optional.of(problem);
+            this.problem = Optional.ofNullable(problem);
         }
 
         public StartSimulation(){

@@ -60,7 +60,6 @@ public class ChangeBinaryNeighborsList implements NeighborsList {
 
         return this.neighborsList;
     }
-    }
 
     @Override
     public ArrayList<ArrayList<Object>> removeNeighbors(Object position){

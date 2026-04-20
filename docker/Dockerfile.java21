@@ -1,0 +1,40 @@
+FROM amazoncorretto:21-al2023 AS coco-compile
+
+WORKDIR /coco
+
+COPY native/*.c /coco/
+COPY native/*.h /coco/
+
+RUN dnf install -y gcc
+
+ENV JAVA_HOME="/usr/lib/jvm/java-21-amazon-corretto"
+
+RUN gcc -I $JAVA_HOME/include -I $JAVA_HOME/include/linux -o libCocoJNI.so -fPIC -shared CocoJNI.c -lm
+
+FROM amazoncorretto:21-al2023 AS run
+
+WORKDIR /d-optimas/run
+
+# Create native directory
+RUN mkdir -p /d-optimas/native
+
+# Copy the native library compiled in the previous stage
+COPY --from=coco-compile /coco/libCocoJNI.so /d-optimas/native/
+
+COPY config/docker-config.conf ./
+COPY experiments ./experiments/
+COPY target/d-optimas-2.10-SNAPSHOT-deploy.jar ./d-optimas.jar
+COPY scripts/run-d-optimas.sh ./
+COPY config/log4j2.xml ./
+COPY test_de.conf ./test_de.conf
+
+RUN dnf install -y lmdb lmdb-devel tar
+
+ENV CONFIG_FILE="docker-config.conf"
+ENV REPEAT=1
+ENV CASSANDRA_HOST=cassandra
+ENV DOPTIMAS_EXP_FILE=test_de.conf
+ENV COCO_LIB=/d-optimas/native/
+
+# Overwrite entrypoint to use our test config if provided via env
+ENTRYPOINT ./run-d-optimas.sh ${CONFIG_FILE} ${CASSANDRA_HOST} ${DOPTIMAS_EXP_FILE} ${REPEAT}

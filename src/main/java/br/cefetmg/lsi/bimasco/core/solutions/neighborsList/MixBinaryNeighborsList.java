@@ -63,16 +63,13 @@ public class MixBinaryNeighborsList implements NeighborsList {
         }
 
         return this.neighborsList;
-    }
-        
-        return this.neighborsList;
-    }
+        }
 
-    @Override
-    public ArrayList<ArrayList<Object>> removeNeighbors(Object position){
+        @Override
+        public ArrayList<ArrayList<Object>> removeNeighbors(Object position){
         int index = (Integer) position;
 
         this.neighborsList.remove(index);
         return this.neighborsList;
-    }
-}
+        }
+        }

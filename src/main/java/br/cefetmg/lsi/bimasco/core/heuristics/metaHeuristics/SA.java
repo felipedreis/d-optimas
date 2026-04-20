@@ -99,6 +99,9 @@ public class SA extends MetaHeuristic {
         int it = 0;
         int noImproveIt = 0;
 
+        getStopWatch().reset();
+        getStopWatch().start();
+
         temperature = (Double) temperatureSA.initialTemperature(
                 List.of(maxIterations, temperatureMaxIterations, alpha, modifieSolutionName, alpha));
 
@@ -106,9 +109,9 @@ public class SA extends MetaHeuristic {
         double valX;
         double expTemp;
 
-        Solution currentSolution = (Solution) initialSolution.clone();
+        currentSolution = (Solution) initialSolution.clone();
 
-        while (!stopCondition.isSatisfied(currentSolution.getFunctionValue(), time, it,
+        while (!stopCondition.isSatisfied(currentSolution.getFunctionValue(), getStopWatch().getTime(), it,
                 noImproveIt, metaHeuristicParameters)) {
             while (temperatureIt < temperatureMaxIterations) {
                 temperatureIt++;
@@ -118,9 +121,15 @@ public class SA extends MetaHeuristic {
 
                 if (neighborsSolution.isViable(context)) {
 
-                    if (solutionAnalyser.compare(neighborsSolution, currentSolution) > 0) {
+                    if (solutionAnalyser.compare(neighborsSolution, currentSolution) < 0) {
                         currentSolution = neighborsSolution;
-                        bestSolution = solutionAnalyser.getBestSolution(bestSolution, currentSolution);
+                        Solution newBest = solutionAnalyser.getBestSolution(bestSolution, currentSolution);
+                        if (!newBest.equals(bestSolution)) {
+                            bestSolution = newBest;
+                            noImproveIt = 0;
+                        } else {
+                            noImproveIt++;
+                        }
                     } else {
                         valX = rand.nextDouble();
                         expTemp = calculateDeltaValue(neighborsSolution.getFunctionValue(),
@@ -129,26 +138,33 @@ public class SA extends MetaHeuristic {
                         if (valX < expTemp) {
                             currentSolution = neighborsSolution;
                         }
+                        noImproveIt++;
                     }
+                } else {
+                    noImproveIt++;
                 }
             }
 
             temperature = (Double) temperatureSA.update(temperature, it);
 
             temperatureIt = 0;
-            it++;
-
         }
+        getStopWatch().stop();
     }
 
-    public Double calculateDeltaValue(Number A, Number B, Double T) {
-        double result;
-        double valA = A.doubleValue();
-        double valB = B.doubleValue();
+    public Double calculateDeltaValue(Number neighborsValue, Number currentValue, Double T) {
+        double diff = neighborsValue.doubleValue() - currentValue.doubleValue();
+        
+        // If it's a maximization problem, a better solution has a positive diff.
+        // If it's a minimization problem, a better solution has a negative diff.
+        // Standard SA (minimization): exp(-delta / T) where delta = neighbor - current > 0.
+        // For maximization: delta = current - neighbor > 0.
+        
+        if (problem.getProblemSettings().getMax()) {
+            diff = -diff; // flip for maximization
+        }
 
-        result = Math.exp(-(valB - valA) / T);
-
-        return result;
+        return Math.exp(-diff / T);
     }
 
     private void setAlpha(Double parseDouble) {

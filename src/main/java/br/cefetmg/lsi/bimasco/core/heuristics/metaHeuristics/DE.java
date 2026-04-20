@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +66,12 @@ public class DE extends MetaHeuristic {
     public List<Solution> runMetaHeuristic(List<Solution> externalSolution, Context context) {
         int popSize = externalSolution.size();
         population = externalSolution;
+
+        if (popSize == 0) {
+            logger.warn("Received empty population in DE");
+            return Collections.emptyList();
+        }
+
         Solution r1, r2, r3;
         Object f0 = problem.getLimit();
 
@@ -85,11 +92,20 @@ public class DE extends MetaHeuristic {
             for (int i = 0; i < popSize; ++i) {
                 logger.debug(format("Constructing offspring %d", i));
 
-                Object [] sample = rdg.nextSample(population, 3);
+                if (popSize >= 4) {
+                    List<Solution> otherSolutions = new ArrayList<>(population);
+                    otherSolutions.remove(i);
+                    Object [] sample = rdg.nextSample(otherSolutions, 3);
 
-                r1 = (Solution) sample[0];
-                r2 = (Solution) sample[1];
-                r3 = (Solution) sample[2];
+                    r1 = (Solution) sample[0];
+                    r2 = (Solution) sample[1];
+                    r3 = (Solution) sample[2];
+                } else {
+                    Object [] sample = rdg.nextSample(population, 3);
+                    r1 = (Solution) sample[0];
+                    r2 = (Solution) sample[1];
+                    r3 = (Solution) sample[2];
+                }
 
                 logger.debug(format("Chosen solutions: \nr1: %s\nr2: %s\nr3: %s\n", r1, r2, r3));
 

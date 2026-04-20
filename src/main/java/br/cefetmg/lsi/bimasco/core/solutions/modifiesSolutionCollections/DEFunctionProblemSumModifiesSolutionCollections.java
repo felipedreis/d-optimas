@@ -48,6 +48,13 @@ public class DEFunctionProblemSumModifiesSolutionCollections extends ModifiesSol
                 logger.debug(format("Using differential formula to position %d of to calculate next vector", j));
                 double e = r1.getElement(j).toDoubleValue() + scaleFactor * (r2.getElement(j).toDoubleValue()
                         - r3.getElement(j).toDoubleValue());
+
+                // Boundary handling (clamping)
+                Double lower = problem.domain(j, 0);
+                Double upper = problem.domain(j, 1);
+                if (e < lower) e = lower;
+                if (e > upper) e = upper;
+
                 element = new FunctionSolutionElement(e);
             } else {
                 logger.debug(format("Using %d of previous vector", j));

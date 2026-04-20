@@ -143,7 +143,9 @@ public class ILS extends MetaHeuristic {
 
     public Solution metodo_ILS(Context context) {
         int divisor = 0;
-        int nivel = 2;
+        int initialDisturbLevel = (int) metaHeuristicParameters.getOrDefault("initialDisturbLevel", 2);
+        int disturbThreshold = (int) metaHeuristicParameters.getOrDefault("disturbThreshold", 6);
+        int nivel = initialDisturbLevel;
         int nivelAux = 0;
         Object f0 = limit;
         int iteracoes = 0;
@@ -171,18 +173,17 @@ public class ILS extends MetaHeuristic {
                 bestSolution = solutionAnalyser.getBestSolution(localSearchSolution, bestSolution);
 
                 if (bestSolution.equals(localSearchSolution)) {
-                    nivel = 2;
+                    nivel = initialDisturbLevel;
                     nivelAux = -1;
 
                     logger.debug("Updating best solution");
                     currentSolution = localSearchSolution;
-                    bestSolution = currentSolution;
                     iteracoesSM = -1;
                 }
             }
 
             if (nivel < disturbLevel) {
-                if (nivelAux < 6) {
+                if (nivelAux < disturbThreshold) {
                     nivelAux++;
                 } else {
                     nivel++;
@@ -191,7 +192,7 @@ public class ILS extends MetaHeuristic {
                     iteracoesSM++;
                 }
             } else {
-                nivel = 2;
+                nivel = initialDisturbLevel;
                 nivelAux = 0;
                 //iteracoes++;
                 iteracoesSM++;

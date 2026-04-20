@@ -55,9 +55,13 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        logger.info("AAAAAAAAAA");
+        logger.info("Starting D-Optimas");
 
-        CocoJNI.cocoSetLogLevel("info");
+        try {
+            CocoJNI.cocoSetLogLevel("info");
+        } catch (Throwable t) {
+            logger.warn("Could not initialize CocoJNI. Benchmark problems might not work: " + t.getMessage());
+        }
 
         CommandLineParser parser = new  DefaultParser();
         try {

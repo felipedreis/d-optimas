@@ -16,6 +16,7 @@ sleep 30
 ls /d-optimas/native
 
 JVM_OPTS="-Dconfig.file=${CONFIG_FILE} -Djava.library.path=${COCO_LIB} -Dlog4j.configurationFile=log4j2.xml"
+JVM_OPTS="${JVM_OPTS} --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED"
 
 echo "welcome to the docker run of d-optimas, this experiment ${DOPTIMAS_EXP_FILE} will run ${REPEAT} times in a clean environment"
 for i in `seq 1 ${REPEAT}`; do

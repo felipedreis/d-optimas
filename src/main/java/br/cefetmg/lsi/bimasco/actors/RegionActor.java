@@ -170,7 +170,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         internalTask.cancel();
         region.clear();
         regionStarted = false;
-        sender().tell(new SimulationStopped(), self());
+        sender().tell(new RegionRelease(id), self());
     }
 
 

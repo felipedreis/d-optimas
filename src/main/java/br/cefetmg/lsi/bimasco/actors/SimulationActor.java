@@ -82,6 +82,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         globalStatistics = new SummaryStatistics();
         nodes = new ArrayList<>();
         simulationSettings = settings;
+        problem = Problem.buildProblem(settings.getProblem());
         amILeader = false;
         simulationStarted = false;
 
@@ -218,7 +219,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         startSimulation.problem.ifPresent(p -> problem = p);
         Arrays.stream(agents)
                 .filter(Objects::nonNull)
-                .forEach(agent -> agent.tell(startSimulation, self()));
+                .forEach(agent -> agent.tell(new StartSimulation(problem), self()));
         simulationStarted = true;
     }
 
@@ -489,7 +490,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                     if (id.isPresent()) {
                         Integer agentId = id.get();
                         CreateAgent createAgent = new CreateAgent(agentId, agentShard, regionShard, self(), agentSettings);
-                        CompletableFuture t = Patterns.ask(agentShard, createAgent, Duration.ofSeconds(1)).toCompletableFuture();
+                        CompletableFuture t = Patterns.ask(agentShard, createAgent, Duration.ofSeconds(5)).toCompletableFuture();
 
                         completionStages.add(t);
                         agentShard.tell(createAgent, self());
@@ -518,6 +519,13 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      * @param leaderAddress message containing the leader address
      */
     void onLeaderChanged(Address leaderAddress) {
+        if (leaderAddress == null) {
+            logger.info("Leader changed to null (likely during shutdown)");
+            amILeader = false;
+            leader = null;
+            return;
+        }
+
         Address selfAddress = cluster.selfMember().address();
 
         logger.info("Actor " + selfAddress + " updating leader to " + leaderAddress);

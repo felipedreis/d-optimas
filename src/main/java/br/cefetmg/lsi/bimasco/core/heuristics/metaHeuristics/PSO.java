@@ -143,7 +143,11 @@ public class PSO extends MetaHeuristic {
                 Solution best = solutionAnalyser.getBestSolution(particleBest.get(i), particles.get(i));
                 particleBest.set(i, best);
 
-                globalBest = solutionAnalyser.getBestSolution(best, globalBest);
+                if (globalBest == null) {
+                    globalBest = best;
+                } else {
+                    globalBest = solutionAnalyser.getBestSolution(best, globalBest);
+                }
             }
         }
         logger.debug("Global best particle " + globalBest.toString());
@@ -154,7 +158,11 @@ public class PSO extends MetaHeuristic {
                 .reduce(solutionAnalyser::getBestSolution)
                 .get();
 
-        globalBest = solutionAnalyser.getBestSolution(populationBest, globalBest);
+        if (globalBest == null) {
+            globalBest = populationBest;
+        } else {
+            globalBest = solutionAnalyser.getBestSolution(populationBest, globalBest);
+        }
     }
 
     @Override

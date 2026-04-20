@@ -1,7 +1,7 @@
 drop keyspace if exists akka;
 
 CREATE KEYSPACE IF NOT EXISTS akka
-    WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy','datacenter1': 3 };
+    WITH REPLICATION = { 'class' : 'SimpleStrategy','replication_factor': 1 };
 -- AKKA JOURNALING
 CREATE TABLE IF NOT EXISTS akka.messages (
                                              persistence_id text,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS akka.all_persistence_ids(
 drop keyspace if exists akka_snapshot;
 
 CREATE KEYSPACE IF NOT EXISTS akka_snapshot
-    WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy','datacenter1': 3 };
+    WITH REPLICATION = { 'class' : 'SimpleStrategy','replication_factor': 1 };
 
 -- AKKA SNAPSHOT
 CREATE TABLE IF NOT EXISTS akka_snapshot.snapshots (
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS akka_snapshot.snapshots (
 
 drop keyspace if exists d_optimas;
 
-create KEYSPACE d_optimas WITH replication = {'class': 'NetworkTopologyStrategy', 'datacenter1' : 3 };
+create KEYSPACE d_optimas WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1 };
 use d_optimas;
 
 create table message_state (
@@ -133,8 +133,8 @@ create table message_state (
                                entity_id text,
                                message_type text,
                                status text,
-                               primary key ( id, entity_id,  status )
-);
+                               primary key ( id, problem_name )
+) with clustering order by (problem_name asc);
 
 create table global_state (
                               id uuid,
@@ -145,8 +145,8 @@ create table global_state (
                               solutions bigint,
                               regions int,
                               region_ids list<int>,
-                              primary key ( id, time )
-) with clustering order by (time asc);
+                              primary key ( id, problem_name, time )
+) with clustering order by (problem_name asc, time asc);
 
 create table region_state (
                               id uuid,
@@ -158,11 +158,12 @@ create table region_state (
                               variance double,
                               solutions list<uuid>,
                               num_solutions bigint,
-                              primary key ((id, name), time, problem_name, best_solution )
-) with clustering order by (time asc);
+                              primary key ((id, name), problem_name, time, best_solution )
+) with clustering order by (problem_name asc, time asc, best_solution asc);
 
 create table solution_state (
                                 id uuid,
+                                problem_name text,
                                 agent text,
                                 region text,
                                 time bigint,
@@ -174,15 +175,16 @@ create table solution_state (
 create table agent_state (
                              id uuid,
                              persistent_id text,
+                             problem_name text,
                              algorithm_name text,
                              time bigint,
                              timestamp_start bigint,
                              timestamp_end bigint,
                              produced_solution uuid,
                              function_evaluations bigint,
-                             primary key ((id), persistent_id, time)
+                             primary key ((id), persistent_id, problem_name, time)
 
-) with clustering order by (persistent_id asc, time asc);
+) with clustering order by (persistent_id asc, problem_name asc, time asc);
 
 create table memory_state (
                               id uuid,
@@ -195,4 +197,4 @@ create table memory_state (
                               memory_status text,
                               chosen_region int,
                               primary key ((id), problem_name, agent, time )
-) with clustering order by (agent asc, time asc);
+                              ) with clustering order by (problem_name asc, agent asc, time asc);

@@ -1,0 +1,39 @@
+version: "3.4"
+
+networks:
+  d-optimas-net:
+    driver: bridge
+
+services:
+  d-optimas-1:
+    container_name: d-optimas-1
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.java21
+    ports:
+      - 2551:2551
+    environment:
+      DOPTIMAS_PORT: 2551
+      DOPTIMAS_HOST: d-optimas-1
+      DOPTIMAS_EXP_FILE: test_de.conf
+      CASSANDRA_HOST: cassandra
+      REPEAT: 1
+    depends_on:
+      - cassandra
+    restart: on-failure
+    volumes:
+      - ../results:/data
+    networks:
+      - d-optimas-net
+
+  cassandra:
+    container_name: cassandra
+    image: cassandra:3.11
+    environment:
+      - CASSANDRA_CLUSTER_NAME=d-optimas-db
+    ports:
+      - 9042:9042
+    volumes:
+      - ../src/main/resources/cassandra/db.cql:/docker-entrypoint-initdb.d/init.cql
+    networks:
+      - d-optimas-net
