@@ -28,6 +28,8 @@ public class SimulationSettings implements Serializable {
 
     private final boolean benchmark;
 
+    private final long evaluationsBudget;
+
     public SimulationSettings(Config config) {
         config = config.getConfig("simulation");
 
@@ -48,6 +50,7 @@ public class SimulationSettings implements Serializable {
         nodes = config.getInt("nodes");
 
         benchmark = config.hasPath("benchmark") ? config.getBoolean("benchmark") : false ;
+        evaluationsBudget = config.hasPath("evaluationsBudget") ? config.getLong("evaluationsBudget") : 100_000L;
     }
 
     public String getName() {
@@ -88,5 +91,9 @@ public class SimulationSettings implements Serializable {
 
     public boolean isBenchmark() {
         return benchmark;
+    }
+
+    public long getEvaluationsBudget() {
+        return evaluationsBudget;
     }
 }

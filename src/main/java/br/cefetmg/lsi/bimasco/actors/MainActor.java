@@ -43,7 +43,7 @@ public class MainActor extends AbstractActor {
         this.settings = settings;
         if (settings.isBenchmark()) {
             simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");
-            benchmarkActor = context().actorOf(Props.create(BenchmarkActor.class, simulationActor, settings.getName()), "benchmark");
+            benchmarkActor = context().actorOf(Props.create(BenchmarkActor.class, simulationActor, settings.getName(), settings.getEvaluationsBudget()), "benchmark");
 
         } else {
             simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");

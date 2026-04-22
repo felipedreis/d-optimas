@@ -35,8 +35,7 @@ public class BenchmarkActor extends AbstractActor {
 
     private long evaluations;
 
-    // 3x10^6 is the number used in C-DEEPSO evaluation on large benchmark problems
-    private long evaluationsBudget = 100_000;//3_000_000;
+    private long evaluationsBudget;
 
     private boolean runningSimulation;
 
@@ -44,9 +43,10 @@ public class BenchmarkActor extends AbstractActor {
 
     private ExtractorsConfig extractorsConfig;
 
-    public BenchmarkActor(ActorRef simulationActor, String name){
+    public BenchmarkActor(ActorRef simulationActor, String name, long evaluationsBudget){
         this.simulationActor = simulationActor;
         this.name = name;
+        this.evaluationsBudget = evaluationsBudget;
     }
 
     @Override
