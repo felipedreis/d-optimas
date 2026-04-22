@@ -1,290 +1,78 @@
-Bimasco Readme
-=============
-
-The propose of this file is provide a overview of Bimasco architecture.
-* Obs.: This file is not complete.
-
-Here we must include a project overview 
-
-
-0. You are welcome to help make this file.
-
-Please see our [contributing guidelines](CONTRIBUTING.md) before start work.
-
-Requirements (to build from source)
--------
-
-0. Java SDK 21 or above
-0. PostgreSQL 9.4.5 or above
-0. Maven dependency tool
-0. Set a system variable _JAVA_OPTIONS with value '-Xmx512M'
-
-Desired
-------
-
-0. IntelliJ 15.0.1 or above (because IntelliJ is the best)
-0. IntelliJ plugin scala support
-0. pgAdmin 3 or above
-
-* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::HTML`
-  comes with Perl >= 5.10. Lower versions should install [Pod::Simple](http://search.cpan.org/~dwheeler/Pod-Simple-3.28/lib/Pod/Simple.pod) from CPAN.
-
-Installation
------------
-
-```
-1 - Create a new Database with name "Bimasco2.0"
-2 - run all tests "src/test"
-```
-
-Usage
------
-
-```
-1 - To use Bimasco you must set a "simulationSettings.properties"
-on "src/main/resources/settings/simulationSettings.properties"
-
-2 - run "br.cefetmg.lsi.bimasco.Main"
-```
-
-
-Project structure
-----------------
-
-The Bimasco's project architecture is organized by:
-
-* **br.cefetmg.lsi.bimasco**
-    * **actors** = agent and region actor implementations using akka.
-    * **experiment** (this was used only for a test propose)
-    * **messages** = messages changed between actors
-    * **persistence** = all necessary to persist any data. At now we have only PostgreSQL implementation.
-    * **settings** = all necessary to manage settings files of Bimasco's simulations.
-    * **core** = all basic components of bimasco architecture.
-        * **agents** = all components necessary to create an agent as Memory for instance
-        * **regions** = region implementation
-        * **heuristics** = all components necessary to create some heuristic
-            * **localSearch** = all local search available on Bimasco
-            * **metaHeuristics** = all meta heuristics available on Bimasco
-            * **stopCondition** = all stop conditions available on Bimasco
-        * **problems** = all components necessary to create a problem (all problems implementations)
-            * **candidatesList** = all implementations of candidates list choice available on Bimasco
-            * **functions** = all function problems implementations available on Bimasco
-        * **solutions** = all components necessary to create a solution
-            * **analyser** = all solutions analyser implementations available on Bimasco
-            * **solutionModifier** = all solutions modifies implementations available on Bimasco
-            * **modifiesSolutionCollections** = all solutions collections modifies implementations available on Bimasco
-            * **motion** = all motion solutions implementations available on Bimasco
-            * **motionCollections** = all motion collection solutions implementations available on Bimasco
-            * **neighborsList** = all type of neighbors list choice implemented on Bimasco
-        * **utils** = helper classes
-
-
-Basic Components Implemented
------------
-
-* **localSearch**
-    * **BetterNeighborhoodLocalSearch** =
-    * **FirstImproveLocalSearch** =
-    * **RandomLocalSearch** =
-
-* **metaHeuristics**
-    * **AG_P** =
-    * **GRASP_P** =
-    * **GRASP_NP** =
-    * **HGulosa** =
-    * **HRandom** =
-    * **ILS** =
-    * **SA** =
-    * **VNS** =
-
-* **stopCondition**
-    * **F0StopCondition** =
-    * **MaxIterationsStopCondition** =
-    * **MaxIterationsWithoutImproveStopCondition** =
-    * **MixStopCondition** =
-    * **TimeStopCondition** =
-
-* **candidatesList**
-    * **PositionCandidatesList** =
-    * **SolutionElementsCountCandidatesList** =
-    * **StepCandidatesList** =
-
-* **functions** = mathematical functions that can be used on function's problem.
-    * **BealeFunction** =
-    * **EasomFunction** =
-    * **EggHolderFunction** =
-    * **GriewankFunction** =
-    * **MichalewicsFunction** =
-    * **RastriginFunction** =
-    * **SumSquaresFunction** =
-    * **XinSheYang03Function** =
-
-* **problems**
-    * **BinaryPartitionNumberProblem** =
-    * **FunctionProblem** =
-    * **Knapsack01Problem** =
-    * **PartitionNumberProblem** =
-    * **PDMProblem** =
-    * **PRVJT_DeniseProblem** =
-
-* **solutions** each problem has your solution
-    * **BinaryPartitionNumberSolution** =
-    * **FunctionSolution** =
-    * **Knapsack01Solution** =
-    * **PartitionNumberSolution** =
-    * **PDMSolution** =
-    * **PRVJT_DeniseSolution** =
-
-* **solutionModifier** = each kind of solution has your solution analyser
-* **modifiesSolutionCollections** = each kind of solution has your solution analyser
-* **motion** = each kind of solution has your solution analyser
-* **motionCollections** = each kind of solution has your solution analyser
-* **neighborsList** = each kind of solution has your solution analyser
-
-* **analyser** = each kind of solution has your solution analyser
-
-
-Overview actors and messages
------------
-
-### Actors
-
-One **actor**, as a actor model proposed by Carl's Hewitt, is responsible to receive a message, process some work and send zero or more messages to the others actors.
-On Bimasco each **agent** or **region** are implemented as a **actor**. This actors (agents or regions) interact by messages.
-
-### Messages
-
-Todas as mensagens são categorizadas em:
-
-* **ExternalStimulus** = are external messages exchange between regions and agents.
-* **InternalStimulus** = are internal messages exchange internally on regions or agents.
-
-#### Messages Components
-
-All components of a message are described on this section:
-
-* **Payload**
-
-Each message has on **Payload** structure to store information.
-
-For **ExternalStimulus** messages are used one of this **Payload**
-
-* AcknowledgePayload
-* MergePayload
-* SolutionPayload
-
-For **InternalStimulus** messages are not used **Payload**
-
-* **StimulusInformation**
-
-Each message has on **StimulusInformation** used to flag what is the message subject.
-
-For **ExternalStimulus** messages are used one of this **StimulusInformation**
-
-* ACKNOWLEDGE
-* MERGE_REQUEST
-* MERGE_RESPONSE
-* SOLUTION_REQUEST
-* SOLUTION_RESULT
-* REGION_MERGED
-* BOOTSTRAP
-
-For **InternalStimulus** messages are used one of this **StimulusInformation**
-
-* CHANGE_MY_STATE
-
-
-Architecture workflow
-------------
-
-Basically the flow of messages exchange on Bimasco follow this order:
-
-## Ping
-
-Each 5 seconds all actors on Bimasco send a **ExternalStimulus** as a Ping to the others agents. This is necessary to
-keep every actor updated about the others.
-
-Agent actors constantly send **ExternalStimulus** with ACKNOWLEDGE **StimulusInformation** only to others agents actor.
-Regions actors constantly send **ExternalStimulus** with ACKNOWLEDGE **StimulusInformation** to others agents and regions actor.
-
-## Constructors Agents
-
-
-## Observações
-
-public static String getTipo(){
-        if(idTipo==0){
-            return "Inteiro";
-        } else if(idTipo==1){
-            return "Binario";
-        } else if(idTipo==2){
-            return "Real";
-        }
-        return null;
-    }
-
-
-Contributing
-------------
-
-Before contribute see our adopted principles always as possible:
-
-1. Prefira sempre **convenção** ao invés de **configuração**;
-1. **Nunca** oriente-se por BD. O BD deve apenas auxiliar no armazenamento de eventos ocorridos na arquitetura;
-1. Reutilização de boas bibliotecas (configuração/ORM/cálculos matemáticos)
-1. A aplicação deve ser standalone (não deve precisar de nada além da JVM e do arquivo .JAR)
-1. Testes de unidade sempre que possível
-1. Comentários inúteis são inúteis;
-1. Convenção de codificação padrão JAVA;
-1. Evitar, sempre que possível, o uso de operadores estáticos;
-1. Lembre-se, código comentado é inútil (serve apenas para confundir)
-1. A inicialização de um ator não deve disparar mensagens. Utilizar sempre que necessário mensagens de controle.
-Isso facilita o processo de testes.
-
-* Como primeira abordagem serão salvos referencias (mesmo que não atualizadas) de agentes e regioes. No futuro é
-possível que utilizemos apenas mensagem com ActorSelection
-
-
-See [Contributing](CONTRIBUTING.md)
-
-Identified Bugs and Implementation Deviations
----------------------------------------------
-
-A deep dive into the metaheuristics implementation revealed several issues that should be addressed:
-
-### Genetic Algorithm (GA)
-- **Redundant Population Copy:** The `proxPopulacao` is initialized with a copy of the current population, but then new offspring are added to it, potentially leading to an ever-growing or incorrectly sized population if not carefully managed by `nextPopulation` selection. (FIXED)
-- **Inconsistent Variable Usage:** `getNumPais` returns `maxIterations` instead of `numPais`. (FIXED)
-
-### Differential Evolution (DE)
-- **Crossover Logic:** The standard DE crossover (binomial or exponential) seems to be missing from the main loop. Currently, it calls `deSum` for every individual, which might be delegating crossover to the `deSum` operator, but this deviates from the standard structural implementation where crossover is explicitly handled. (FIXED)
-- **Viability Check:** If an offspring is not viable, it is discarded and the parent is kept. While safe, standard DE usually ensures viability through boundary handling or re-sampling. (FIXED)
-
-### Particle Swarm Optimization (PSO)
-- **Initialization Risk:** `globalBest` is used in `updateParticleBest` and `findGlobalBest` before being guaranteed an initial value, which could lead to `NullPointerException`. (FIXED)
-- **Velocity Update:** The concatenation logic `SolutionsCollectionUtils.concat(velocity, particles, particleBest)` combined with `velocityModifiers.modify` is non-standard and might lead to incorrect velocity calculations depending on the underlying modifier implementation. (FIXED)
-
-### Iterated Local Search (ILS)
-- **Hardcoded Perturbation:** The `nivel` (perturbation level) starts at 2 and has hardcoded logic (`nivelAux < 6`), which should ideally be parameterized. (FIXED)
-- **Redundant Assignment:** `bestSolution = currentSolution; bestSolution = localSearchSolution;` in the success block is redundant. (FIXED)
-
-### Simulated Annealing (SA)
-- **Acceptance Probability:** The `calculateDeltaValue` formula `Math.exp(-(valB - valA) / T)` might be incorrectly signs-flipped depending on whether it's a minimization or maximization problem. (VERIFIED CORRECT)
-- **Time Variable:** The `time` variable used in the `stopCondition` is never updated inside the loop, potentially leading to infinite loops if a time-based stop condition is used. (FIXED)
-- **Scope Issue:** `methodSA` updates a local `bestSolution` but it's not clearly returning it to the caller in a thread-safe or consistent way if `runMetaHeuristic` is expected to return the final best. (FIXED)
-
-### System-level Issues (Discovered during DE Fix Verification)
-- **Actor Communication NPE:** `AgentActor.onUpdateGlobalSummary` can crash if `update.summary` is null, which happens if a region registers before its statistics are fully initialized. (FIXED)
-- **Simulation Shutdown Race:** `SimulationActor.stopAgentsAndRegions` fails with a `ClassCastException` because it expects `RegionRelease` but sometimes receives `SimulationStopped` from `RegionActor`. (FIXED)
-- **SimulationActor state NPE:** `SimulationActor.state()` could crash if `globalStatistics` was null during a state request or shutdown. (FIXED)
-- **IterationsTemperature Serialization:** `IterationsTemperature` and `SATemperature` were not serializable, causing Akka snapshot failures in SA agents. (FIXED)
-- **Data Extraction Mismatch:** `AgentSolutionsOverTimeExtractor` fails because the CQL query in `AgentStateDAO` uses `:agentId` while the parameter and field are named `persistentId`. (FIXED)
-- **Missing Problem ID in Extraction:** `Main` fails to set `problemId` in `ExtractorsConfig` before running extraction, leading to `InvalidQueryException`. (FIXED)
-- **Java 21 Compatibility:** Akka Distributed Data (LMDB) and reflection require specific `--add-opens` and `--add-exports` JVM flags to work on Java 17+. (FIXED)
-
-The required flags for Java 17+ are:
+# d-optimas (Bimasco)
+
+**d-optimas** is a distributed optimization framework based on the **Actor Model**. It enables the execution of various metaheuristics (such as Genetic Algorithms, Particle Swarm Optimization, Differential Evolution, GRASP, and Iterative Local Search) on complex optimization problems by partitioning the search space and enabling autonomous agents to cooperate or compete.
+
+## Core Technologies
+- **Language:** Java 21 (JDK 21)
+- **Concurrency & Distribution:** [Akka](https://akka.io/) (Cluster, Persistence, Remote, Sharding)
+- **Database:** [Apache Cassandra](https://cassandra.apache.org/) (used for journaling, state persistence, and extraction)
+- **Serialization & RPC:** [gRPC](https://grpc.io/) and [Protocol Buffers](https://developers.google.com/protocol-buffers)
+- **Native Integration:** [COCO](https://github.com/numbbo/coco) (Comparing Continuous Optimizers) via JNI for benchmarking.
+- **Analysis:** Python scripts for processing results and generating plots.
+- **Infrastructure:** Docker and Ansible for deployment and orchestration.
+
+## Architecture
+The system follows a hierarchical actor structure where a simulation is decomposed into regions, and regions contain multiple agents:
+
+1.  **MainActor:** Entry point that coordinates the simulation based on HOCON configuration.
+2.  **SimulationActor:** Global coordinator for a specific simulation instance.
+3.  **RegionActor:** Represents a search space partition where agents interact and share solutions.
+4.  **AgentActor:** Individual actors implementing a specific metaheuristic (GA, PSO, DE, etc.).
+5.  **Persistence:** All agent states and simulation data are persisted to Cassandra using Akka Persistence, enabling recovery and offline analysis.
+
+## Getting Started
+
+### Prerequisites
+- **JDK 21**
+- **Maven 3.x**
+- **Cassandra 3.11** (typically run via Docker)
+- **Native COCO libraries** (located in `native/`)
+
+### Building
+To build the project and create a deployable "shaded" JAR:
 ```bash
---add-opens java.base/java.nio=ALL-UNNAMED \
---add-opens java.base/sun.nio.ch=ALL-UNNAMED \
---add-exports java.base/jdk.internal.misc=ALL-UNNAMED
+./mvnw clean package
 ```
+The resulting JAR will be in `target/d-optimas-2.10-SNAPSHOT-deploy.jar`.
+
+### Running a Simulation
+Simulations are driven by HOCON configuration files (found in `experiments/` or `simulation.conf`).
+
+**Important:** Running on Java 17+ requires specific JVM flags for Akka and reflection:
+```bash
+java --add-opens java.base/java.nio=ALL-UNNAMED \
+     --add-opens java.base/sun.nio.ch=ALL-UNNAMED \
+     --add-exports java.base/jdk.internal.misc=ALL-UNNAMED \
+     -Djava.library.path=./native/ \
+     -jar target/d-optimas-2.10-SNAPSHOT-deploy.jar \
+     -host <CASSANDRA_IP> \
+     -config <PATH_TO_SIMULATION_CONF>
+```
+
+### Data Extraction
+To extract simulation results from Cassandra for analysis:
+```bash
+java -jar target/d-optimas-2.10-SNAPSHOT-deploy.jar \
+     -host <CASSANDRA_IP> \
+     -config <PATH_TO_SIMULATION_CONF> \
+     -extract
+```
+
+## Running with Docker
+A `docker-compose.yml` is provided to spin up a Cassandra cluster and a d-optimas node.
+```bash
+cd docker
+docker-compose up
+```
+
+## Project Structure
+- `src/main/java`: Core logic (actors, heuristics, problems, persistence).
+- `src/main/proto`: gRPC service and message definitions.
+- `native/`: JNI bindings for the COCO framework.
+- `experiments/`: Library of simulation configuration files.
+- `analysis/`: Python scripts for post-simulation data processing.
+- `ansible/`: Playbooks for automated deployment.
+- `docker/`: Docker Compose and Dockerfile for containerization.
+
+## Contributing
+Please see our [contributing guidelines](CONTRIBUTING.md) before starting work. We follow standard Java coding conventions and favor convention over configuration.
