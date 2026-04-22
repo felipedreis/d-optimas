@@ -1,0 +1,56 @@
+version: "3.8"
+
+networks:
+  d-optimas-net:
+    driver: overlay
+    attachable: true
+
+services:
+  d-optimas:
+    image: felipedreis/d-optimas:2.10
+    environment:
+      DOPTIMAS_PORT: 2551
+      DOPTIMAS_EXP_FILE: experiments/artigo/COCO.conf
+      CASSANDRA_HOST: cassandra
+      REPEAT: 1
+    # Use dns_rr for tasks discovery
+    deploy:
+      replicas: 4
+      placement:
+        max_replicas_per_node: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+    volumes:
+      - results:/data
+    networks:
+      - d-optimas-net
+
+  cassandra:
+    image: bitnami/cassandra:3.11.5
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_DATACENTER=datacenter1
+      - CASSANDRA_CLUSTER_NAME=d-optimas-db
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    networks:
+      - d-optimas-net
+
+volumes:
+  results:
+    driver: local
