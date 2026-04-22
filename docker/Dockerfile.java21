@@ -9,7 +9,7 @@ RUN dnf install -y gcc
 
 ENV JAVA_HOME="/usr/lib/jvm/java-21-amazon-corretto"
 
-RUN gcc -I $JAVA_HOME/include -I $JAVA_HOME/include/linux -o libCocoJNI.so -fPIC -shared CocoJNI.c -lm
+RUN gcc -I $JAVA_HOME/include -I $JAVA_HOME/include/linux -o libCocoJNI.so -fPIC -shared CocoJNI.c coco.c -lm -O3
 
 FROM amazoncorretto:21-al2023 AS run
 
