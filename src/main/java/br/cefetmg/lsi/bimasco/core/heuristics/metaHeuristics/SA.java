@@ -31,7 +31,6 @@ public class SA extends MetaHeuristic {
     private String temperatureName;
     private SolutionAnalyser solutionAnalyser;
     private String modifieSolutionName;
-    private double time;
     private StopCondition stopCondition;
     private Temperature temperatureSA;
     private SolutionModifier solutionModifier;
@@ -76,7 +75,6 @@ public class SA extends MetaHeuristic {
 
         solutionModifier = SolutionModifierHelper
                 .buildModifiesSolution(problem.getProblemSettings().getType() + modifieSolutionName, problem, metaHeuristicParameters);
-        time = 0;
     }
 
     @SuppressWarnings("empty-statement")
@@ -113,7 +111,8 @@ public class SA extends MetaHeuristic {
 
         while (!stopCondition.isSatisfied(currentSolution.getFunctionValue(), getStopWatch().getTime(), it,
                 noImproveIt, metaHeuristicParameters)) {
-            while (temperatureIt < temperatureMaxIterations) {
+            while (temperatureIt < temperatureMaxIterations && !stopCondition.isSatisfied(currentSolution.getFunctionValue(), getStopWatch().getTime(), it,
+                    noImproveIt, metaHeuristicParameters)) {
                 temperatureIt++;
                 it++;
                 Solution neighborsSolution = solutionModifier.modify(currentSolution, null, null, 1);

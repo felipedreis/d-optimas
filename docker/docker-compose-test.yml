@@ -13,7 +13,7 @@ services:
     environment:
       DOPTIMAS_PORT: 2551
       DOPTIMAS_HOST: d-optimas-test
-      DOPTIMAS_EXP_FILE: test_de.conf
+      DOPTIMAS_EXP_FILE: test_pso_sa.conf
       CASSANDRA_HOST: cassandra
       REPEAT: 1
       JAVA_TOOL_OPTIONS: "-Dakka.cluster.seed-nodes.0=akka://d-optimas@d-optimas-test:2551"

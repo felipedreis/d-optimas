@@ -261,21 +261,23 @@ A deep dive into the metaheuristics implementation revealed several issues that 
 - **Viability Check:** If an offspring is not viable, it is discarded and the parent is kept. While safe, standard DE usually ensures viability through boundary handling or re-sampling.
 
 ### Particle Swarm Optimization (PSO)
-- **Initialization Risk:** `globalBest` is used in `updateParticleBest` and `findGlobalBest` before being guaranteed an initial value, which could lead to `NullPointerException`.
+- **Initialization Risk:** `globalBest` is used in `updateParticleBest` and `findGlobalBest` before being guaranteed an initial value, which could lead to `NullPointerException`. (FIXED)
 - **Velocity Update:** The concatenation logic `SolutionsCollectionUtils.concat(velocity, particles, particleBest)` combined with `velocityModifiers.modify` is non-standard and might lead to incorrect velocity calculations depending on the underlying modifier implementation.
 
 ### Iterated Local Search (ILS)
-- **Hardcoded Perturbation:** The `nivel` (perturbation level) starts at 2 and has hardcoded logic (`nivelAux < 6`), which should ideally be parameterized.
-- **Redundant Assignment:** `bestSolution = currentSolution; bestSolution = localSearchSolution;` in the success block is redundant.
+- **Hardcoded Perturbation:** The `nivel` (perturbation level) starts at 2 and has hardcoded logic (`nivelAux < 6`), which should ideally be parameterized. (FIXED)
+- **Redundant Assignment:** `bestSolution = currentSolution; bestSolution = localSearchSolution;` in the success block is redundant. (FIXED)
 
 ### Simulated Annealing (SA)
-- **Acceptance Probability:** The `calculateDeltaValue` formula `Math.exp(-(valB - valA) / T)` might be incorrectly signs-flipped depending on whether it's a minimization or maximization problem.
-- **Time Variable:** The `time` variable used in the `stopCondition` is never updated inside the loop, potentially leading to infinite loops if a time-based stop condition is used.
+- **Acceptance Probability:** The `calculateDeltaValue` formula `Math.exp(-(valB - valA) / T)` might be incorrectly signs-flipped depending on whether it's a minimization or maximization problem. (VERIFIED CORRECT)
+- **Time Variable:** The `time` variable used in the `stopCondition` is never updated inside the loop, potentially leading to infinite loops if a time-based stop condition is used. (FIXED)
 - **Scope Issue:** `methodSA` updates a local `bestSolution` but it's not clearly returning it to the caller in a thread-safe or consistent way if `runMetaHeuristic` is expected to return the final best. (FIXED)
 
 ### System-level Issues (Discovered during DE Fix Verification)
 - **Actor Communication NPE:** `AgentActor.onUpdateGlobalSummary` can crash if `update.summary` is null, which happens if a region registers before its statistics are fully initialized. (FIXED)
 - **Simulation Shutdown Race:** `SimulationActor.stopAgentsAndRegions` fails with a `ClassCastException` because it expects `RegionRelease` but sometimes receives `SimulationStopped` from `RegionActor`. (FIXED)
+- **SimulationActor state NPE:** `SimulationActor.state()` could crash if `globalStatistics` was null during a state request or shutdown. (FIXED)
+- **IterationsTemperature Serialization:** `IterationsTemperature` and `SATemperature` were not serializable, causing Akka snapshot failures in SA agents. (FIXED)
 - **Data Extraction Mismatch:** `AgentSolutionsOverTimeExtractor` fails because the CQL query in `AgentStateDAO` uses `:agentId` while the parameter and field are named `persistentId`. (FIXED)
 - **Missing Problem ID in Extraction:** `Main` fails to set `problemId` in `ExtractorsConfig` before running extraction, leading to `InvalidQueryException`. (FIXED)
 - **Java 21 Compatibility:** Akka Distributed Data (LMDB) and reflection require specific `--add-opens` and `--add-exports` JVM flags to work on Java 17+.

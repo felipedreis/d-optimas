@@ -625,12 +625,16 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     }
 
     public GlobalState state(){
+        double mean = globalStatistics == null ? 0.0 : globalStatistics.getMean();
+        double variance = globalStatistics == null ? 0.0 : globalStatistics.getVariance();
+        long n = globalStatistics == null ? 0 : globalStatistics.getN();
+
         return new GlobalState(
                 problem.toString(),
                 time,
-                globalStatistics.getMean(),
-                globalStatistics.getVariance(),
-                globalStatistics.getN(),
+                mean,
+                variance,
+                n,
                 regionUsedIds.size(),
                 regionUsedIds
         );

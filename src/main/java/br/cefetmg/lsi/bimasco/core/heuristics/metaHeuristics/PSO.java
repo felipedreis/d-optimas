@@ -150,13 +150,19 @@ public class PSO extends MetaHeuristic {
                 }
             }
         }
-        logger.debug("Global best particle " + globalBest.toString());
+        if (globalBest != null) {
+            logger.debug("Global best particle " + globalBest.toString());
+        }
     }
 
     private void findGlobalBest() {
         Solution populationBest = particleBest.stream()
                 .reduce(solutionAnalyser::getBestSolution)
-                .get();
+                .orElse(null);
+
+        if (populationBest == null) {
+            return;
+        }
 
         if (globalBest == null) {
             globalBest = populationBest;

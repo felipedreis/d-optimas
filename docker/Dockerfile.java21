@@ -27,6 +27,7 @@ COPY target/d-optimas-2.10-SNAPSHOT-deploy.jar ./d-optimas.jar
 COPY scripts/run-d-optimas.sh ./
 COPY config/log4j2.xml ./
 COPY test_de.conf ./test_de.conf
+COPY test_pso_sa.conf ./test_pso_sa.conf
 
 RUN dnf install -y lmdb lmdb-devel tar
 

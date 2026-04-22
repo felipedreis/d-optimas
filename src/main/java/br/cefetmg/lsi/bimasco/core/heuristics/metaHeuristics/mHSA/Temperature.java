@@ -4,12 +4,13 @@ import br.cefetmg.lsi.bimasco.core.Problem;
 import br.cefetmg.lsi.bimasco.core.heuristics.metaHeuristics.SA;
 import br.cefetmg.lsi.bimasco.core.utils.BimascoClassPath;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public interface Temperature {
+public interface Temperature extends Serializable {
 
     static Temperature buildTemperature(Problem problem, String temperatureName) {
         Temperature temperature = null;

@@ -13,7 +13,7 @@ import java.util.Random;
 //TODO: analyse type of returns
 public class  SATemperature implements Temperature{
 
-    private final Problem problem;
+    private final transient Problem problem;
     private double alpha;
 
     public SATemperature(Problem problem){

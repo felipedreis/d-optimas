@@ -9,7 +9,7 @@ import java.util.List;
 //TODO: analyse type of returns
 public class IterationsTemperature implements Temperature {
 
-    private final Problem problem;
+    private final transient Problem problem;
     private Object temperature = null;
 
     public IterationsTemperature(Problem problem) {
