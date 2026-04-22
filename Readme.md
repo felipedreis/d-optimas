@@ -253,16 +253,16 @@ Identified Bugs and Implementation Deviations
 A deep dive into the metaheuristics implementation revealed several issues that should be addressed:
 
 ### Genetic Algorithm (GA)
-- **Redundant Population Copy:** The `proxPopulacao` is initialized with a copy of the current population, but then new offspring are added to it, potentially leading to an ever-growing or incorrectly sized population if not carefully managed by `nextPopulation` selection.
-- **Inconsistent Variable Usage:** `getNumPais` returns `maxIterations` instead of `numPais`.
+- **Redundant Population Copy:** The `proxPopulacao` is initialized with a copy of the current population, but then new offspring are added to it, potentially leading to an ever-growing or incorrectly sized population if not carefully managed by `nextPopulation` selection. (FIXED)
+- **Inconsistent Variable Usage:** `getNumPais` returns `maxIterations` instead of `numPais`. (FIXED)
 
 ### Differential Evolution (DE)
-- **Crossover Logic:** The standard DE crossover (binomial or exponential) seems to be missing from the main loop. Currently, it calls `deSum` for every individual, which might be delegating crossover to the `deSum` operator, but this deviates from the standard structural implementation where crossover is explicitly handled.
-- **Viability Check:** If an offspring is not viable, it is discarded and the parent is kept. While safe, standard DE usually ensures viability through boundary handling or re-sampling.
+- **Crossover Logic:** The standard DE crossover (binomial or exponential) seems to be missing from the main loop. Currently, it calls `deSum` for every individual, which might be delegating crossover to the `deSum` operator, but this deviates from the standard structural implementation where crossover is explicitly handled. (FIXED)
+- **Viability Check:** If an offspring is not viable, it is discarded and the parent is kept. While safe, standard DE usually ensures viability through boundary handling or re-sampling. (FIXED)
 
 ### Particle Swarm Optimization (PSO)
 - **Initialization Risk:** `globalBest` is used in `updateParticleBest` and `findGlobalBest` before being guaranteed an initial value, which could lead to `NullPointerException`. (FIXED)
-- **Velocity Update:** The concatenation logic `SolutionsCollectionUtils.concat(velocity, particles, particleBest)` combined with `velocityModifiers.modify` is non-standard and might lead to incorrect velocity calculations depending on the underlying modifier implementation.
+- **Velocity Update:** The concatenation logic `SolutionsCollectionUtils.concat(velocity, particles, particleBest)` combined with `velocityModifiers.modify` is non-standard and might lead to incorrect velocity calculations depending on the underlying modifier implementation. (FIXED)
 
 ### Iterated Local Search (ILS)
 - **Hardcoded Perturbation:** The `nivel` (perturbation level) starts at 2 and has hardcoded logic (`nivelAux < 6`), which should ideally be parameterized. (FIXED)
@@ -280,4 +280,11 @@ A deep dive into the metaheuristics implementation revealed several issues that 
 - **IterationsTemperature Serialization:** `IterationsTemperature` and `SATemperature` were not serializable, causing Akka snapshot failures in SA agents. (FIXED)
 - **Data Extraction Mismatch:** `AgentSolutionsOverTimeExtractor` fails because the CQL query in `AgentStateDAO` uses `:agentId` while the parameter and field are named `persistentId`. (FIXED)
 - **Missing Problem ID in Extraction:** `Main` fails to set `problemId` in `ExtractorsConfig` before running extraction, leading to `InvalidQueryException`. (FIXED)
-- **Java 21 Compatibility:** Akka Distributed Data (LMDB) and reflection require specific `--add-opens` and `--add-exports` JVM flags to work on Java 17+.
+- **Java 21 Compatibility:** Akka Distributed Data (LMDB) and reflection require specific `--add-opens` and `--add-exports` JVM flags to work on Java 17+. (FIXED)
+
+The required flags for Java 17+ are:
+```bash
+--add-opens java.base/java.nio=ALL-UNNAMED \
+--add-opens java.base/sun.nio.ch=ALL-UNNAMED \
+--add-exports java.base/jdk.internal.misc=ALL-UNNAMED
+```
