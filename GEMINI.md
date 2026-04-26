@@ -1,9 +1,5 @@
 # d-optimas (Bimasco) Project Context
 
-## Active Plans
-- [P001-fix-ga-bugs.md](plans/P001-fix-ga-bugs.md) - Fix GA Bugs (Completed)
-- [P002-translate-to-english.md](plans/P002-translate-to-english.md) - Translate Codebase to English (Paused)
-
 ## Project Overview
 **d-optimas** is a distributed optimization framework based on the Actor model. It allows for the execution of various metaheuristics (such as Genetic Algorithms, Particle Swarm Optimization, Differential Evolution, GRASP, and Iterative Local Search) on a wide range of optimization problems.
 
@@ -57,7 +53,13 @@ java -jar target/d-optimas-2.10-SNAPSHOT-deploy.jar \
      -config <PATH_TO_SIMULATION_CONF> \
      -extract
 ```
+The plans should be extensive and tracked by the version control. 
 
+When we pass for the implementation, we should have a test-drivevn development
+approach. Propose the test classes and the test cases first, then we progress 
+to the implementation. 
+
+Tests should be
 ### Running with Docker
 A `docker-compose.yml` is provided in the `docker/` directory to spin up a Cassandra cluster and a d-optimas node.
 ```bash
@@ -73,11 +75,35 @@ Before starting any implementation, create a plan document in the `plans/` direc
 - Tasks to complete
 - Dependencies and prerequisites
 - Design decisions, architectural considerations, and trade-offs
+- Use diagrams (UML, flowcharts) where appropriate
+- Update the plan during implementation to reflect completed steps and any changes.
+- Avoid significant plan changes without proper consideration.
+- The plans should be extensive and tracked by the version control. 
 
-Use diagrams (UML, flowcharts) where appropriate. Update the plan during implementation to reflect completed steps and any changes. Avoid significant plan changes without proper consideration.
+After plan, we enter in development mode. This are the rules: 
+
+- When we pass for the implementation, we should have a test-drivevn development
+approach
+- Propose the test classes and the test cases first, I have to approve them first,  then we progress 
+    to the implementation. 
+- After the test is approved and implemented we progress to the implementation of the component
+- Tests should be meaningful, and test edge cases and happy paths. 
+- We should avoid mocking stuff
+- Complex scenarios should be tested in a functional test 
+
+### GitHub Integration (`gh` CLI)
+We use the GitHub CLI for managing the project's lifecycle. Common operations:
+- **List issues:** `gh issue list`
+- **View issue & comments:** `gh issue view <number> --comments`
+- **Create issue:** `gh issue create --title "..." --body "..."`
+- **Close issue:** `gh issue close <number>`
+- **Comment on issue:** `gh issue comment <number> --body "..."`
 
 ## Development Conventions
 
+- **Commit Message Standards:**
+    - Always mention the relevant issue number in the commit message (e.g., `Refactor agent state #42`).
+    - Prefer concise, descriptive messages that explain the *why*.
 - **Coding Style:** Follows standard Java conventions. Prefers composition and the Actor model for state management.
 - **Configuration:** Uses TypeSafe Config (HOCON). Main settings are in `src/main/resources/application.conf` (Akka) and `simulation.conf`.
 - **Testing:** Uses JUnit 5. Tests often require the native library path:

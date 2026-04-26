@@ -1,24 +1,7 @@
-- name: Prepare Raspberry Pi Cluster
-  hosts: all
-  become: yes
-  tasks:
-    - name: Install dependencies
-      apt:
-        name:
-          - docker.io
-          - python3-pip
-        state: present
-        update_cache: yes
-
-    - name: Ensure docker python library is installed
-      pip:
-        name: docker
-        state: present
-
 - name: Build and Deploy d-optimas Swarm Stack
   hosts: manager
   vars:
-    project_dir: "/home/pi/d-optimas"
+    project_dir: "/home/felipeduarte/d-optimas"
     image_name: "felipedreis/d-optimas:2.10"
   tasks:
     - name: Create project directory
@@ -28,37 +11,65 @@
 
     - name: Synchronize source code
       synchronize:
-        src: "../"
-        dest: "{{ project_dir }}"
+        src: "{{ playbook_dir }}/../"
+        dest: "{{ project_dir }}/"
         recursive: yes
         delete: yes
         rsync_opts:
           - "--exclude=.git"
-          - "--exclude=target"
           - "--exclude=.idea"
+
+    - name: List project directory contents
+      command: "ls -R {{ project_dir }}"
+      register: ls_output
+
+    - name: Show ls output
+      debug:
+        var: ls_output.stdout_lines
+
+    - name: Ensure python3-pip is installed
+      apt:
+        name: 
+          - python3-pip
+        state: present
+        update_cache: no
+      become: yes
+
+    - name: Install python dependencies with pip
+      command: pip3 install jsondiff docker --break-system-packages
+      become: yes
 
     - name: Build Docker image for ARM
       docker_image:
         build:
           path: "{{ project_dir }}"
-          dockerfile: docker/Dockerfile.java21
+          dockerfile: "docker/Dockerfile.java21"
         name: "{{ image_name }}"
         source: build
+      become: yes
 
     - name: Copy stack definition
       template:
         src: "../docker/docker-stack.yml"
         dest: "{{ project_dir }}/docker-stack.yml"
 
+    - name: Check Docker Info
+      command: docker info
+      become: yes
+      register: docker_info
+
+    - name: Show Docker Info
+      debug:
+        var: docker_info.stdout_lines
+
     - name: Deploy Swarm stack
-      docker_stack:
-        state: present
-        name: d-optimas
-        compose:
-          - "{{ project_dir }}/docker-stack.yml"
+      shell: docker stack deploy -c {{ project_dir }}/docker-stack.yml d-optimas
+      become: yes
 
 - name: Monitor and Collect Results
   hosts: manager
+  vars:
+    project_dir: "/home/felipeduarte/d-optimas"
   tasks:
     - name: Wait for simulation to finish (check logs or volume)
       pause:
