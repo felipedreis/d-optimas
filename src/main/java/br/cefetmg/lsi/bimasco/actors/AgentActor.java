@@ -87,9 +87,11 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         String[] tokens = self().path().name().split("-");
         id = Integer.parseInt(tokens[1]);
 
-        agentStateDAO = DatabaseHelper.getMapper().agentStateDAO();
-        messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
-        memoryStateDAO = DatabaseHelper.getMapper().memoryStateDAO();
+        if (DatabaseHelper.getCqlSession() != null) {
+            agentStateDAO = DatabaseHelper.getMapper().agentStateDAO();
+            messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
+            memoryStateDAO = DatabaseHelper.getMapper().memoryStateDAO();
+        }
     }
 
     @Override
@@ -277,11 +279,13 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     }
 
     private void persistAgentState(AgentState state){
-        agentStateDAO.save(state);
+        if (agentStateDAO != null)
+            agentStateDAO.save(state);
     }
 
     private void persistMemoryState(MemoryState memoryState) {
-        memoryStateDAO.save(memoryState);
+        if (memoryStateDAO != null)
+            memoryStateDAO.save(memoryState);
     }
 
     private void onUpdateGlobalSummary(UpdateGlobalSummary update) {

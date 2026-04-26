@@ -53,7 +53,7 @@ public class MainActor extends AbstractActor {
                 .addService(new AgentService(simulationActor))
                 .addService(new RegionService(simulationActor))
                 .addService(new BenchmarkService(benchmarkActor))
-                .addService(new SimulationService())
+                .addService(new SimulationService(simulationActor))
                 .build();
 
         try {

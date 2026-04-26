@@ -29,7 +29,10 @@ public interface MessagePersister {
     }
 
 
-    default void persistMessage(MessageState s) { messageStateDao().save(s); }
+    default void persistMessage(MessageState s) {
+        if (messageStateDao() != null)
+            messageStateDao().save(s);
+    }
 
     MessageStateDAO messageStateDao();
 }
