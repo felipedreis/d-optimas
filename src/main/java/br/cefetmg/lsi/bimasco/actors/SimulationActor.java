@@ -58,6 +58,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     private ActorRef regionShard;
 
     private boolean simulationStarted;
+    private SimulationState.Status status = SimulationState.Status.STOPPED;
 
     private List<Integer> regionsIds;
     private List<Integer> agentsIds;
@@ -120,8 +121,10 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .start("regions", Props.create(RegionActor.class, simulationSettings), shardSettings,
                         Messages.regionMessageExtractor);
 
-        globalStateDAO = DatabaseHelper.getMapper().globalStateDAO();
-        messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
+        if (DatabaseHelper.getCqlSession() != null) {
+            globalStateDAO = DatabaseHelper.getMapper().globalStateDAO();
+            messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
+        }
     }
 
     @Override
@@ -173,9 +176,14 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
             stopAgentsAndRegions(stopSimulation);
             resetRegionsData();
             simulationStarted = false;
+            status = SimulationState.Status.STOPPED;
             sender().tell(new SimulationStopped(nodes), self());
         } else {
-            leader.forward(stopSimulation, context());
+            if (leader != null) {
+                leader.forward(stopSimulation, context());
+            } else {
+                logger.warn("No leader available to forward StopSimulation");
+            }
         }
     }
 
@@ -221,6 +229,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      */
     void onStartSimulation(StartSimulation startSimulation) {
         logger.info("Starting the simulation");
+        status = SimulationState.Status.STARTED;
         startSimulation.problem.ifPresent(p -> problem = p);
         Arrays.stream(agents)
                 .filter(Objects::nonNull)
@@ -280,6 +289,8 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
             logger.info(format("Simulation time exceeded the execution time %d", simulationSettings.getExecutionTime()));
             stopAgentsAndRegions(new StopSimulation());
             resetRegionsData();
+            simulationStarted = false;
+            status = SimulationState.Status.FINISHED;
             context().parent().tell(new SimulationStopped(nodes), self());
         }
     }
@@ -512,6 +523,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
 
             if (amILeader) {
                 if (Arrays.stream(agents).noneMatch(Objects::isNull) && !simulationStarted) {
+                    status = SimulationState.Status.READY;
                     context().parent().tell(new SimulationReady(), self());
                 }
             }
@@ -573,6 +585,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
 
     public void onGetState(GetState getState) {
         SimulationState state = new SimulationState(
+                status,
                 problem.toString(),
                 time,
                 simulationSettings,
@@ -621,7 +634,8 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     }
 
     void persist(GlobalState obj) {
-        globalStateDAO.save(obj);
+        if (globalStateDAO != null)
+            globalStateDAO.save(obj);
     }
 
     public GlobalState state(){

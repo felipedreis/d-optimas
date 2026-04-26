@@ -81,15 +81,18 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     public RegionActor(SimulationSettings settings) {
         super();
         this.settings = settings;
-        regionStateDAO = DatabaseHelper.getMapper().regionStateDAO();
-        solutionStateDAO = DatabaseHelper.getMapper().solutionStateDAO();
-        messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
     }
 
     @Override
     public void preStart() {
         String [] tokens = self().path().name().split("-");
         id = Integer.parseInt(tokens[1]);
+
+        if (DatabaseHelper.getCqlSession() != null) {
+            regionStateDAO = DatabaseHelper.getMapper().regionStateDAO();
+            solutionStateDAO = DatabaseHelper.getMapper().solutionStateDAO();
+            messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
+        }
 
         logger.info("Starting " + persistenceId());
     }
@@ -337,11 +340,13 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     }
 
     void persistRegion(RegionState s) {
-        regionStateDAO.save(s);
+        if (regionStateDAO != null)
+            regionStateDAO.save(s);
     }
 
     void persistSolution(SolutionState s) {
-        solutionStateDAO.save(s);
+        if (solutionStateDAO != null)
+            solutionStateDAO.save(s);
     }
 
     @Override

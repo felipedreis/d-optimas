@@ -11,6 +11,12 @@ import java.util.Objects;
 
 public class SimulationState {
 
+    public enum Status {
+        READY, STARTED, STOPPED, FINISHED, FAILED
+    }
+
+    public final Status status;
+
     public final String problemName;
 
     public final long time;
@@ -25,13 +31,15 @@ public class SimulationState {
 
     public final StatisticalSummary globalStats;
 
-    public SimulationState(String problemName,
+    public SimulationState(Status status,
+                           String problemName,
                            long time,
                            SimulationSettings settings,
                            StatisticalSummary globalStats,
                            List<ActorRef> agents,
                            List<ActorRef> regions,
                            Map<String, StatisticalSummary> regionStats) {
+        this.status = status;
         this. problemName = problemName;
         this.time = time;
         this.settings = settings;

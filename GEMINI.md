@@ -92,12 +92,37 @@ approach
 - Complex scenarios should be tested in a functional test 
 
 ### GitHub Integration (`gh` CLI)
-We use the GitHub CLI for managing the project's lifecycle. Common operations:
+We use the GitHub CLI for managing the project's lifecycle. 
+
+#### Creating Issues
+When creating issues, use a detailed body that includes context, technical approach, classes to be touched, and verifiable acceptance criteria.
+```bash
+gh issue create --title "[Category] Title" --body "### Context
+[Describe the problem or feature background]
+
+### Technical Approach
+[Describe the high-level strategy and detailed steps]
+
+### Classes to be modified
+* [Reference the classes that will be touched]
+
+### Acceptance Criteria
+* [List verifiable criteria that can be checked by AI or automated tests]"
+```
+
+Common operations:
 - **List issues:** `gh issue list`
 - **View issue & comments:** `gh issue view <number> --comments`
-- **Create issue:** `gh issue create --title "..." --body "..."`
 - **Close issue:** `gh issue close <number>`
 - **Comment on issue:** `gh issue comment <number> --body "..."`
+
+### Code Analysis & Discovery (GitNexus)
+Always use GitNexus tools to perform structured analysis of the codebase before proposing changes or creating issues.
+- **Querying:** Use `mcp_gitnexus_query` to find concepts or execution flows.
+- **Context:** Use `mcp_gitnexus_context` for a 360-degree view of a symbol (callers, callees, properties).
+- **Impact:** Use `mcp_gitnexus_impact` to analyze the blast radius of a change.
+- **Structural Discovery:** Use `mcp_gitnexus_cypher` for complex relationship queries.
+- **API Impact:** Use `mcp_gitnexus_api_impact` before modifying any API route handler.
 
 ## Development Conventions
 
