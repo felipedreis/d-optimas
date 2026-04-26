@@ -250,6 +250,8 @@ public class Messages {
         }
     }
 
+    public static class SimulationStarted implements Serializable {}
+
     public static class SimulationReady implements Serializable {}
 
     public static class StopSimulation implements Serializable {}

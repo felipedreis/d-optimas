@@ -1,12 +1,14 @@
 package br.cefetmg.lsi.bimasco.api;
 
 import akka.actor.ActorRef;
+import akka.pattern.Patterns;
 import br.cefetmg.lsi.bimasco.actors.Messages;
 import br.cefetmg.lsi.bimasco.actors.SimulationState;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public class SimulationService extends SimulationServiceGrpc.SimulationServiceImplBase {
@@ -42,25 +44,45 @@ public class SimulationService extends SimulationServiceGrpc.SimulationServiceIm
     @Override
     public void startSimulation(StartSimulationRequest request, StreamObserver<StatSimulationResponse> responseObserver) {
         logger.info("Doptimas API startSimulation request");
-        simulationActor.tell(new Messages.StartSimulation(), ActorRef.noSender());
-        StatSimulationResponse response = StatSimulationResponse.newBuilder()
-                .setStatus(SimulationStatus.STARTED)
-                .setMessage("Simulation start requested")
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        
+        // Wait for SimulationStarted confirmation before getting state
+        Patterns.ask(simulationActor, new Messages.StartSimulation(), Duration.ofSeconds(5))
+                .toCompletableFuture()
+                .thenCompose(ack -> getSimulationState())
+                .thenAccept(state -> {
+                    StatSimulationResponse response = StatSimulationResponse.newBuilder()
+                            .setStatus(mapStatus(state.status))
+                            .setMessage("Simulation started")
+                            .build();
+                    responseObserver.onNext(response);
+                    responseObserver.onCompleted();
+                }).exceptionally(ex -> {
+                    logger.error("Error starting simulation", ex);
+                    responseObserver.onError(ex);
+                    return null;
+                });
     }
 
     @Override
     public void stopSimulation(StopSimulationRequest request, StreamObserver<StatSimulationResponse> responseObserver) {
         logger.info("Doptimas API stopSimulation request");
-        simulationActor.tell(new Messages.StopSimulation(), ActorRef.noSender());
-        StatSimulationResponse response = StatSimulationResponse.newBuilder()
-                .setStatus(SimulationStatus.STOPPED)
-                .setMessage("Simulation stop requested")
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+
+        // Wait for SimulationStopped confirmation before getting state
+        Patterns.ask(simulationActor, new Messages.StopSimulation(), Duration.ofSeconds(5))
+                .toCompletableFuture()
+                .thenCompose(ack -> getSimulationState())
+                .thenAccept(state -> {
+                    StatSimulationResponse response = StatSimulationResponse.newBuilder()
+                            .setStatus(mapStatus(state.status))
+                            .setMessage("Simulation stopped")
+                            .build();
+                    responseObserver.onNext(response);
+                    responseObserver.onCompleted();
+                }).exceptionally(ex -> {
+                    logger.error("Error stopping simulation", ex);
+                    responseObserver.onError(ex);
+                    return null;
+                });
     }
 
     private SimulationStatus mapStatus(SimulationState.Status status) {

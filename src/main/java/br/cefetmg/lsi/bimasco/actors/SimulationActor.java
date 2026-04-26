@@ -235,6 +235,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .filter(Objects::nonNull)
                 .forEach(agent -> agent.tell(new StartSimulation(problem), self()));
         simulationStarted = true;
+        sender().tell(new SimulationStarted(), self());
     }
 
     /**
