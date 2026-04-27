@@ -4,11 +4,9 @@ on:
   push:
     paths:
       - 'src/main/proto/**'
-      - '.github/workflows/publish-proto.yml'
     branches:
       - main
       - master
-      - feature/automate-proto-generation
 
 jobs:
   publish:
