@@ -266,7 +266,43 @@ public class Messages {
         }
     }
 
-    public static class GetState implements Serializable {}
+    public static class GetState extends AbstractMessage {
+        public GetState(int receiverId) {
+            super(Messages.Nobody, receiverId);
+        }
+
+        public GetState() {
+            super(Messages.Nobody, Messages.Nobody);
+        }
+    }
+
+    public static class DetailedAgentState implements Serializable {
+        public final String agentId;
+        public final long lifetime;
+        public final long startTime;
+        public final long currentTime;
+        public final long completeExecutions;
+        public final long requiredSolutions;
+        public final String heuristic;
+        public final double memoryTax;
+        public final Solution bestSolution;
+        public final Map<Integer, Double> qTable;
+
+        public DetailedAgentState(String agentId, long lifetime, long startTime, long currentTime,
+                                  long completeExecutions, long requiredSolutions, String heuristic,
+                                  double memoryTax, Solution bestSolution, Map<Integer, Double> qTable) {
+            this.agentId = agentId;
+            this.lifetime = lifetime;
+            this.startTime = startTime;
+            this.currentTime = currentTime;
+            this.completeExecutions = completeExecutions;
+            this.requiredSolutions = requiredSolutions;
+            this.heuristic = heuristic;
+            this.memoryTax = memoryTax;
+            this.bestSolution = bestSolution;
+            this.qTable = qTable;
+        }
+    }
 
     public static class Terminate implements Serializable {}
 }

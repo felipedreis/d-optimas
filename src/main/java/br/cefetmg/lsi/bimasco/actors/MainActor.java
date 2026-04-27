@@ -3,6 +3,7 @@ package br.cefetmg.lsi.bimasco.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.cluster.sharding.ClusterSharding;
 import br.cefetmg.lsi.bimasco.api.AgentService;
 import br.cefetmg.lsi.bimasco.api.BenchmarkService;
 import br.cefetmg.lsi.bimasco.api.RegionService;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static br.cefetmg.lsi.bimasco.actors.Messages.*;
 
@@ -49,8 +51,13 @@ public class MainActor extends AbstractActor {
             simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");
         }
 
+        ActorRef agentShard = ClusterSharding.get(context().system()).startProxy(
+                "agents",
+                Optional.empty(),
+                Messages.agentMessageExtractor);
+
         grpcServer = ServerBuilder.forPort(8080)
-                .addService(new AgentService(simulationActor))
+                .addService(new AgentService(simulationActor, agentShard))
                 .addService(new RegionService(simulationActor))
                 .addService(new BenchmarkService(benchmarkActor))
                 .addService(new SimulationService(simulationActor))

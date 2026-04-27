@@ -130,6 +130,10 @@ public class Agent implements Serializable {
         return new MemoryState(problem.toString(), agentSettings.getName(), regions, probabilities, bestMemorySolution);
     }
 
+    public QLearningMemory getQLearningMemory() {
+        return qLearningMemory;
+    }
+
     public void reset(Problem problem) {
         this.problem = problem;
         metaHeuristic.setProblem(problem);
