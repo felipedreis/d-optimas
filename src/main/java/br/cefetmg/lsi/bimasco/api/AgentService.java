@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class AgentService extends AgentServiceGrpc.AgentServiceImplBase {
@@ -21,9 +22,11 @@ public class AgentService extends AgentServiceGrpc.AgentServiceImplBase {
     private static final Logger logger = LoggerFactory.getLogger(AgentService.class);
 
     private ActorRef simulationActor;
+    private ActorRef agentShard;
 
-    public AgentService(ActorRef simulationActor) {
+    public AgentService(ActorRef simulationActor, ActorRef agentShard) {
         this.simulationActor = simulationActor;
+        this.agentShard = agentShard;
     }
 
     private CompletableFuture<SimulationState> getSimulationState() {
@@ -63,6 +66,46 @@ public class AgentService extends AgentServiceGrpc.AgentServiceImplBase {
 
     @Override
     public void describeAgent(DescribeAgentRequest request, StreamObserver<DescribeAgentResponse> responseObserver) {
-        super.describeAgent(request, responseObserver);
+        logger.info("Doptimas API describeAgent request {}", request);
+        String agentId = request.getAgentId();
+        int id = Integer.parseInt(agentId.split("-")[1]);
+
+        Patterns.ask(agentShard, new Messages.GetState(id), Duration.ofSeconds(5))
+                .toCompletableFuture()
+                .thenAccept(obj -> {
+                    if (obj instanceof Messages.DetailedAgentState) {
+                        Messages.DetailedAgentState state = (Messages.DetailedAgentState) obj;
+                        DescribeAgentResponse.Builder builder = DescribeAgentResponse.newBuilder()
+                                .setAgentId(state.agentId)
+                                .setLifetime(state.lifetime)
+                                .setStartTime(state.startTime)
+                                .setCurrentTime(state.currentTime)
+                                .setCompleteExecutions(state.completeExecutions)
+                                .setRequiredSolutions(state.requiredSolutions)
+                                .setHeuristic(state.heuristic)
+                                .setMemoryTax(state.memoryTax)
+                                .putAllMemory(state.qTable.entrySet().stream()
+                                        .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue)));
+
+                        if (state.bestSolution != null) {
+                            List<Double> x = DoubleStream.of(state.bestSolution.toDoubleArray()).boxed().collect(Collectors.toList());
+                            List<Double> y = List.of(state.bestSolution.getFunctionValue().doubleValue());
+
+                            builder.setBestSolution(Solution.newBuilder()
+                                    .setId(state.bestSolution.getId().toString())
+                                    .addAllX(x)
+                                    .addAllY(y)
+                                    .build());
+                        }
+
+                        responseObserver.onNext(builder.build());
+                        responseObserver.onCompleted();
+                    } else {
+                        responseObserver.onError(new RuntimeException("Unexpected response from agent: " + obj));
+                    }
+                }).exceptionally(ex -> {
+                    responseObserver.onError(ex);
+                    return null;
+                });
     }
 }

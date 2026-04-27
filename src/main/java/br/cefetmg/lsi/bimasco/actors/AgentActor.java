@@ -68,6 +68,8 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private long globalTime;
 
+    private long startTime;
+
     private long globalSolutions;
 
     private Cancellable internalTask;
@@ -131,6 +133,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
         logger.info("Handling start simulation " + startSimulation);
         startSimulation.problem.ifPresent(agent::reset);
         agentStarted = true;
+        startTime = globalTime;
         globalSolutions = 0;
         startInternalTask();
     }
@@ -236,7 +239,23 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     }
 
     public void onGetState(GetState state){
-        sender().tell(new AgentState(), self());
+        if (agent == null) {
+            sender().tell(new akka.actor.Status.Failure(new IllegalStateException("Agent not initialized yet")), self());
+            return;
+        }
+
+        sender().tell(new DetailedAgentState(
+                persistenceId(),
+                lifetime,
+                startTime,
+                globalTime,
+                agent.getContext().getInvocations().get(),
+                (long) agent.getSolutionsCount(),
+                agent.getAgentSettings().getMetaHeuristicName(),
+                agent.getAgentSettings().getMemoryTax(),
+                agent.getContext().getBestSolution(),
+                agent.getQLearningMemory().getQTable()
+        ), self());
     }
 
     private void processSolutionList(int region, List<Solution> solutions) {
