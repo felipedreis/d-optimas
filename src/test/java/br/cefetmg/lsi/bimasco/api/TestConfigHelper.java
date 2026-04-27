@@ -1,6 +1,7 @@
 package br.cefetmg.lsi.bimasco.api;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TestConfigHelper {
@@ -27,6 +28,27 @@ public class TestConfigHelper {
                 "  problem: " + problem + ",\n" +
                 "  region: " + region + ",\n" +
                 "  agents: [" + String.join(", ", agents) + "]\n" +
+                "}";
+    }
+
+    public static String buildAgentConfig(String name, int count, String metaHeuristicName,
+                                        boolean isPopulation, boolean isConstructor, long lifetime,
+                                        double memoryTax, Map<String, Object> parameters) {
+        String params = parameters.entrySet().stream()
+                .map(e -> e.getKey() + " = " + (e.getValue() instanceof String ? "\"" + e.getValue() + "\"" : e.getValue()))
+                .collect(Collectors.joining("\n        "));
+
+        return "{\n" +
+                "  name: \"" + name + "\",\n" +
+                "  count: " + count + ",\n" +
+                "  metaHeuristicName: \"" + metaHeuristicName + "\",\n" +
+                "  isPopulationMetaHeuristic: " + isPopulation + ",\n" +
+                "  isConstructorMetaHeuristic: " + isConstructor + ",\n" +
+                "  lifetime: " + lifetime + ",\n" +
+                "  memoryTax: " + memoryTax + ",\n" +
+                "  metaHeuristicParameters: {\n" +
+                "    " + params + "\n" +
+                "  }\n" +
                 "}";
     }
 

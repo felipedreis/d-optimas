@@ -20,6 +20,7 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -63,27 +64,20 @@ public class AgentServiceTest {
         Cluster cluster = Cluster.get(system);
         cluster.join(cluster.selfAddress());
 
-        String agentConfig = "{\n" +
-                "  name: \"TestGRASP\",\n" +
-                "  count: 1,\n" +
-                "  metaHeuristicName: \"GRASP\",\n" +
-                "  isPopulationMetaHeuristic: false,\n" +
-                "  isConstructorMetaHeuristic: true,\n" +
-                "  lifetime: 1000,\n" +
-                "  memoryTax: 0.5,\n" +
-                "  metaHeuristicParameters: {\n" +
-                "    maxIterations = 20\n" +
-                "    maxIterationsSM = 5\n" +
-                "    time = 100.0\n" +
-                "    f0 = -1.7723\n" +
-                "    alpha = 0.001\n" +
-                "    stopConditionName = \"MaxIterations\"\n" +
-                "    neighborsListName = \"Step\"\n" +
-                "    localSearchName = \"Random\"\n" +
-                "    localSearchNeighbor = \"RealRandom\"\n" +
-                "    candidatesListName = \"Function\"\n" +
-                "  }\n" +
-                "}";
+        String agentConfig = TestConfigHelper.buildAgentConfig("TestGRASP", 1, "GRASP",
+                false, true, 1000, 0.5,
+                Map.of(
+                        "maxIterations", 20,
+                        "maxIterationsSM", 5,
+                        "time", 100.0,
+                        "f0", -1.7723,
+                        "alpha", 0.001,
+                        "stopConditionName", "MaxIterations",
+                        "neighborsListName", "Step",
+                        "localSearchName", "Random",
+                        "localSearchNeighbor", "RealRandom",
+                        "candidatesListName", "Function"
+                ));
 
         String configString = TestConfigHelper.buildSimulationConfig("Test", 60, 1, "results",
                 TestConfigHelper.buildProblemConfig("Function", "Function", false,
