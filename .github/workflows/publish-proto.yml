@@ -2,6 +2,9 @@ name: Publish Go Proto Stubs
 
 on:
   push:
+    paths:
+      - 'src/main/proto/**'
+      - '.github/workflows/publish-proto.yml'
     branches:
       - main
       - master
