@@ -16,14 +16,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '1.21'
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          protoc --version
 
       - name: Install Protoc Plugins
         run: |
@@ -50,9 +51,7 @@ jobs:
           # Ensure api directory exists in the stub repo
           mkdir -p doptimas-proto-go/api
           
-          # Copy generated files (adjusting path based on where protoc puts them)
-          # With paths=source_relative, if doptimas.proto is in the root of --proto_path, 
-          # it will be in the root of --go_out.
+          # Copy generated files
           cp gen/go/*.go doptimas-proto-go/api/
           
           cd doptimas-proto-go
@@ -70,7 +69,6 @@ jobs:
           git add .
           if ! git diff --cached --quiet; then
             git commit -m "Update proto stubs from d-optimas commit ${GITHUB_SHA::7}"
-            # Attempt to push to main, then master if main fails
             git push origin main || git push origin master
           else
             echo "No changes to commit"
