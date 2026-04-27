@@ -2,11 +2,10 @@ name: Publish Go Proto Stubs
 
 on:
   push:
-    paths:
-      - 'src/main/proto/**'
     branches:
       - main
       - master
+      - feature/automate-proto-generation
 
 jobs:
   publish:
