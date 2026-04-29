@@ -92,7 +92,7 @@ public class AgentServiceTest {
         Config config = ConfigFactory.parseString(configString);
         SimulationSettings settings = new SimulationSettings(config);
 
-        ActorRef mainActor = system.actorOf(Props.create(MainActor.class), "main");
+        ActorRef mainActor = system.actorOf(Props.create(MainActor.class, 0), "main");
         mainActor.tell(settings, ActorRef.noSender());
 
         // Wait for SimulationActor to be created by MainActor
@@ -114,7 +114,7 @@ public class AgentServiceTest {
 
         server = ServerBuilder.forPort(0)
                 .addService(new AgentService(simulationActor, agentShard))
-                .addService(new SimulationService(simulationActor))
+                .addService(new SimulationService(simulationActor, mainActor))
                 .build()
                 .start();
 

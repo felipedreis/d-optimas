@@ -31,44 +31,80 @@ public class MainActor extends AbstractActor {
 
     private Server grpcServer;
 
-    @Override
-    public Receive createReceive() {
-        return receiveBuilder()
-                .match(SimulationSettings.class, this::setup)
-                .match(SimulationReady.class, this::onReady)
-                .match(SimulationStopped.class, this::onSimulationStopped)
-                .build();
+    private final int grpcPort;
+
+    public MainActor() {
+        this(8080);
     }
 
-    private void setup(SimulationSettings settings) {
-        logger.info("Setting up the simulation manager");
-        this.settings = settings;
-        if (settings.isBenchmark()) {
-            simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");
-            benchmarkActor = context().actorOf(Props.create(BenchmarkActor.class, simulationActor, settings.getName(), settings.getEvaluationsBudget()), "benchmark");
+    public MainActor(int grpcPort) {
+        this.grpcPort = grpcPort;
+    }
 
-        } else {
-            simulationActor = context().actorOf(Props.create(SimulationActor.class, settings), "manager");
-        }
+    @Override
+    public void preStart() {
+        logger.info("Main actor starting on port {}", grpcPort);
+        simulationActor = context().actorOf(Props.create(SimulationActor.class), "manager");
+        benchmarkActor = context().actorOf(Props.create(BenchmarkActor.class), "benchmark");
 
         ActorRef agentShard = ClusterSharding.get(context().system()).startProxy(
                 "agents",
                 Optional.empty(),
                 Messages.agentMessageExtractor);
 
-        grpcServer = ServerBuilder.forPort(8080)
+        ActorRef regionShard = ClusterSharding.get(context().system()).startProxy(
+                "regions",
+                Optional.empty(),
+                Messages.regionMessageExtractor);
+
+        grpcServer = ServerBuilder.forPort(grpcPort)
                 .addService(new AgentService(simulationActor, agentShard))
-                .addService(new RegionService(simulationActor))
+                .addService(new RegionService(simulationActor, regionShard))
                 .addService(new BenchmarkService(benchmarkActor))
-                .addService(new SimulationService(simulationActor))
+                .addService(new SimulationService(simulationActor, self()))
                 .build();
 
         try {
             grpcServer.start();
+            logger.info("GRPC server started on port {}", grpcPort);
         } catch (IOException ex) {
             logger.error("Couldn't start grpc endpoint", ex);
         }
-        logger.info("GRPC started");
+    }
+
+    @Override
+    public void postStop() {
+        if (grpcServer != null) {
+            grpcServer.shutdown();
+        }
+    }
+
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(SimulationSettings.class, this::setup)
+                .match(ConfigureSimulation.class, this::onConfigureSimulation)
+                .match(SimulationReady.class, this::onReady)
+                .match(SimulationStopped.class, this::onSimulationStopped)
+                .build();
+    }
+
+    private void onConfigureSimulation(ConfigureSimulation configure) {
+        logger.info("Forwarding configuration to manager");
+        this.settings = configure.settings;
+        simulationActor.forward(configure, context());
+        if (settings.isBenchmark()) {
+            benchmarkActor.forward(configure, context());
+        }
+    }
+
+    private void setup(SimulationSettings settings) {
+        logger.info("Setting up the simulation manager");
+        this.settings = settings;
+        simulationActor.tell(new ConfigureSimulation(settings), self());
+        if (settings.isBenchmark()) {
+            benchmarkActor.tell(new ConfigureSimulation(settings), self());
+        }
     }
 
     private void onReady(SimulationReady ready)  {

@@ -103,15 +103,14 @@ public class ExtractorsConfig {
     }
 
     private Set<String> getRegionNames() {
-
-        return regionStateDAO.findAll().all()
+        return regionStateDAO.findByProblem(problemId).all()
                 .stream()
                 .map(RegionState::getName)
                 .collect(Collectors.toSet());
     }
 
     private Set<String> getAgentNames() {
-        return agentStateDAO.findAll().all()
+        return agentStateDAO.findByProblem(problemId).all()
                 .stream()
                 .map(AgentState::getPersistentId)
                 .collect(Collectors.toSet());

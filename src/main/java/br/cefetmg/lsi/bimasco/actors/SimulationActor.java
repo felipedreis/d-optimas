@@ -75,32 +75,45 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
 
     private long time;
 
+    private String currentProblemId;
+
+    public SimulationActor() {
+        nodes = new ArrayList<>();
+        amILeader = false;
+        simulationStarted = false;
+        status = SimulationState.Status.STOPPED;
+        time = 0;
+        regionsIds = new ArrayList<>();
+        agentsIds = new ArrayList<>();
+        regionUsedIds = new ArrayList<>();
+        agentsUsedIds = new ArrayList<>();
+    }
+
     public SimulationActor(SimulationSettings settings){
+        this();
+        configure(settings);
+    }
+
+    private void configure(SimulationSettings settings) {
+        simulationSettings = settings;
         regionSettings = settings.getRegion();
         agents = new ActorRef[settings.getNumberOfAgents()];
         regions = new ActorRef[regionSettings.getMaxRegions()];
         regionsSummary = new SummaryStatistics[regionSettings.getMaxRegions()];
         globalStatistics = new SummaryStatistics();
-        nodes = new ArrayList<>();
-        simulationSettings = settings;
         problem = Problem.buildProblem(settings.getProblem());
-        amILeader = false;
-        simulationStarted = false;
 
-        regionsIds = new ArrayList<>();
-        agentsIds = new ArrayList<>();
-        regionUsedIds = new ArrayList<>();
-        agentsUsedIds = new ArrayList<>();
-
+        regionsIds.clear();
         for (int i = 0; i < regionSettings.getMaxRegions(); ++i) {
             regionsIds.add(i);
         }
 
+        agentsIds.clear();
         for (int i = 0; i < simulationSettings.getNumberOfAgents(); ++i) {
             agentsIds.add(i);
         }
 
-        time = 0;
+        initializeSharding();
     }
 
 
@@ -111,6 +124,18 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         logger.info("Joining cluster");
         cluster.subscribe(self(), ClusterEvent.MemberUp.class, ClusterEvent.LeaderChanged.class);
         logger.info("Subscribed to Member events");
+
+        initializeSharding();
+
+        if (DatabaseHelper.getCqlSession() != null) {
+            globalStateDAO = DatabaseHelper.getMapper().globalStateDAO();
+            messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
+        }
+    }
+
+    private void initializeSharding() {
+        if (simulationSettings == null) return;
+
         ClusterShardingSettings shardSettings = ClusterShardingSettings.create(context().system());
 
         agentShard = ClusterSharding.get(context().system())
@@ -120,11 +145,6 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         regionShard = ClusterSharding.get(context().system())
                 .start("regions", Props.create(RegionActor.class, simulationSettings), shardSettings,
                         Messages.regionMessageExtractor);
-
-        if (DatabaseHelper.getCqlSession() != null) {
-            globalStateDAO = DatabaseHelper.getMapper().globalStateDAO();
-            messageStateDAO = DatabaseHelper.getMapper().messageStateDAO();
-        }
     }
 
     @Override
@@ -157,6 +177,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .match(MergeRequest.class, this::onMergeRequest)
                 .match(RegionRelease.class, this::onRegionRelease)
                 .match(UpdateRegionSummary.class, this::onUpdateRegionSummary)
+                .match(ConfigureSimulation.class, this::onConfigureSimulation)
                 .match(StartSimulation.class, this::onStartSimulation)
                 .match(StopSimulation.class, this::onStopSimulation)
                 .match(GetState.class, this::onGetState)
@@ -164,6 +185,31 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                 .match(SimulationStopped.class, any -> logger.info("Received simulation stopped"))
                 .matchAny(any -> logger.warn("Not handling {}", any))
                 .build();
+    }
+
+    private void onConfigureSimulation(ConfigureSimulation configure) {
+        logger.info("Configuring simulation: {}", configure.settings.getName());
+        if (simulationSettings != null) {
+            hardReset();
+        }
+
+        this.currentProblemId = configure.problemId != null ? configure.problemId : configure.settings.getName();
+        configure(configure.settings);
+
+        if (nodes.size() == simulationSettings.getNodes()) {
+            createAgents();
+        }
+    }
+
+    private void hardReset() {
+        logger.info("Performing hard reset");
+        stopAgentsAndRegions(new StopSimulation());
+        resetRegionsData();
+        agentsUsedIds.clear();
+        regionUsedIds.clear();
+        time = 0;
+        status = SimulationState.Status.STOPPED;
+        simulationStarted = false;
     }
 
     private void terminate(Terminate t){
@@ -188,17 +234,29 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     }
 
     private void stopAgentsAndRegions(StopSimulation stopSimulation) {
-        Arrays.stream(agents)
+        String problemId = currentProblemId;
+        List<CompletableFuture<Object>> agentFutures = Arrays.stream(agents)
                 .filter(Objects::nonNull)
-                .map(agent -> Patterns.ask(agent, stopSimulation, Duration.ofSeconds(1)))
-                .map(CompletionStage::toCompletableFuture)
-                .forEach(CompletableFuture::join);
+                .map(agent -> {
+                    StopSimulation stop = new StopSimulation();
+                    stop.withProblemId(problemId);
+                    return Patterns.ask(agent, stop, Duration.ofSeconds(5)).toCompletableFuture();
+                })
+                .collect(Collectors.toList());
 
-        Arrays.stream(regions)
+        List<CompletableFuture<Object>> regionFutures = Arrays.stream(regions)
                 .filter(Objects::nonNull)
-                .map(region -> Patterns.ask(region, stopSimulation, Duration.ofSeconds(1)))
-                .map(CompletionStage::toCompletableFuture)
-                .map(CompletableFuture::join)
+                .map(region -> {
+                    StopSimulation stop = new StopSimulation();
+                    stop.withProblemId(problemId);
+                    return Patterns.ask(region, stop, Duration.ofSeconds(5)).toCompletableFuture();
+                })
+                .collect(Collectors.toList());
+
+        CompletableFuture.allOf(agentFutures.toArray(new CompletableFuture[0])).join();
+        CompletableFuture.allOf(regionFutures.toArray(new CompletableFuture[0])).join();
+
+        regionFutures.stream().map(CompletableFuture::join)
                 .forEach(release -> {
                     if (release instanceof RegionRelease) {
                         onRegionRelease((RegionRelease) release);
@@ -233,7 +291,11 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
         startSimulation.problem.ifPresent(p -> problem = p);
         Arrays.stream(agents)
                 .filter(Objects::nonNull)
-                .forEach(agent -> agent.tell(new StartSimulation(problem), self()));
+                .forEach(agent -> {
+                    StartSimulation start = new StartSimulation(problem);
+                    start.withProblemId(currentProblemId);
+                    agent.tell(start, self());
+                });
         simulationStarted = true;
         sender().tell(new SimulationStarted(), self());
     }
@@ -305,6 +367,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
             ActorRef region = regions[i];
             if (region != null) {
                 UpdateGlobalSummary updateGlobalSummary = new UpdateGlobalSummary(i, globalStatistics, time, regionUsedIds);
+                updateGlobalSummary.withProblemId(currentProblemId);
                 logger.debug(format("Sending global update %s to %s", updateGlobalSummary, region));
                 region.tell(updateGlobalSummary, self());
                 persistMessage(sent(problem.toString(), updateGlobalSummary, time, ENTITY_ID));
@@ -321,6 +384,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
             ActorRef agent = agents[i];
             if (agent != null) {
                 UpdateGlobalSummary updateGlobalSummary = new UpdateGlobalSummary(i, globalStatistics, time, regionUsedIds);
+                updateGlobalSummary.withProblemId(currentProblemId);
                 agent.tell(updateGlobalSummary, self());
             }
         }
@@ -394,7 +458,9 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
      */
     private void createRegion(Integer id, List<Solution> solutions) {
         logger.info(format("Creating region-%d", id));
-        regionShard.tell(new CreateRegion(id, simulationSettings.getRegion(), time, solutions, problem), self());
+        CreateRegion createRegion = new CreateRegion(id, simulationSettings.getRegion(), time, solutions, problem);
+        createRegion.withProblemId(currentProblemId);
+        regionShard.tell(createRegion, self());
     }
 
     /**
@@ -487,9 +553,13 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
 
         CompletionStage<ActorRef> future = newMemberSelection.resolveOne(Duration.ofSeconds(1));
         future.thenAccept(nodes::add).thenRun(() -> {
-            logger.info("Member {} added. Nodes {}/{}", memberAddress, nodes.size(), simulationSettings.getNodes());
-            if (nodes.size() == simulationSettings.getNodes()) {
-                createAgents();
+            if (simulationSettings != null) {
+                logger.info("Member {} added. Nodes {}/{}", memberAddress, nodes.size(), simulationSettings.getNodes());
+                if (nodes.size() == simulationSettings.getNodes()) {
+                    createAgents();
+                }
+            } else {
+                logger.info("Member {} added. Nodes {}. Waiting for configuration.", memberAddress, nodes.size());
             }
         });
     }
@@ -507,6 +577,7 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
                     if (id.isPresent()) {
                         Integer agentId = id.get();
                         CreateAgent createAgent = new CreateAgent(agentId, agentShard, regionShard, self(), agentSettings);
+                        createAgent.withProblemId(currentProblemId);
                         CompletableFuture t = Patterns.ask(agentShard, createAgent, Duration.ofSeconds(5)).toCompletableFuture();
 
                         completionStages.add(t);
@@ -587,16 +658,17 @@ public class SimulationActor extends AbstractActor implements MessagePersister {
     public void onGetState(GetState getState) {
         SimulationState state = new SimulationState(
                 status,
-                problem.toString(),
+                problem != null ? problem.toString() : "Not Configured",
                 time,
                 simulationSettings,
                 globalStatistics,
-                Arrays.stream(agents).filter(Objects::nonNull).collect(Collectors.toList()),
-                Arrays.stream(regions).filter(Objects::nonNull).collect(Collectors.toList()),
-                IntStream.range(0, regionsSummary.length)
+                agents != null ? Arrays.stream(agents).filter(Objects::nonNull).collect(Collectors.toList()) : List.of(),
+                regions != null ? Arrays.stream(regions).filter(Objects::nonNull).collect(Collectors.toList()) : List.of(),
+                regionsSummary != null ?
+                        IntStream.range(0, regionsSummary.length)
                         .filter(idx -> regionsSummary[idx] != null)
                         .boxed()
-                        .collect(Collectors.toMap(idx -> "region-" + idx, idx -> regionsSummary[(Integer) idx]))
+                        .collect(Collectors.toMap(idx -> "region-" + idx, idx -> regionsSummary[(Integer) idx])) : Map.of()
         );
 
         sender().tell(state, self());

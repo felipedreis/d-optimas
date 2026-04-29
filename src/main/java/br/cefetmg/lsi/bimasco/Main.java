@@ -31,13 +31,11 @@ public class Main {
         Option host = Option.builder("host")
                 .hasArg()
                 .argName("ip")
-                .required()
                 .build();
 
         Option config = Option.builder("config")
                 .hasArg()
                 .argName("file")
-                .required()
                 .build();
 
 
@@ -74,37 +72,42 @@ public class Main {
                 System.exit(0);
             }
 
-            String host = cmd.getOptionValue("host");
+            String host = cmd.getOptionValue("host", "127.0.0.1");
             Config config = ConfigFactory.load();
 
             DatabaseHelper.initCqlSession(host);
 
-            File configFile = new File(cmd.getOptionValue("config"));
-            Config simulationConfig = ConfigFactory.parseFile(configFile);
-            SimulationSettings settings = new SimulationSettings(simulationConfig);
+            ActorSystem system = ActorSystem.create("d-optimas", config);
 
-            if (cmd.hasOption("extract")){
-                logger.info("Received extract option, I won't run any simulation");
-                DOptimasMapper mapper = DatabaseHelper.getMapper();
-                logger.info("Building extract beans");
-                ExtractorsConfig extractorsConfig = new ExtractorsConfig(mapper.agentStateDAO(), mapper.regionStateDAO(),
-                        mapper.solutionStateDAO(), mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
-                extractorsConfig.setProblemId(settings.getName());
+            DatabaseCleaner cleaner = new DatabaseCleaner();
+            cleaner.cleanup(system);
+            ActorRef mainActor = system.actorOf(Props.create(MainActor.class), "main");
 
-                logger.info("Creating data extraction batch");
-                DataExtractionBatch extractionBatch = new DataExtractionBatch(settings.getExtractPath() + "/",
-                        extractorsConfig.extractors());
-                logger.info("Starting data extraction batch");
-                extractionBatch.prepareDataPath();
-                extractionBatch.run();
+            if (cmd.hasOption("config")) {
+                File configFile = new File(cmd.getOptionValue("config"));
+                Config simulationConfig = ConfigFactory.parseFile(configFile);
+                SimulationSettings settings = new SimulationSettings(simulationConfig);
+
+                if (cmd.hasOption("extract")){
+                    logger.info("Received extract option, I won't run any simulation");
+                    DOptimasMapper mapper = DatabaseHelper.getMapper();
+                    logger.info("Building extract beans");
+                    ExtractorsConfig extractorsConfig = new ExtractorsConfig(mapper.agentStateDAO(), mapper.regionStateDAO(),
+                            mapper.solutionStateDAO(), mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
+                    extractorsConfig.setProblemId(settings.getName());
+
+                    logger.info("Creating data extraction batch");
+                    DataExtractionBatch extractionBatch = new DataExtractionBatch(settings.getExtractPath() + "/",
+                            extractorsConfig.extractors());
+                    logger.info("Starting data extraction batch");
+                    extractionBatch.prepareDataPath();
+                    extractionBatch.run();
+                } else {
+                    DatabaseHelper.clearAllTables();
+                    mainActor.tell(settings, ActorRef.noSender());
+                }
             } else {
-                DatabaseHelper.clearAllTables();
-                ActorSystem system = ActorSystem.create("d-optimas", config);
-
-                DatabaseCleaner cleaner = new DatabaseCleaner();
-                cleaner.cleanup(system);
-                ActorRef mainActor = system.actorOf(Props.create(MainActor.class), "main");
-                mainActor.tell(settings, mainActor);
+                logger.info("D-Optimas started in dormant mode. Waiting for configuration.");
             }
         } catch (ParseException e) {
             e.printStackTrace();
