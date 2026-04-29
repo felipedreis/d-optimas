@@ -70,42 +70,50 @@ public class AgentService extends AgentServiceGrpc.AgentServiceImplBase {
         String agentId = request.getAgentId();
         int id = Integer.parseInt(agentId.split("-")[1]);
 
-        Patterns.ask(agentShard, new Messages.GetState(id), Duration.ofSeconds(5))
-                .toCompletableFuture()
-                .thenAccept(obj -> {
-                    if (obj instanceof Messages.DetailedAgentState) {
-                        Messages.DetailedAgentState state = (Messages.DetailedAgentState) obj;
-                        DescribeAgentResponse.Builder builder = DescribeAgentResponse.newBuilder()
-                                .setAgentId(state.agentId)
-                                .setLifetime(state.lifetime)
-                                .setStartTime(state.startTime)
-                                .setCurrentTime(state.currentTime)
-                                .setCompleteExecutions(state.completeExecutions)
-                                .setRequiredSolutions(state.requiredSolutions)
-                                .setHeuristic(state.heuristic)
-                                .setMemoryTax(state.memoryTax)
-                                .putAllMemory(state.qTable.entrySet().stream()
-                                        .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue)));
+        getSimulationState().thenAccept(simState -> {
+            String problemId = simState.settings != null ? simState.settings.getName() : null;
 
-                        if (state.bestSolution != null) {
-                            List<Double> x = DoubleStream.of(state.bestSolution.toDoubleArray()).boxed().collect(Collectors.toList());
-                            List<Double> y = List.of(state.bestSolution.getFunctionValue().doubleValue());
+            Patterns.ask(agentShard, new Messages.GetState(id, problemId), Duration.ofSeconds(5))
+                    .toCompletableFuture()
+                    .thenAccept(obj -> {
+                        if (obj instanceof Messages.DetailedAgentState) {
+                            Messages.DetailedAgentState state = (Messages.DetailedAgentState) obj;
+                            DescribeAgentResponse.Builder builder = DescribeAgentResponse.newBuilder()
+                                    .setAgentId(state.agentId)
+                                    .setLifetime(state.lifetime)
+                                    .setStartTime(state.startTime)
+                                    .setCurrentTime(state.currentTime)
+                                    .setCompleteExecutions(state.completeExecutions)
+                                    .setRequiredSolutions(state.requiredSolutions)
+                                    .setHeuristic(state.heuristic)
+                                    .setMemoryTax(state.memoryTax)
+                                    .putAllMemory(state.qTable.entrySet().stream()
+                                            .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue)));
 
-                            builder.setBestSolution(Solution.newBuilder()
-                                    .setId(state.bestSolution.getId().toString())
-                                    .addAllX(x)
-                                    .addAllY(y)
-                                    .build());
+                            if (state.bestSolution != null) {
+                                List<Double> x = DoubleStream.of(state.bestSolution.toDoubleArray()).boxed().collect(Collectors.toList());
+                                List<Double> y = List.of(state.bestSolution.getFunctionValue().doubleValue());
+
+                                builder.setBestSolution(Solution.newBuilder()
+                                        .setId(state.bestSolution.getId().toString())
+                                        .addAllX(x)
+                                        .addAllY(y)
+                                        .build());
+                            }
+
+                            responseObserver.onNext(builder.build());
+                            responseObserver.onCompleted();
+                        } else {
+                            responseObserver.onError(new RuntimeException("Unexpected response from agent: " + obj));
                         }
-
-                        responseObserver.onNext(builder.build());
-                        responseObserver.onCompleted();
-                    } else {
-                        responseObserver.onError(new RuntimeException("Unexpected response from agent: " + obj));
-                    }
-                }).exceptionally(ex -> {
-                    responseObserver.onError(ex);
-                    return null;
-                });
+                    }).exceptionally(ex -> {
+                        responseObserver.onError(ex);
+                        return null;
+                    });
+        }).exceptionally(ex -> {
+            responseObserver.onError(ex);
+            return null;
+        });
     }
+
 }

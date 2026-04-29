@@ -5,6 +5,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.cluster.Cluster;
 import akka.testkit.javadsl.TestKit;
+import akka.testkit.TestProbe;
 import br.cefetmg.lsi.bimasco.actors.SimulationActor;
 import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 import com.typesafe.config.Config;
@@ -60,9 +61,10 @@ public class SimulationServiceTest {
         SimulationSettings settings = new SimulationSettings(config);
 
         simulationActor = system.actorOf(Props.create(SimulationActor.class, settings), "simulationActor");
+        ActorRef mainActorProbe = new TestProbe(system).ref();
 
         server = ServerBuilder.forPort(0)
-                .addService(new SimulationService(simulationActor))
+                .addService(new SimulationService(simulationActor, mainActorProbe))
                 .build()
                 .start();
 

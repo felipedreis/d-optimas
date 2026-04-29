@@ -7,6 +7,7 @@ import br.cefetmg.lsi.bimasco.core.Solution;
 import br.cefetmg.lsi.bimasco.core.solutions.analyser.SolutionAnalyser;
 import br.cefetmg.lsi.bimasco.settings.AgentSettings;
 import br.cefetmg.lsi.bimasco.settings.RegionSettings;
+import br.cefetmg.lsi.bimasco.settings.SimulationSettings;
 import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -230,15 +231,17 @@ public class Messages {
         }
     }
 
-    public static class StartSimulation implements Serializable {
+    public static class StartSimulation extends AbstractMessage {
 
         public final Optional<Problem> problem;
 
         public StartSimulation(Problem problem) {
+            super(Messages.Nobody, Messages.Nobody);
             this.problem = Optional.ofNullable(problem);
         }
 
         public StartSimulation(){
+            super(Messages.Nobody, Messages.Nobody);
             problem = Optional.empty();
         }
 
@@ -246,6 +249,7 @@ public class Messages {
         public String toString() {
             return "StartSimulation{" +
                     "problem=" + problem +
+                    ", problemId=" + problemId +
                     '}';
         }
     }
@@ -254,7 +258,15 @@ public class Messages {
 
     public static class SimulationReady implements Serializable {}
 
-    public static class StopSimulation implements Serializable {}
+    public static class StopSimulation extends AbstractMessage {
+        public StopSimulation(int receiverId) {
+            super(Messages.Nobody, receiverId);
+        }
+
+        public StopSimulation() {
+            super(Messages.Nobody, Messages.Nobody);
+        }
+    }
     public static class SimulationStopped implements Serializable {
         public final List<ActorRef> nodes;
 
@@ -268,7 +280,11 @@ public class Messages {
 
     public static class GetState extends AbstractMessage {
         public GetState(int receiverId) {
-            super(Messages.Nobody, receiverId);
+            super(Nobody, receiverId);
+        }
+
+        public GetState(int receiverId, String problemId) {
+            super(Nobody, receiverId, problemId);
         }
 
         public GetState() {
@@ -304,6 +320,43 @@ public class Messages {
         }
     }
 
+    public static class ConfigureSimulation implements Serializable {
+        public final SimulationSettings settings;
+        public final String problemId;
+
+        public ConfigureSimulation(SimulationSettings settings) {
+            this(settings, null);
+        }
+
+        public ConfigureSimulation(SimulationSettings settings, String problemId) {
+            this.settings = settings;
+            this.problemId = problemId;
+        }
+    }
+
+    public static class DetailedRegionState implements Serializable {
+        public final String regionId;
+        public final long startedTime;
+        public final long currentTime;
+        public final boolean started;
+        public final long numberOfSolutions;
+        public final double average;
+        public final double std;
+        public final Solution bestSolution;
+
+        public DetailedRegionState(String regionId, long startedTime, long currentTime, boolean started,
+                                   long numberOfSolutions, double average, double std, Solution bestSolution) {
+            this.regionId = regionId;
+            this.startedTime = startedTime;
+            this.currentTime = currentTime;
+            this.started = started;
+            this.numberOfSolutions = numberOfSolutions;
+            this.average = average;
+            this.std = std;
+            this.bestSolution = bestSolution;
+        }
+    }
+
     public static class Terminate implements Serializable {}
 }
 
@@ -335,7 +388,7 @@ class MessageExtractor implements ShardRegion.MessageExtractor {
 
         if (message instanceof AbstractMessage) {
             AbstractMessage abstractMessage = (AbstractMessage) message;
-            shardId = abstractMessage.receiverId % numberOfShards;
+            shardId = Math.abs(abstractMessage.receiverId % numberOfShards);
         } else {
             shardId = 0;
         }
@@ -348,11 +401,22 @@ abstract class AbstractMessage implements Serializable {
     final UUID messageId;
     final int senderId;
     final int receiverId;
+    String problemId;
 
     public AbstractMessage(int senderId, int receiverId) {
+        this(senderId, receiverId, null);
+    }
+
+    public AbstractMessage(int senderId, int receiverId, String problemId) {
         messageId = UUID.randomUUID();
         this.senderId = senderId;
         this.receiverId = receiverId;
+        this.problemId = problemId;
+    }
+
+    public AbstractMessage withProblemId(String problemId) {
+        this.problemId = problemId;
+        return this;
     }
 
     @Override
@@ -361,6 +425,7 @@ abstract class AbstractMessage implements Serializable {
                 "messageId=" + messageId +
                 ", senderId=" + senderId +
                 ", receiverId=" + receiverId +
+                ", problemId=" + problemId +
                 '}';
     }
 }

@@ -42,6 +42,5 @@ public class DataExtractionBatch {
             extractor.extractData(path);
         }
         logger.info("Finished data extraction successfully");
-        System.exit(0);
     }
 }

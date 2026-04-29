@@ -61,6 +61,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     private SimulationSettings settings;
 
     private int id;
+    private String problemId;
 
     private ActorRef leader;
 
@@ -87,6 +88,9 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
     public void preStart() {
         String [] tokens = self().path().name().split("-");
         id = Integer.parseInt(tokens[1]);
+        if (tokens.length > 2) {
+            problemId = tokens[2];
+        }
 
         if (DatabaseHelper.getCqlSession() != null) {
             regionStateDAO = DatabaseHelper.getMapper().regionStateDAO();
@@ -130,18 +134,46 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
                 .match(InternalStimulus.class, this::onInternalStimulus)
                 .match(UpdateGlobalSummary.class, this::onUpdateGlobalSummary)
                 .match(StopSimulation.class, this::onStopSimulation)
+                .match(GetState.class, this::onGetState)
                 .matchAny(any -> logger.info("Not handling " + any.getClass()))
                 .build();
     }
 
+    private void onGetState(GetState state) {
+        if (region == null) {
+            sender().tell(new akka.actor.Status.Failure(new IllegalStateException("Region not initialized")), self());
+            return;
+        }
+
+        double average = region.getSummary().getMean();
+        double std = region.getSummary().getStandardDeviation();
+        long numberOfSolutions = region.getSummary().getN();
+
+        DetailedRegionState detailedRegionState = new DetailedRegionState(
+                persistenceId(),
+                0, // TODO: track started time if needed
+                time,
+                regionStarted,
+                numberOfSolutions,
+                average,
+                std,
+                region.getBestSolution()
+        );
+
+        sender().tell(detailedRegionState, self());
+    }
+
     private void initialize(CreateRegion config) {
+        this.problemId = config.problemId;
         problem = config.problem;
         time = config.time;
         region = new Region(id, config.problem, config.settings);
         leader = sender();
         addSolutions(config.initialSolutions);
 
-        sender().tell(new RegionRegister(id, region.getSummary()), self());
+        RegionRegister register = new RegionRegister(id, region.getSummary());
+        register.withProblemId(problemId);
+        sender().tell(register, self());
 
         InternalStimulus internalStimulusMessage = new InternalStimulus();
         internalStimulusMessage.setInformation(Stimulus.StimulusInformation.CHANGE_MY_STATE);
@@ -173,7 +205,9 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         internalTask.cancel();
         region.clear();
         regionStarted = false;
-        sender().tell(new RegionRelease(id), self());
+        RegionRelease release = new RegionRelease(id);
+        release.withProblemId(problemId);
+        sender().tell(release, self());
     }
 
 
@@ -190,11 +224,13 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
         if (region.getSolutionList().size() > request.counter) {
             List<Solution> solutions = region.getRandomSolutions(request.counter);
-            SolutionResponse response = new SolutionResponse(id, request.receiverId, solutions);
+            SolutionResponse response = new SolutionResponse(id, request.senderId, solutions);
+            response.withProblemId(problemId);
             sender().tell(response, self());
 
             persistMessage(sent(problem.toString(), response, time, persistenceId()));
         }
+
     }
 
     private  void onSolutionResponse(SolutionResponse response) {
@@ -215,6 +251,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
         if (StatisticsHelper.variationRate(merged) < StatisticsHelper.variationRate(region.getSummary())) {
             MergeResponse response = new MergeResponse(id, request.senderId);
+            response.withProblemId(problemId);
             sender().tell(response, self());
 
             persistMessage(sent(problem.toString(), response, time, persistenceId()));
@@ -227,7 +264,9 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         if (region != null) {
             logger.info("Region " + persistenceId() + " handling a merge response from " + sender().path().name());
             MergeResult mergeResult = new MergeResult(id, response.senderId, region.getSolutionList());
+            mergeResult.withProblemId(problemId);
             RegionRelease release = new RegionRelease(id);
+            release.withProblemId(problemId);
 
             sender().tell(mergeResult, self());
             leader.tell(release, self());
@@ -264,6 +303,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
         persistRegion(regionState());
 
         UpdateRegionSummary updateSummary = new UpdateRegionSummary(id, region.getSummary());
+        updateSummary.withProblemId(problemId);
         leader.tell(updateSummary, self());
         persistMessage(sent(problem.toString(), updateSummary, time, persistenceId()));
     }
@@ -288,6 +328,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
 
             if (!splitResult.isEmpty()) {
                 RegionSplit split = new RegionSplit(id, splitResult.get(0), splitResult.get(1));
+                split.withProblemId(problemId);
                 leader.tell(split, self());
 
                 persistMessage(sent(problem.toString(), split, time, persistenceId()));
@@ -297,6 +338,7 @@ public class RegionActor extends AbstractPersistentActor implements Serializable
             } else {
                 MergeRequest mergeRequest = new MergeRequest(id, Messages.Everybody, region.getSummary(),
                         region.getSearchSpaceSummary());
+                mergeRequest.withProblemId(problemId);
                 leader.tell(mergeRequest, self());
                 persistMessage(sent(problem.toString(), mergeRequest, time, persistenceId()));
             }

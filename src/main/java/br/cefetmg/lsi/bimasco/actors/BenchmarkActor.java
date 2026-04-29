@@ -43,6 +43,10 @@ public class BenchmarkActor extends AbstractActor {
 
     private ExtractorsConfig extractorsConfig;
 
+    private br.cefetmg.lsi.bimasco.settings.SimulationSettings simulationSettings;
+
+    public BenchmarkActor() {}
+
     public BenchmarkActor(ActorRef simulationActor, String name, long evaluationsBudget){
         this.simulationActor = simulationActor;
         this.name = name;
@@ -52,10 +56,15 @@ public class BenchmarkActor extends AbstractActor {
     @Override
     public void preStart() throws Exception {
         super.preStart();
-        init();
+        if (name != null) {
+            init();
+        }
     }
     private void init() {
         try {
+            if (coCOBenchmark != null) {
+                stopBenchmark();
+            }
             suite = new Suite(name, name, "");
             observer = new Observer(name, "");
 
@@ -66,6 +75,8 @@ public class BenchmarkActor extends AbstractActor {
                     mapper.globalStateDAO(), mapper.messageStateDAO(), mapper.memoryStateDAO());
 
             problemCounter = 0;
+            evaluations = 0;
+            runningSimulation = false;
         } catch (Exception ex) {
             logger.error("Failed to initialize benchmark", ex);
         }
@@ -74,9 +85,19 @@ public class BenchmarkActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(Evaluate.class, this::handleEvaluate)
+                .match(ConfigureSimulation.class, this::onConfigureSimulation)
                 .match(StartSimulation.class, this::startBenchmark)
                 .match(SimulationStopped.class, this::handleSimulationEnd)
                 .build();
+    }
+
+    private void onConfigureSimulation(ConfigureSimulation configure) {
+        logger.info("Configuring benchmark: {}", configure.settings.getName());
+        this.name = configure.settings.getName();
+        this.evaluationsBudget = configure.settings.getEvaluationsBudget();
+        this.simulationSettings = configure.settings;
+        this.simulationActor = sender();
+        init();
     }
 
     private void nextProblem() {
@@ -119,7 +140,7 @@ public class BenchmarkActor extends AbstractActor {
     }
 
     private void checkStopCondition() {
-        if (evaluations == evaluationsBudget) {
+        if (evaluations >= evaluationsBudget) {
             logger.info("Stopping simulation due to evaluation limit reached");
             simulationActor.tell(new StopSimulation(), self());
             runningSimulation = false;
@@ -137,6 +158,11 @@ public class BenchmarkActor extends AbstractActor {
         if (!runningSimulation) {
             runningSimulation = true;
             evaluations = 0;
+
+            // Trigger Hard Reset and set new problemId in SimulationActor
+            ConfigureSimulation configure = new ConfigureSimulation(simulationSettings, benchmarkProblem.getId());
+            simulationActor.tell(configure, self());
+
             StartSimulation startSimulation = new StartSimulation(benchmarkProblem);
             simulationActor.tell(startSimulation, self());
             logger.debug("Sending message to simulationActor {}", startSimulation);
@@ -147,9 +173,9 @@ public class BenchmarkActor extends AbstractActor {
 
     private void handleSimulationEnd(SimulationStopped stopped) {
         logger.info("Simulation has stopped, handling the start of next problem");
-        extractData();
         nextProblem();
-        startSimulation();
+        if (benchmarkProblem != null)
+            startSimulation();
     }
 
     private void extractData() {

@@ -57,6 +57,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private ActorRef agentsShard;
     private ActorRef regionsShard;
     private int id;
+    private String problemId;
 
     private AgentStateDAO agentStateDAO;
     private MessageStateDAO messageStateDAO;
@@ -109,7 +110,9 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
                     regionsShard = snapshot.regionsShard;
                     lifetime = agent.getAgentSettings().getLifetime();
 
-                    leader.tell(new AgentRegister(id, self()), self());
+                    AgentRegister register = new AgentRegister(id, self());
+                    register.withProblemId(problemId);
+                    leader.tell(register, self());
                 })
                 .build();
     }
@@ -182,7 +185,7 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
 
     private void initialize(CreateAgent c) {
         logger.info("Running initialize for " + persistenceId());
-
+        this.problemId = c.problemId;
         agentsShard = c.agentsShard;
         regionsShard = c.regionsShard;
         leader = c.leader;
@@ -193,7 +196,9 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
     private Object onCreateAgent(CreateAgent createAgent){
         logger.info("{} {}", sender(), createAgent);
         initialize(createAgent);
-        sender().tell(new AgentRegister(id, self()), self());
+        AgentRegister register = new AgentRegister(id, self());
+        register.withProblemId(problemId);
+        sender().tell(register, self());
         saveSnapshot(new AgentActorSnapshot(agent, agentsShard, regionsShard, leader));
         return null;
     }
@@ -222,7 +227,9 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
             Optional<Integer> regionOptional = agent.chooseRegion();
 
             if (regionOptional.isPresent()) {
-                regionsShard.tell(new SolutionRequest(id, regionOptional.get(), agent.getSolutionsCount()), self());
+                SolutionRequest request = new SolutionRequest(id, regionOptional.get(), agent.getSolutionsCount());
+                request.withProblemId(problemId);
+                regionsShard.tell(request, self());
                 logger.info(join("Sending solution request to region ", regionOptional.get()));
 
                 MemoryState memoryState = agent.getMemoryState();
@@ -232,7 +239,9 @@ public class AgentActor extends AbstractPersistentActor implements Serializable,
                 memoryState.setChosenRegion(regionOptional.get());
                 persistMemoryState(memoryState);
             } else {
-                leader.tell(new SolutionRequest(id, Messages.Nobody, agent.getSolutionsCount()), self());
+                SolutionRequest request = new SolutionRequest(id, Messages.Nobody, agent.getSolutionsCount());
+                request.withProblemId(problemId);
+                leader.tell(request, self());
                 logger.info("Sending solution request to the leader");
             }
         }
